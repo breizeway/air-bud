@@ -1,3 +1,3 @@
-from _queries.league import league
+from .league import league
 
 queries = [league]
