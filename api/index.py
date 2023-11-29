@@ -1,7 +1,7 @@
 from ariadne import graphql_sync, make_executable_schema, load_schema_from_path
 from ariadne.explorer import ExplorerGraphiQL
 from flask import Flask, jsonify, request
-from _queries import queries
+from queries import queries
 
 type_defs = load_schema_from_path("api/schema.graphql")
 
