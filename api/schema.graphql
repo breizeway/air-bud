@@ -1,0 +1,14 @@
+type Query {
+  hello: String!
+  matchup: String!
+}
+# input: MatchupInput!
+
+input AuthInput {
+  swid: String!
+  espn_s2: String!
+}
+
+input MatchupInput {
+  auth: AuthInput!
+}
