@@ -1,7 +1,7 @@
 from ariadne import graphql_sync, make_executable_schema, load_schema_from_path
 from ariadne.explorer import ExplorerGraphiQL
 from flask import Flask, jsonify, request
-from queries import queries
+from api_utils.resolvers.queries import queries
 
 type_defs = load_schema_from_path("api/schema.graphql")
 
@@ -41,7 +41,3 @@ def graphql_server():
 
     status_code = 200 if success else 400
     return jsonify(result), status_code
-
-
-if __name__ == "__main__":
-    app.run(debug=True,port=5678)
