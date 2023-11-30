@@ -19,13 +19,13 @@ type BoxScore {
   home_ties: Int!
   home_losses: Int!
   "example {'PTS': {'value': 88.0, 'result': 'LOSS'}, 'BLK': {'value': 1.0, 'result': 'TIE'} }"
-  home_stats: [Stat!]! #dict
+  home_stats: [BoxStat!]!
   away_team: Team!
   away_wins: Int!
   away_ties: Int!
   away_losses: Int!
   "example {'AST': {'value': 14.0, 'result': 'LOSS'}, 'FG%': {'value': 0.50793651, 'result': 'WIN'}}"
-  away_stats: [Stat!]!
+  away_stats: [BoxStat!]!
   home_lineup: [BoxPlayer]!
   away_lineup: [BoxPlayer]!
 }
@@ -36,7 +36,7 @@ type BoxPlayer {
   "points scored in the current week"
   points: Int!
   "dict of points breakdown (PTS, BLK, AST, ...)"
-  points_breakdown: String! #dict
+  points_breakdown: [BoxStat!]!
   "the pro team the player is going against"
   pro_opponent: String!
   "0 (not played/playing) or 100 (finished game)"
@@ -72,12 +72,12 @@ type Player {
   acquisitionType: String!
   proTeam: String!
   position: String!
-  injuryStatus: String!
+  injuryLeagueStatus: String # confirmed nullable
   injured: Boolean!
   "example {'2': {'team': 'NYK', 'date': datetime.datetime(2019, 4, 11, 0, 0), 'total': {'PTS': 20.0, 'BLK': 0.0, 'AST': 3.0}}}"
-  stats: String! #dict
+  stats: [PlayerStat!]!
   "key is scoring period, example: {'2': {'team': 'BKN', 'date': datetime.datetime(2018, 10, 17, 23, 0)}}"
-  schedule: String! #dict
+  schedule: [Schedule!]!
   "SG, C, PG, SF, IR"
   lineupSlot: String!
   "players total points during the season"
@@ -92,10 +92,10 @@ type Player {
 
 type Matchup {
   home_team: Team!
-  home_team_live_score: Int!
+  home_team_live_score: Float # confirmed nullable # is this actually float?? error went away, sooo
   home_final_score: Int!
   away_team: Team!
-  away_team_live_score: Int!
+  away_team_live_score: Float # confirmed nullable # is this actually float?? error went away, sooo
   away_final_score: Int!
   winner: String!
 }
@@ -103,5 +103,23 @@ type Matchup {
 type Stat {
   category: String!
   value: Float!
-  result: String
+}
+
+type BoxStat {
+  category: String!
+  value: Float!
+  result: String # confirmed nullable
+}
+
+type Schedule {
+  scoring_period: String!
+  team: String!
+  date: String!
+}
+
+type PlayerStat {
+  scoring_period: String!
+  team: String!
+  date: String!
+  total: [Stat!]!
 }
