@@ -36,7 +36,7 @@ type BoxPlayer {
   "points scored in the current week"
   points: Int!
   "dict of points breakdown (PTS, BLK, AST, ...)"
-  points_breakdown: [BoxStat!]!
+  points_breakdown: [Stat!]! # confirmed Stat
   "the pro team the player is going against"
   pro_opponent: String!
   "0 (not played/playing) or 100 (finished game)"
@@ -92,17 +92,17 @@ type Player {
 
 type Matchup {
   home_team: Team!
-  home_team_live_score: Float # confirmed nullable # is this actually float?? error went away, sooo
+  home_team_live_score: Float # confirmed nullable, float
   home_final_score: Int!
   away_team: Team!
-  away_team_live_score: Float # confirmed nullable # is this actually float?? error went away, sooo
+  away_team_live_score: Float # confirmed nullable, float
   away_final_score: Int!
   winner: String!
 }
 
 type Stat {
   category: String!
-  value: Float!
+  value: Float # nullable because it's sometimes infinity
 }
 
 type BoxStat {
@@ -119,7 +119,10 @@ type Schedule {
 
 type PlayerStat {
   scoring_period: String!
-  team: String!
-  date: String!
-  total: [Stat!]!
+  applied_total: Float!
+  applied_avg: Float!
+  team: String # confirmed nullable, in fact it's always None (TODO: update this when you see a value)
+  date: String # confirmed nullable, in fact it's always None (TODO: update this when you see a value)
+  avg: [Stat!] # confirmed nullable
+  total: [Stat!] # confirmed nullable
 }
