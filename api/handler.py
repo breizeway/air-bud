@@ -3,18 +3,14 @@ from ariadne.explorer import ExplorerGraphiQL
 from flask import Flask, jsonify, request
 from api_utils.resolvers.queries import queries
 
-type_defs = load_schema_from_path("api/schema.graphql")
-
-schema = make_executable_schema(type_defs, [*queries])
-
 app = Flask(__name__)
-
-explorer_html = ExplorerGraphiQL().html(None)
+schema = make_executable_schema(
+    load_schema_from_path("api/schema.graphql"), [*queries])
 
 
 @app.route("/graphql", methods=["GET"])
 def graphql_explorer():
-    return explorer_html, 200
+    return ExplorerGraphiQL().html(None), 200
 
 
 @app.route("/graphql", methods=["POST"])

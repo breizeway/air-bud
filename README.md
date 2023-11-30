@@ -15,3 +15,4 @@ use the vercel cli and run `vercel dev`
 - [Vercel Python Serverless](https://vercel.com/docs/functions/serverless-functions/runtimes/python)
 - [Vercel Python Serverless Example](https://github.com/vercel/examples/tree/main/python/flask3)
 - [builds](https://stackoverflow.com/questions/77243878/poetry-and-vercel-issue)
+- [edge storage](https://vercel.com/docs/storage/edge-config)

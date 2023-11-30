@@ -1,14 +1,101 @@
 type Query {
-  hello: String!
-  matchup: String!
+  getBoxScores: [BoxScore!]!
 }
-# input: MatchupInput!
 
-input AuthInput {
+type Mutation {
+  authenticate(input: AuthenticationInput): Boolean!
+}
+
+input AuthenticationInput {
   swid: String!
   espn_s2: String!
 }
 
-input MatchupInput {
-  auth: AuthInput!
+type BoxScore {
+  # HOME or AWAY
+  winner: String!
+  home_team: Team!
+  home_wins: Int!
+  home_ties: Int!
+  home_losses: Int!
+  # example {'PTS': {'value': 88.0, 'result': 'LOSS'}, 'BLK': {'value': 1.0, 'result': 'TIE'} }
+  home_stats: String! #dict
+  away_team: Team!
+  away_wins: Int!
+  away_ties: Int!
+  away_losses: Int!
+  # example {'AST': {'value': 14.0, 'result': 'LOSS'}, 'FG%': {'value': 0.50793651, 'result': 'WIN'}}
+  away_stats: Int!
+  home_lineup: [BoxPlayer]!
+  away_lineup: [BoxPlayer]!
+}
+
+type BoxPlayer {
+  # the players lineup position
+  slot_position: String!
+  # points scored in the current week
+  points: Int!
+  # dict of points breakdown (PTS, BLK, AST, ...)
+  points_breakdown: String! #dict
+  # the pro team the player is going against
+  pro_opponent: String!
+  # 0 (not played/playing) or 100 (finished game)
+  game_played: Int!
+}
+
+type Team {
+  team_id: Int!
+  team_abbrev: String!
+  team_name: String!
+  division_id: String!
+  division_name: String!
+  wins: Int!
+  losses: Int!
+  ties: Int!
+  # array of owner ids
+  owners: [String!]!
+  # standing before playoffs
+  standing: Int!
+  # final standing at end of season
+  final_standing: Int!
+  logo_url: String!
+  roster: [Player]!
+  schedule: [Matchup]!
+}
+
+type Player {
+  name: String!
+  playerId: Int!
+  eligibleSlots: [String!]!
+  # players positional rank
+  posRank: Int!
+  acquisitionType: String!
+  proTeam: String!
+  position: String!
+  injuryStatus: String!
+  injured: Boolean!
+  # example {'2': {'team': 'NYK', 'date': datetime.datetime(2019, 4, 11, 0, 0), 'total': {'PTS': 20.0, 'BLK': 0.0, 'AST': 3.0}}}
+  stats: String! #dict
+  # key is scoring period, example: {'2': {'team': 'BKN', 'date': datetime.datetime(2018, 10, 17, 23, 0)}}
+  schedule: String! #dict
+  # SG, C, PG, SF, IR
+  lineupSlot: String!
+  # players total points during the season
+  total_points: Int!
+  # players average points during the season
+  avg_points: Int!
+  # projected player points for the season
+  projected_total_points: Int!
+  # projected players average points for the season
+  projected_avg_points: Int!
+}
+
+type Matchup {
+  home_team: Team!
+  home_team_live_score: Int!
+  home_final_score: Int!
+  away_team: Team!
+  away_team_live_score: Int!
+  away_final_score: Int!
+  winner: String!
 }
