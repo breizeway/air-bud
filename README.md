@@ -4,7 +4,9 @@ A companion to ESPN fantasy basketball
 
 ## developing
 
-use the vercel cli and run `vercel dev`
+- install the vercel cli `npm i -g vercel`
+- use the vercel cli and run `vercel dev serverless`.
+  - this initializes the serverless `app` function at `serverless/api/handler.py`
 
 ## python api
 
@@ -16,3 +18,4 @@ use the vercel cli and run `vercel dev`
 - [Vercel Python Serverless Example](https://github.com/vercel/examples/tree/main/python/flask3)
 - [builds](https://stackoverflow.com/questions/77243878/poetry-and-vercel-issue)
 - [edge storage](https://vercel.com/docs/storage/edge-config)
+- [`vercel dev` only works on one project at a time](https://github.com/vercel/vercel/discussions/5294)

@@ -1,6 +1,6 @@
 from ariadne import QueryType
-from api_utils.data import ClientBoxScore
-from api_utils.league import init_league
+from data import ClientBoxScore
+from league import init_league
 
 query = QueryType()
 
