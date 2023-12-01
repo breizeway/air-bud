@@ -4,8 +4,8 @@ A companion to ESPN fantasy basketball
 
 ## developing
 
-- install the vercel cli `npm i -g vercel`
-- use the vercel cli and run `vercel dev serverless`.
+- install the vercel CLI with `npm i -g vercel`
+- use the vercel CLI and run `vercel dev serverless`.
   - this initializes the serverless `app` function at `serverless/api/handler.py`
 
 ## python api
