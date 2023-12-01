@@ -1,12 +1,9 @@
 type Query {
-  getBoxScores: [BoxScore!]!
+  getBoxScores(league_config: LeagueConfigInput!): [BoxScore!]!
 }
 
-type Mutation {
-  authenticate(input: AuthenticationInput): Boolean!
-}
-
-input AuthenticationInput {
+input LeagueConfigInput {
+  year: Int
   swid: String!
   espn_s2: String!
 }

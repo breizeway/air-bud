@@ -2,7 +2,7 @@ from espn_api.basketball import League
 import os
 
 
-def init_league(year: int = 2024):
-    league = League(league_id=os.environ["LEAGUE_ID"], year=year, espn_s2="AEBkULgGKd5WK77vZ38D88yxOqSO1KyaRtKNNwHxO%2FVDWwFu7f8CfpHIy84MUJWwi7kwcv6wA0NphH%2Ff2lXwVYH8lEnKzlWet3iYb1ZqbwzClJzwVM6QhRP9bQYIzngfztjasDeDxlM%2FA%2BZVLJR2mrPpcbUm2diqnxvXo7FkHyn6M%2FWu0qbVUbcYwUKsOFL3KrgUjLaDcN8406Izy2oqb4RG60IvDRh3X2trqIcTP5U%2FQ9RUAGGw%2BNUwc82dgXzG%2F5JjfshRwc3a5BOaDi2BKBW7",
-                    swid="{3872DC0C-8931-4C30-A0FD-F9AD7CA4C739}")
-    return league
+def init_league(league_config: dict):
+    league_config.update({"year": league_config.get("year", 2024)})
+    league_config.update({"league_id": int(os.environ["LEAGUE_ID"])})
+    return League(**league_config)
