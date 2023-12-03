@@ -1,0 +1,25 @@
+.siteContainer {
+}
+
+.welcome {
+  @apply flex flex-col gap-2;
+  @apply text-4xl;
+}
+
+.welcome h1 {
+  @apply text-theme;
+}
+
+.welcomeGifBg {
+  @apply float-left mr-3 bg-[var(--theme-color)] px-3 py-1;
+
+  box-shadow: 2px 2px 3px black;
+}
+
+.welcomeGif {
+  filter: contrast(200%) brightness(2);
+}
+
+.footer {
+  @apply flex justify-between items-end gap-2 font-semibold;
+}

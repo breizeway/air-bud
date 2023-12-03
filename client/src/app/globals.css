@@ -4,14 +4,14 @@
 
 :root {
   --theme-color: #e03a3e;
-  --foreground-color: #2d1a0a;
+  --foreground-color: #000;
   --background-color: #070707;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --theme-color: #e03a3e;
-    --foreground-color: #2d1a0a;
+    --foreground-color: #000;
     --background-color: #070707;
   }
 }
@@ -21,7 +21,7 @@ a {
 }
 
 body {
-  background-color: var(--background-color);
+  background-color: var(--theme-color);
   font-family: "Times New Roman", Times, serif;
   overscroll-behavior: none;
   color: var(--foreground-color);
@@ -34,7 +34,4 @@ button {
   @apply shadow-md shadow-amber-800;
   @apply hover:shadow-lg hover:shadow-amber-800 hover:mt-0 hover:mb-[0.1rem];
   @apply active:shadow-md active:shadow-amber-800 active:mt-[0.1rem] active:mb-0;
-
-  /* background-image: url("/basketball-texture-2.png");
-  background-size: 200px 100px; */
 }
