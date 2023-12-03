@@ -19,9 +19,9 @@ export default function Home() {
         </h1>
       </div>
       <p className="tracking-widest font-semibold text-lg my-6 border-2 border-black px-2">
-        Hi! If you are a member of the &quot;ESPN fantasy basketball&quot;
-        league Ball is Lyf3 and want to know all about the stats and how the
-        teams are doing - you have come to the right place.
+        Hi! If you are a member of the ESPN fantasy basketball league &quot;Ball
+        is Lyf3&quot; and want to know all about the stats and how the teams are
+        doing - you have come to the right place.
       </p>
       <Image
         src="/under-construction.gif"
