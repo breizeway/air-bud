@@ -15,7 +15,7 @@ export default function Home() {
               className={styles.welcomeGif}
             />
           </div>
-          to the internet home of the Ball is Lyf3 fantasy league!!!
+          to the internet home of the &quot;Ball is Lyf3&quot; fantasy league!!!
         </h1>
       </div>
       <p className="tracking-widest font-semibold text-lg my-6 border-2 border-black px-2">

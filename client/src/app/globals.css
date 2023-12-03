@@ -4,16 +4,9 @@
 
 :root {
   --theme-color: #e03a3e;
+  --wood-color: #ce884d;
   --foreground-color: #000;
   --background-color: #070707;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --theme-color: #e03a3e;
-    --foreground-color: #000;
-    --background-color: #070707;
-  }
 }
 
 a {
