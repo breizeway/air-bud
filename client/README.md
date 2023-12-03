@@ -41,3 +41,6 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 - [web design museum](https://www.webdesignmuseum.org/)
 - [nextjs 13 routing](https://dev.to/zenstack/fun-with-nextjs-13-new-routing-system-5gmk)
 - [bball graphics](https://carlswebgraphics.com/basketball.html)
+- [more graphics](https://pixabay.com/vectors/search/basketball/)
+- [custom tailwind classes](https://tailwindcss.com/docs/functions-and-directives#using-apply-with-per-component-css)
+- [gifs paradise](https://www.gifs-paradise.com/)

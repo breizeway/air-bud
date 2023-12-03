@@ -1,0 +1,33 @@
+.court {
+  display: grid;
+  grid-template-areas:
+    "top    top    top"
+    "left   main   right"
+    "bottom bottom bottom";
+  grid-template-rows: 2rem auto 2rem;
+  grid-template-columns: 1rem auto 1rem;
+}
+
+.top {
+  @apply bg-black;
+  grid-area: top;
+}
+
+.left {
+  @apply bg-black;
+  grid-area: left;
+}
+
+.main {
+  grid-area: main;
+}
+
+.right {
+  @apply bg-black;
+  grid-area: right;
+}
+
+.bottom {
+  @apply bg-black;
+  grid-area: bottom;
+}

@@ -1,0 +1,42 @@
+.siteContainer {
+  @apply h-full min-h-[100dvh] w-screen p-2 px-4 flex flex-col items-center gap-4;
+
+  background-image: url("/wood.svg");
+  background-size: 720px;
+}
+
+.siteContainer > * {
+  @apply w-full max-w-[1026px];
+}
+
+.header {
+  @apply text-theme;
+  @apply flex flex-col gap-2;
+}
+
+.welcome {
+  @apply text-4xl;
+}
+
+.welcomeGifBg {
+  @apply float-left mr-3 bg-[var(--theme-color)] px-3 py-1;
+
+  box-shadow: 2px 2px 3px black;
+}
+
+.welcomeGif {
+  filter: contrast(200%) brightness(2);
+}
+
+.nav {
+  @apply flex gap-4;
+}
+
+.main {
+  @apply grow flex flex-col;
+}
+
+.footer {
+  @apply flex justify-between items-end gap-2 font-semibold;
+  padding-bottom: env(safe-area-inset-bottom);
+}
