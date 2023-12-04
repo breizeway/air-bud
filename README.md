@@ -11,13 +11,14 @@ each project has a separate deployment pipeline with Vercel
 
 ### nextjs app
 
-- run `npm i`
-- run `npm run dev`
+- run `npm install --prefix client`
+- run `npm run dev --prefix client`
 
 ### serverless api
 
 - install the vercel CLI with `npm i -g vercel`
-- use the vercel CLI and run `vercel dev serverless`.
-  - this initializes the serverless `app` function at `serverless/api/handler.py`
+- set up the integration with vercel cli with `vercel link`. follow [these instructions](https://vercel.com/docs/cli/project-linking) to run vercel from the `./serverless` directory
+- run `vercel dev`.
+  - this initializes the serverless `app` function at `serverless/api/handler.py` if you linked to vercel correctly
 
-using the vercel CLI instead of running a `python3 ...` command initializes a virtual environment that matches how vercel will actually run the serverless function in production. this means no surprises when you deploy.
+using the vercel CLI instead of running a `python3 ...` command initializes a virtual environment to run the actual serverless function like in production. this means no surprises when you deploy.

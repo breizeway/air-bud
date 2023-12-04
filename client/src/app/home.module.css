@@ -11,9 +11,13 @@
 }
 
 .welcomeGifBg {
-  @apply float-left mr-3 bg-[var(--theme-color)] px-3 py-1;
+  @apply float-left p-2 mt-2 mr-3 z-10 bg-[#D7C9B3];
+  @apply border-[0.33rem] border-l-[#FFEFD6] border-t-[#FFEFD6] border-b-[#9C9181] border-r-[#9C9181];
+  @apply shadow-md shadow-[#4A453D];
 
-  box-shadow: 2px 2px 3px black;
+  /* @apply bg-[var(--theme-color)] px-3 py-1; */
+
+  /* box-shadow: 2px 2px 3px black; */
 }
 
 .welcomeGif {

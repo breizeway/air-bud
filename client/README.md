@@ -44,3 +44,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 - [more graphics](https://pixabay.com/vectors/search/basketball/)
 - [custom tailwind classes](https://tailwindcss.com/docs/functions-and-directives#using-apply-with-per-component-css)
 - [gifs paradise](https://www.gifs-paradise.com/)
+- [gif cities](https://gifcities.org/)

@@ -13,7 +13,14 @@ const config: Config = {
         ".text-theme": {
           color: "var(--theme-color)",
           fontWeight: "bold",
-          textShadow: "2px 2px 3px black",
+          textShadow:
+            "-1px -1px 2px black, 1px 1px 2px black, -1px 1px 2px black, 1px -1px 2px black",
+        },
+        ".paint": {
+          color: "var(--background-color)",
+          backgroundColor: "black",
+          opacity: "0.85",
+          border: "2px solid var(--background-color)",
         },
       });
     }),

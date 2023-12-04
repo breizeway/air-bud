@@ -10,12 +10,12 @@
   background-image: url("/wood.svg");
   background-size: 720px;
 
-  @apply border-2 border-white;
+  @apply border-2 border-[var(--background-color)];
   @apply h-full min-h-[100dvh] w-screen;
 }
 
 .main {
-  @apply h-full w-full flex flex-col items-center p-2 border-2 border-white;
+  @apply h-full w-full flex flex-col items-center p-2 border-2 border-[var(--background-color)];
   grid-area: main;
 }
 
@@ -27,7 +27,7 @@
 .bottom,
 .left,
 .right {
-  @apply overflow-clip opacity-[0.85];
+  @apply overflow-clip paint border-0;
 }
 
 .top {
@@ -36,7 +36,7 @@
 
 .top,
 .bottom {
-  @apply bg-black text-theme text-lg flex justify-between items-center gap-2;
+  @apply text-theme text-lg flex justify-between items-center gap-2;
 }
 
 .bottom {
@@ -44,8 +44,12 @@
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-.bottom > * {
+.bottom a {
   transform: rotate(-180deg);
+}
+
+.courtLogo {
+  @apply flex w-full items-center;
 }
 
 .courtLogoStretch {
@@ -58,15 +62,13 @@
 }
 
 .espnLogo {
-  @apply text-white flex items-center gap-1 overflow-clip no-underline;
+  @apply text-[var(--background-color)] flex items-center gap-1 overflow-clip no-underline;
 }
 
 .left {
-  @apply bg-black;
   grid-area: left;
 }
 
 .right {
-  @apply bg-black;
   grid-area: right;
 }

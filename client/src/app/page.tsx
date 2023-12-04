@@ -8,17 +8,16 @@ export default function Home() {
         <h1>
           <div className={styles.welcomeGifBg}>
             <Image
-              src={"/welcome-7.gif"}
+              src={`/welcome.gif`}
               alt="animated welcome text"
-              height={25.2}
-              width={140}
-              className={styles.welcomeGif}
+              height={41.13}
+              width={250}
             />
           </div>
           to the internet home of the &quot;Ball is Lyf3&quot; fantasy league!!!
         </h1>
       </div>
-      <p className="tracking-widest font-semibold text-lg my-6 border-2 border-black px-2">
+      <p className="tracking-widest font-semibold text-md p-2 my-4 paint">
         Hi! If you are a member of the ESPN fantasy basketball league &quot;Ball
         is Lyf3&quot; and want to know all about the stats and how the teams are
         doing - you have come to the right place.
