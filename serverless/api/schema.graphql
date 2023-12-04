@@ -1,5 +1,19 @@
 type Query {
-  getBoxScores(league_config: LeagueConfigInput!): [BoxScore!]!
+  getBoxScores(league_config: LeagueConfigInput!): BoxScoresResult!
+}
+
+enum ClientErrorCode {
+  LEAGUE_AUTH
+}
+
+type ClientError {
+  code: ClientErrorCode!
+  message: String!
+}
+
+type BoxScoresResult {
+  box_scores: [BoxScore!]
+  client_errors: [ClientError!]
 }
 
 input LeagueConfigInput {
