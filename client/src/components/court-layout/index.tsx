@@ -36,14 +36,7 @@ export default function CourtLayout({ children }: PropsWithChildren) {
       </footer>
       <div className={styles.left} />
       <div className={styles.right} />
-      <main className={styles.main}>
-        {/* <nav className="mb-2 flex gap-2">
-          <Link href="/" className="text-theme">
-            home
-          </Link>
-        </nav> */}
-        {children}
-      </main>
+      <main className={styles.main}>{children}</main>
     </div>
   );
 }

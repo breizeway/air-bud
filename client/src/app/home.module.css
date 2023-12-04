@@ -1,29 +1,8 @@
-.siteContainer {
-}
-
 .welcome {
   @apply flex flex-col gap-2;
-  @apply text-4xl;
-}
-
-.welcome h1 {
-  @apply text-theme;
 }
 
 .welcomeGifBg {
-  @apply float-left p-2 mt-2 mr-3 z-10 bg-[#D7C9B3];
+  @apply float-left p-2 mt-3 mr-3 z-10 bg-[#D7C9B3] shadow-outline;
   @apply border-[0.33rem] border-l-[#FFEFD6] border-t-[#FFEFD6] border-b-[#9C9181] border-r-[#9C9181];
-  @apply shadow-md shadow-[#4A453D];
-
-  /* @apply bg-[var(--theme-color)] px-3 py-1; */
-
-  /* box-shadow: 2px 2px 3px black; */
-}
-
-.welcomeGif {
-  filter: contrast(200%) brightness(2);
-}
-
-.footer {
-  @apply flex justify-between items-end gap-2 font-semibold;
 }
