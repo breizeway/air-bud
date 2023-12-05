@@ -4,6 +4,7 @@ type Query {
 
 enum ClientErrorCode {
   LEAGUE_AUTH
+  LEAGUE_REQUEST
 }
 
 type ClientError {
