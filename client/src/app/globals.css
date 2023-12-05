@@ -21,12 +21,3 @@ body {
   background-color: var(--theme-color);
   overscroll-behavior: none;
 }
-
-button {
-  /* @apply text-theme;
-  @apply px-2 py-1 mt-[0.1rem] bg-black opacity-80; */
-  /* @apply border-2 border-b-amber-950 border-r-amber-950 border-l-amber-700 border-t-amber-700;
-  @apply shadow-md shadow-amber-800;
-  @apply hover:shadow-lg hover:shadow-amber-800 hover:mt-0 hover:mb-[0.1rem];
-  @apply active:shadow-md active:shadow-amber-800 active:mt-[0.1rem] active:mb-0; */
-}

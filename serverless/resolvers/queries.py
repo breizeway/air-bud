@@ -12,4 +12,4 @@ def resolve_get_box_scores(*_, league_config):
         box_scores = league.box_scores()
         return {"box_scores": map(lambda box_score: ClientBoxScore(box_score), box_scores)}
 
-    return PrivateLeague(league_config).makeRequest(getBoxScores)
+    return PrivateLeague(league_config).make_request(getBoxScores)

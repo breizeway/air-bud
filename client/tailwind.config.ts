@@ -4,6 +4,7 @@ import plugin from "tailwindcss/plugin";
 // https://tailwindcss.com/docs/adding-custom-styles#customizing-your-theme
 const outlineShadow =
   "-1px -1px 2px black, 1px 1px 2px black, -1px 1px 2px black, 1px -1px 2px black";
+const contentWidth = "920px";
 
 const config: Config = {
   content: [
@@ -12,11 +13,19 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    boxShadow: {
-      outline: outlineShadow,
-    },
-    dropShadow: {
-      outline: outlineShadow,
+    extend: {
+      boxShadow: {
+        outline: outlineShadow,
+      },
+      dropShadow: {
+        outline: outlineShadow,
+      },
+      width: {
+        content: contentWidth,
+      },
+      maxWidth: {
+        content: contentWidth,
+      },
     },
   },
   plugins: [
@@ -24,6 +33,19 @@ const config: Config = {
       addBase({
         h1: {
           fontSize: theme("fontSize.3xl"),
+          marginTop: theme("margin.3"),
+          marginBottom: theme("margin.3"),
+        },
+        h2: {
+          fontSize: theme("fontSize.2xl"),
+          marginTop: theme("margin.2"),
+          marginBottom: theme("margin.2"),
+        },
+        ol: { listStyle: "decimal" },
+        li: { margin: "0.5rem 0 0.5rem 2rem" },
+        "input[type=text]": {
+          paddingLeft: theme("padding.1"),
+          paddingRight: theme("padding.1"),
         },
       }),
         addComponents({

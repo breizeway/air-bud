@@ -45,3 +45,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 - [custom tailwind classes](https://tailwindcss.com/docs/functions-and-directives#using-apply-with-per-component-css)
 - [gifs paradise](https://www.gifs-paradise.com/)
 - [gif cities](https://gifcities.org/)
+- [court lines](https://observablehq.com/@willhoup/drawing-an-nba-court)

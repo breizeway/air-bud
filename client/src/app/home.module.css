@@ -3,6 +3,6 @@
 }
 
 .welcomeGifBg {
-  @apply float-left p-2 mt-3 mr-3 z-10 bg-[#D7C9B3] shadow-outline;
+  @apply float-left p-2 mt-3 mr-5 z-10 bg-[#D7C9B3] shadow-outline;
   @apply border-[0.33rem] border-l-[#FFEFD6] border-t-[#FFEFD6] border-b-[#9C9181] border-r-[#9C9181];
 }

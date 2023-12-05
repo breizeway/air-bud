@@ -10,8 +10,8 @@ export default function Home() {
             <Image
               src={`/welcome.gif`}
               alt="animated welcome text"
-              height={46.73}
-              width={284}
+              height={43.11}
+              width={262}
             />
           </div>
           to the official internet home of the &quot;Ball is Lyf3&quot; fantasy

@@ -12,7 +12,7 @@
 }
 
 .court:before {
-  @apply absolute top-0 left-0 right-0 bottom-0 z-[-2] bg-[var(--wood-color)];
+  @apply absolute top-0 left-0 right-0 bottom-0 z-[-1] bg-[var(--wood-color)];
   content: " ";
   background-image: url("/wood.svg");
   background-size: 540px;
@@ -25,14 +25,14 @@
 }
 
 .main > section {
-  @apply grow w-full max-w-[920px];
+  @apply grow w-full max-w-content;
 }
 
 .top,
 .bottom,
 .left,
 .right {
-  @apply overflow-clip paint border-0 z-[-1];
+  @apply overflow-clip paint border-0;
 }
 
 .top {
