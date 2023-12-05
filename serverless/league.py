@@ -16,9 +16,9 @@ def init_league(league_config: dict):
     return League(**league_config)
 
 
-def make_league_request(league: League, callback: callable):
+def make_league_request(league_config, callback):
     try:
-        callback(league)
+        return callback(init_league(league_config))
     except ESPNAccessDenied as err:
         print(":::ERR::: ", err)
         return {"client_errors": [ClientError("LEAGUE_AUTH", "League credentials not valid")]}
