@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Auth() {
   const LEAGUE_ID = process.env.LEAGUE_ID;
@@ -23,15 +24,22 @@ export default function Auth() {
       />
       <h1 className="font-bold">Oh no!</h1>
       <strong className="text-lg">
-        You're seeing this page because the credentials this web site uses to
-        access ESPN league data have expired.
+        You&apos;re seeing this page because the credentials this web site uses
+        to access ESPN league data have expired.{" "}
+        <Image
+          src="/skull.gif"
+          alt="green rotating skull and crossbones"
+          width={32}
+          height={24}
+          className="inline mt-[-0.4em]"
+        />
       </strong>
       <h2 className="text-theme">
-        If you're a member of the league, Ball is Lyf3 needs YOUR help to get up
-        and running again.
+        If you&apos;re a member of the league, Ball is Lyf3 needs YOUR help to
+        get up and running again.
       </h2>
       <strong>
-        Don't be scared - it's quite simple, really.
+        Don&apos;t be scared - it&apos;s quite simple, really.
         <ol>
           <li>
             Go to the{" "}
@@ -41,7 +49,7 @@ export default function Auth() {
             >
               Ball is Lyf3 League page at ESPN
             </a>
-            . Make sure you're logged in!
+            . Make sure you&apos;re logged in!
           </li>
           <li>
             Next,{" "}
@@ -52,12 +60,12 @@ export default function Auth() {
               go to your browser cookies
             </a>{" "}
             and find the ones named <code>SWID</code> and <code>espn_s2</code>.
-            They'll be in the <code>https://fantasy.espn.com</code> bucket.
+            They&apos;ll be in the <code>https://fantasy.espn.com</code> bucket.
           </li>
           <li>
-            Then just copy and paste those cookies' values into the text fields
-            below and click submit! (Don't worry - this probably isn't illegal
-            or anything.)
+            Then just copy and paste those cookies&apos; values into the text
+            fields below and click submit! (Don&apos;t worry - this probably
+            isn't illegal or anything.)
           </li>
         </ol>
         <Image
@@ -81,6 +89,7 @@ export default function Auth() {
           </button>
         </form>
       </strong>
+      <Link href="/">home</Link>
     </section>
   );
 }
