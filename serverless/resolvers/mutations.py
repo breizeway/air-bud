@@ -19,12 +19,12 @@ def resolve_set_league_auth(*_, league_auth):
                                                        "key": "league_auth",
                                                        "value": league_auth}]}))
         print("edge_api_result: ", result.json())
-        # result.raise_for_status()
         if (result.ok):
-            return {"success": result.ok}
+            # TODO: make this result type a class for use with all api responses
+            return {"success": result.ok, "errors": []}
         else:
-            return {"success": False, "client_errors": [ClientError(ClientErrorCodes.EDGE_API, f'{result.status_code}: {result.reason}')]}
+            return {"success": False, "errors": [ClientError(ClientErrorCodes.EDGE_API, f'{result.status_code}: {result.reason}')]}
 
     except Exception as err:
-        print("edge_api_error: ", err)
-        return {"success": False, "client_errors": [ClientError(ClientErrorCodes.EDGE_API, err)]}
+        print("edge_api_error: ", str(err))
+        return {"success": False, "errors": [ClientError(ClientErrorCodes.EDGE_API, err)]}

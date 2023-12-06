@@ -19,15 +19,15 @@ class LeagueApi:
                 ClientErrorCodes.LEAGUE_API_AUTH, "ESPN api private league authentication credentials are not valid"))
 
     def make_request(self, callback: Callable[[League], Dict]):
-        if not len(self._errors):
+        if not len(self.errors):
             try:
-                return callback(self.league)
+                return self.build_response(callback(self.league))
             except Exception as err:
                 print("ERR: LEAGUE_API: ", err)
-                self._errors.append(ClientError(
-                    ClientErrorCodes.LEAGUE_API, "General ESPN api request error"))
+                self.add_error(ClientError(
+                    ClientErrorCodes.LEAGUE_API, "ESPN api request failed"))
 
-        return self.client_errors
+        return self.build_response()
 
     def get_default_league_year(self):
         today = datetime.now()
@@ -37,10 +37,13 @@ class LeagueApi:
             return current_year + 1
         return current_year
 
-    @property
-    def client_errors(self):
-        return {"client_errors": self._errors}
+    def build_response(self, response: dict = {}):
+        return {"success": False if len(self.errors) else True, "errors": self.errors, **response}
 
-    @client_errors.setter
-    def set_error(self, error: ClientError):
+    @property
+    def errors(self):
+        return self._errors
+
+    @errors.setter
+    def add_error(self, error: ClientError):
         self._errors.append(error)

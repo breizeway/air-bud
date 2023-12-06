@@ -6,25 +6,26 @@ type Mutation {
   setLeagueAuth(league_auth: LeagueAuthInput!): SetLeagueAuthResult!
 }
 
-enum ClientErrorCode {
+enum ErrorCodes {
   LEAGUE_API_AUTH
   LEAGUE_API
   EDGE_API
 }
 
-type ClientError {
-  code: ClientErrorCode!
+type Error {
+  code: ErrorCodes!
   message: String!
 }
 
 type GetBoxScoresResult {
+  success: Boolean!
+  errors: [Error]!
   box_scores: [BoxScore!]
-  client_errors: [ClientError!]
 }
 
 type SetLeagueAuthResult {
-  success: Boolean
-  client_errors: [ClientError!]
+  success: Boolean!
+  errors: [Error]!
 }
 
 input LeagueAuthInput {

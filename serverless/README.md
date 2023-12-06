@@ -9,3 +9,4 @@
 - [builds](https://stackoverflow.com/questions/77243878/poetry-and-vercel-issue)
 - [edge storage](https://vercel.com/docs/storage/edge-config)
 - [`vercel dev` only works on one project at a time](https://github.com/vercel/vercel/discussions/5294)
+- https://www.twilio.com/blog/graphql-api-python-flask-ariadne
