@@ -1,10 +1,23 @@
 "use client";
 
+import { setLeagueAuth } from "@/data/edge-storage";
 import Image from "next/image";
 import Link from "next/link";
+import { FormEvent, useState } from "react";
+
+const LEAGUE_ID = process.env.NEXT_PUBLIC_LEAGUE_ID;
 
 export default function Auth() {
-  const LEAGUE_ID = process.env.LEAGUE_ID;
+  const [swid, setSwid] = useState<string>("");
+  const [espn_s2, setEspnS2] = useState<string>("");
+
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!swid || !espn_s2) return;
+    console.log({ swid, espn_s2 });
+    const res = await setLeagueAuth({ swid, espn_s2 });
+    console.log(`:::RES::: `, res);
+  };
 
   return (
     <section>
@@ -74,11 +87,25 @@ export default function Auth() {
           width={200}
           height={100}
         />
-        <form onSubmit={(e) => e.preventDefault()}>
+        <form {...{ onSubmit }}>
           <label htmlFor="swid">SWID</label>
-          <input id="swid" name="swid" type="text" className="block" />
+          <input
+            id="swid"
+            name="swid"
+            type="text"
+            className="block"
+            value={swid}
+            onChange={(e) => setSwid(e.target.value)}
+          />
           <label htmlFor="espn_s2">espn_s2</label>
-          <input id="espn_s2" name="espn_s2" type="text" className="block" />
+          <input
+            id="espn_s2"
+            name="espn_s2"
+            type="text"
+            className="block"
+            value={espn_s2}
+            onChange={(e) => setEspnS2(e.target.value)}
+          />
           <button type="submit" className="mt-4">
             <Image
               src="/submit.gif"

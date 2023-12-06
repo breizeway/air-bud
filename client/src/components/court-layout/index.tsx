@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import classNames from "classnames";
 
-const LEAGUE_ID = process.env.LEAGUE_ID;
+const LEAGUE_ID = process.env.NEXT_PUBLIC_LEAGUE_ID;
 
 export default function CourtLayout({ children }: PropsWithChildren) {
   return (

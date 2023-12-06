@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <section>
       <div className={styles.welcome}>
-        <h1 className="text-theme">
+        <h1 className="">
           <div className={styles.welcomeGifBg}>
             <Image
               src={`/welcome.gif`}

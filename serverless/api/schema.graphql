@@ -1,10 +1,15 @@
 type Query {
-  getBoxScores(league_config: LeagueConfigInput!): BoxScoresResult!
+  getBoxScores(league_auth: LeagueAuthInput!, year: Int): GetBoxScoresResult!
+}
+
+type Mutation {
+  setLeagueAuth(league_auth: LeagueAuthInput!): SetLeagueAuthResult!
 }
 
 enum ClientErrorCode {
-  LEAGUE_AUTH
-  LEAGUE_REQUEST
+  LEAGUE_API_AUTH
+  LEAGUE_API
+  EDGE_API
 }
 
 type ClientError {
@@ -12,13 +17,17 @@ type ClientError {
   message: String!
 }
 
-type BoxScoresResult {
+type GetBoxScoresResult {
   box_scores: [BoxScore!]
   client_errors: [ClientError!]
 }
 
-input LeagueConfigInput {
-  year: Int
+type SetLeagueAuthResult {
+  success: Boolean
+  client_errors: [ClientError!]
+}
+
+input LeagueAuthInput {
   swid: String!
   espn_s2: String!
 }

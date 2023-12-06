@@ -2,10 +2,11 @@ from ariadne import graphql_sync, make_executable_schema, load_schema_from_path
 from ariadne.explorer import ExplorerGraphiQL
 from flask import Flask, jsonify, request
 from resolvers.queries import query
+from resolvers.mutations import mutation
 
 app = Flask(__name__)
 schema = make_executable_schema(
-    load_schema_from_path("api/schema.graphql"), query)
+    load_schema_from_path("api/schema.graphql"), [query, mutation])
 
 
 @app.route("/graphql", methods=["GET"])
