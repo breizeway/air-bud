@@ -65,7 +65,7 @@ export default function Auth() {
           <li>
             Then just copy and paste those cookies&apos; values into the text
             fields below and click submit! (Don&apos;t worry - this probably
-            isn't illegal or anything.)
+            isn&apos;t illegal or anything.)
           </li>
         </ol>
         <Image
