@@ -13,7 +13,7 @@ def resolve_set_league_auth(*_, league_auth):
         result: requests.Response = EdgeStore().set_league_auth(
             LeagueAuth(**league_auth))
         if (result.ok):
-            # TODO: make this result type a class for use with all api responses
+            # TODO: make this result type a class for use with all api responses (with success and error)
             return {"success": result.ok, "errors": []}
         else:
             return {"success": False, "errors": [ClientError(ClientErrorCodes.EDGE_API, f'{result.status_code}: {result.reason}')]}
