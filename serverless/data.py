@@ -68,8 +68,8 @@ class ClientTeam:
         self.wins = team.wins
         self.losses = team.losses
         self.ties = team.ties
-        print("team.owners::: ", str(team.owners))
-        self.owners = map(lambda owner: str(owner), team.owners)
+        self.owners = team.owners
+        # addnl team owner data avail in espn-api >= 0.34.0
         self.standing = team.standing
         self.final_standing = team.final_standing
         self.logo_url = team.logo_url
