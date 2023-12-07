@@ -40,7 +40,7 @@ class LeagueApi:
         return current_year
 
     def build_response(self, response: dict = {}):
-        return {"success": False if len(self.errors) or all(bool(val) for (_, _, val) in list(response.values())) else True, "errors": self.errors, **response}
+        return {"success": False if len(self.errors) or all(bool(val) for val in list(response.values())) else True, "errors": self.errors, **response}
 
     @property
     def errors(self):
