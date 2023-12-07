@@ -12,7 +12,6 @@ def resolve_set_league_auth(*_, league_auth):
     try:
         result: requests.Response = EdgeStore().set_league_auth(
             LeagueAuth(**league_auth))
-        print("edge_store_api_result: ", result.json())
         if (result.ok):
             # TODO: make this result type a class for use with all api responses
             return {"success": result.ok, "errors": []}
@@ -20,5 +19,5 @@ def resolve_set_league_auth(*_, league_auth):
             return {"success": False, "errors": [ClientError(ClientErrorCodes.EDGE_API, f'{result.status_code}: {result.reason}')]}
 
     except Exception as err:
-        print("edge_api_error: ", str(err))
+        print("ERROR - resolve_set_league_auth:", str(err))
         return {"success": False, "errors": [ClientError(ClientErrorCodes.EDGE_API, err)]}

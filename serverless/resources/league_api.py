@@ -25,7 +25,7 @@ class LeagueApi:
             try:
                 return self.build_response(callback(self.league))
             except Exception as err:
-                print("ERR: LEAGUE_API: ", err)
+                print("ERROR - LeagueApi.make_request: ", err)
                 self.add_error(ClientError(
                     ClientErrorCodes.LEAGUE_API, "ESPN api request failed"))
 
