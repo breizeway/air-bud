@@ -19,5 +19,5 @@ def resolve_set_league_auth(*_, league_auth):
             return {"success": False, "errors": [ClientError(ClientErrorCodes.EDGE_API, f'{result.status_code}: {result.reason}')]}
 
     except Exception as err:
-        print("ERROR - resolve_set_league_auth:", str(err))
+        print("ERROR - resolve_set_league_auth: ", str(err))
         return {"success": False, "errors": [ClientError(ClientErrorCodes.EDGE_API, err)]}

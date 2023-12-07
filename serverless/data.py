@@ -69,7 +69,7 @@ class ClientTeam:
         self.losses = team.losses
         self.ties = team.ties
         self.owners = team.owners
-        # addnl team owner data avail in espn-api >= v0.34.0
+        # additional team owner data available in espn-api >= v0.34.0
         self.standing = team.standing
         self.final_standing = team.final_standing
         self.logo_url = team.logo_url
