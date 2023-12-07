@@ -1,8 +1,8 @@
 import { PropsWithChildren } from "react";
 import styles from "./court-layout.module.css";
-import Image from "next/image";
 import Link from "next/link";
 import classNames from "classnames";
+import RemImage from "../rem-image";
 
 const LEAGUE_ID = process.env.NEXT_PUBLIC_LEAGUE_ID;
 
@@ -11,12 +11,6 @@ export default function CourtLayout({ children }: PropsWithChildren) {
     <div className={styles.court}>
       <header className={styles.top}>
         <LeagueLogo />
-        {/* <Image
-          src="/pixel-bbal.svg"
-          alt="basketball logo"
-          height={28}
-          width={28}
-        /> */}
         <EspnLogo />
       </header>
       <footer className={styles.bottom}>
@@ -25,11 +19,11 @@ export default function CourtLayout({ children }: PropsWithChildren) {
           href="https://github.com/breizeway/air-bud"
           className="block rounded-full overflow-hidden min-w-fit"
         >
-          <Image
+          <RemImage
             src="/github-mark.svg"
             alt="github logo"
-            height={28}
-            width={28}
+            wRem={1.75}
+            hRem={1.75}
           />
         </a>
         <EspnLogo />

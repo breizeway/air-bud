@@ -3,8 +3,8 @@ import plugin from "tailwindcss/plugin";
 
 // https://tailwindcss.com/docs/adding-custom-styles#customizing-your-theme
 const outlineShadow =
-  "-1px -1px 2px black, 1px 1px 2px black, -1px 1px 2px black, 1px -1px 2px black";
-const contentWidth = "920px";
+  "calc(-1rem / 16) calc(-1rem / 16) calc(1rem / 8) black, calc(1rem / 16) calc(1rem / 16) calc(1rem / 8) black, calc(-1rem / 16) calc(1rem / 16) calc(1rem / 8) black, calc(1rem / 16) calc(-1rem / 16) calc(1rem / 8) black";
+const contentWidth = "56rem";
 
 const config: Config = {
   content: [
@@ -50,8 +50,7 @@ const config: Config = {
       }),
         addComponents({
           ".text-shadow-court": {
-            textShadow:
-              "-1px -1px 2px black, 1px 1px 2px black, -1px 1px 2px black, 1px -1px 2px black",
+            textShadow: outlineShadow,
           },
           ".text-theme": {
             color: "var(--theme-color)",
@@ -62,7 +61,7 @@ const config: Config = {
             color: "var(--background-color)",
             backgroundColor: "black",
             opacity: "0.85",
-            border: "2px solid var(--background-color)",
+            border: "calc(1rem / 8) solid var(--background-color)",
           },
         });
     }),

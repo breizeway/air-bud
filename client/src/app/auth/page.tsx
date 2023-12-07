@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import RemImage from "@/components/rem-image";
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 
@@ -18,29 +18,29 @@ export default function Auth() {
 
   return (
     <section>
-      <Image
+      <RemImage
         src="/nodding-player.gif"
         alt="cartoon basketball player holding a basketball and nodding"
-        width={160}
-        height={215.17}
+        wRem={10}
+        hRem={13.4475}
         className="float-left"
       />
-      <Image
+      <RemImage
         src="/timeout-ref.gif"
         alt="cartoon basketball ref with their foot on a basketball making a timeout motion with their hands"
-        width={120}
-        height={205.71}
+        wRem={7.5}
+        hRem={12.856875}
         className="float-right"
       />
       <h1 className="font-bold">Oh no!</h1>
       <strong className="text-lg">
         You&apos;re seeing this page because the credentials this web site uses
         to access ESPN league data have expired.{" "}
-        <Image
+        <RemImage
           src="/skull.gif"
           alt="green rotating skull and crossbones"
-          width={32}
-          height={24}
+          wRem={2}
+          hRem={1.5}
           className="inline mt-[-0.4em]"
         />
       </strong>
@@ -78,11 +78,11 @@ export default function Auth() {
             isn&apos;t illegal or anything.)
           </li>
         </ol>
-        <Image
+        <RemImage
           src="/thank-you.gif"
           alt="animated thank you text"
-          width={200}
-          height={100}
+          wRem={12.5}
+          hRem={3.625}
         />
         <form {...{ onSubmit }}>
           <label htmlFor="swid">SWID</label>
@@ -104,11 +104,11 @@ export default function Auth() {
             onChange={(e) => setEspnS2(e.target.value)}
           />
           <button type="submit" className="mt-4">
-            <Image
+            <RemImage
               src="/submit.gif"
               alt="animated submit button"
-              width={100}
-              height={100}
+              wRem={6.25}
+              hRem={2.225}
             />
           </button>
         </form>

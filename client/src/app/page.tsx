@@ -1,6 +1,6 @@
-import Image from "next/image";
 import styles from "./home.module.css";
 import Link from "next/link";
+import RemImage from "@/components/rem-image";
 
 export default function Home() {
   return (
@@ -8,11 +8,11 @@ export default function Home() {
       <div className={styles.welcome}>
         <h1 className="">
           <div className={styles.welcomeGifBg}>
-            <Image
+            <RemImage
               src={`/welcome.gif`}
               alt="animated welcome text"
-              height={43.11}
-              width={262}
+              wRem={16}
+              hRem={2.633125}
             />
           </div>
           to the official internet home of the &quot;Ball is Lyf3&quot; fantasy
@@ -24,11 +24,11 @@ export default function Home() {
         is Lyf3&quot; and want to know all about the stats and how the teams are
         doing - you have come to the right place.
       </p>
-      <Image
+      <RemImage
         src="/under-construction.gif"
         alt="website under construction"
-        width={300}
-        height={228.31}
+        wRem={18.75}
+        hRem={14.269375}
       />
       <Link href="/auth">/auth</Link>
     </section>

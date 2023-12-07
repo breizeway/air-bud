@@ -15,8 +15,7 @@
   @apply absolute top-0 left-0 right-0 bottom-0 z-[-1] bg-[var(--wood-color)];
   content: " ";
   background-image: url("/wood.svg");
-  background-size: 540px;
-  /* transform: rotate(-45deg); */
+  background-size: 32rem;
 }
 
 .main {
@@ -57,6 +56,10 @@
   @apply flex w-full items-center;
 }
 
+.courtLogo a {
+  @apply no-underline;
+}
+
 .courtLogoStretch {
   @apply block text-lg;
   transform: scaleY(2);
@@ -67,7 +70,7 @@
 }
 
 .espnLogo {
-  @apply text-[var(--background-color)] flex items-center gap-1 overflow-clip no-underline;
+  @apply text-[var(--background-color)] flex items-center gap-1 overflow-clip;
 }
 
 .left {
