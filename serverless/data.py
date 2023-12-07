@@ -69,8 +69,7 @@ class ClientTeam:
         self.losses = team.losses
         self.ties = team.ties
         print("team.owners::: ", str(team.owners))
-        # self.owners = team.owners
-        self.owners = ""
+        self.owners = map(lambda owner: str(owner), team.owners)
         self.standing = team.standing
         self.final_standing = team.final_standing
         self.logo_url = team.logo_url
