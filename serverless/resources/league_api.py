@@ -3,15 +3,17 @@ from espn_api.requests.espn_requests import ESPNAccessDenied
 from typing import Callable, Dict
 from data import ClientErrorCodes, ClientError
 from datetime import datetime
+from resources.edge import EdgeStore
 import os
 
 
 class LeagueApi:
-    def __init__(self, league_auth: dict, year: int = None):
+    def __init__(self, year: int = None):
         self._errors = list()
         league_year = year or self.get_default_league_year()
         try:
-            self.league = League(**league_auth, year=league_year,
+            league_auth = EdgeStore().league_auth
+            self.league = League(swid=league_auth.swid, espn_s2=league_auth.espn_s2, year=league_year,
                                  league_id=int(os.environ["LEAGUE_ID"]))
         except ESPNAccessDenied:
             self.league = None

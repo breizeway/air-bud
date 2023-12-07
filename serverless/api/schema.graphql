@@ -1,5 +1,5 @@
 type Query {
-  getBoxScores(league_auth: LeagueAuthInput!, year: Int): GetBoxScoresResult!
+  getBoxScores(year: Int): GetBoxScoresResult!
 }
 
 type Mutation {

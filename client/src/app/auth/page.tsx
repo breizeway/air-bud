@@ -1,6 +1,5 @@
 "use client";
 
-import { setLeagueAuth } from "@/data/edge-storage";
 import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useState } from "react";
@@ -15,8 +14,6 @@ export default function Auth() {
     e.preventDefault();
     if (!swid || !espn_s2) return;
     console.log({ swid, espn_s2 });
-    const res = await setLeagueAuth({ swid, espn_s2 });
-    console.log(`:::RES::: `, res);
   };
 
   return (
