@@ -32,7 +32,7 @@ export default function Auth() {
         hRem={12.856875}
         className="float-right"
       />
-      <h1 className="font-bold">Oh no!</h1>
+      <h1 className="font-bold mt-0">Oh no!</h1>
       <strong className="text-lg">
         You&apos;re seeing this page because the credentials this web site uses
         to access ESPN league data have expired.{" "}

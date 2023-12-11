@@ -6,23 +6,24 @@ interface RemImageProps extends Omit<ImageProps, "width" | "height"> {
 }
 
 export default function RemImage(props: RemImageProps) {
-  const { wRem, hRem, ...restOfProps } = props;
+  const { wRem, hRem, style, ...restOfProps } = props;
 
-  const width = wRem ? wRem * 16 : 0;
-  const height = hRem ? hRem * 16 : 0;
+  const formatSize = (rem: number | undefined) =>
+    rem !== undefined ? `${rem}rem` : "auto";
 
   return (
     <Image
       {...{
-        ...restOfProps,
-        width,
-        height,
+        width: 0,
+        height: 0,
         style: {
-          width: wRem ? `${wRem}rem` : "auto",
-          minWidth: wRem ? `${wRem}rem` : "auto",
-          height: hRem ? `${hRem}rem` : "auto",
-          minHeight: hRem ? `${hRem}rem` : "auto",
+          width: formatSize(wRem),
+          minWidth: formatSize(wRem),
+          height: formatSize(hRem),
+          minHeight: formatSize(hRem),
+          ...style,
         },
+        ...restOfProps,
       }}
     />
   );

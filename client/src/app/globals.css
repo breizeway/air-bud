@@ -8,7 +8,7 @@
   --foreground-color: #000000;
   --background-color: #ffefd6;
 
-  @apply text-[12px] md:text-[16px] transition-[font-size] duration-100;
+  @apply text-[14px] md:text-[16px] transition-[font-size] duration-100;
 }
 
 a {
