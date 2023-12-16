@@ -3,6 +3,7 @@ from ariadne.explorer import ExplorerGraphiQL
 from flask import Flask, jsonify, request
 from resolvers.queries import query
 from resolvers.mutations import mutation
+from resolvers.response import Response
 
 app = Flask(__name__)
 schema = make_executable_schema(
@@ -17,13 +18,14 @@ def graphql_explorer():
 @app.route("/graphql", methods=["POST"])
 def graphql_server():
     data = request.get_json()
+    response = Response()
 
     success, result = graphql_sync(
         schema,
         data,
-        context_value={"request": request},
+        context_value={"request": request, "response": response},
         debug=app.debug
     )
 
     status_code = 200 if success else 400
-    return jsonify(result), status_code
+    return jsonify(response.package(result)), status_code

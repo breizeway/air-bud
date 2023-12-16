@@ -104,15 +104,3 @@ class ClientBoxScore:
             box_player), box_score.home_lineup)
         self.away_lineup = map(lambda box_player: ClientBoxPlayer(
             box_player), box_score.away_lineup)
-
-
-class ClientErrorCodes(Enum):
-    LEAGUE_API_AUTH = "LEAGUE_API_AUTH"
-    LEAGUE_API = "LEAGUE_API"
-    EDGE_API = "EDGE_API"
-
-
-class ClientError:
-    def __init__(self, code: ClientErrorCodes, message: str):
-        self.code = code.value
-        self.message = message
