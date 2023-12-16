@@ -1,5 +1,4 @@
 import math
-from enum import Enum
 from espn_api.basketball.box_score import BoxScore, STATS_MAP
 from espn_api.basketball.team import Team
 from espn_api.basketball.box_player import BoxPlayer
