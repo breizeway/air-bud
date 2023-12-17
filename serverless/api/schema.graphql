@@ -3,7 +3,7 @@ type Query {
 }
 
 type Mutation {
-  setLeagueAuth(league_auth: LeagueAuthInput!): SetLeagueAuthResult!
+  setLeagueAuth(leagueAuth: LeagueAuthInput!): SetLeagueAuthResult!
 }
 
 enum ErrorCodes {
