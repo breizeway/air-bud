@@ -35,5 +35,5 @@ class Response:
         success_is_set = self.success is not None
         errors_exist = len(self.errors)
         data_exists = bool(len(data.values()))
-        data_is_truthy = all(bool(val) for val in list(data.values()))
-        return self.success if success_is_set else False if errors_exist or (data_exists and data_is_truthy) else True
+        data_is_not_truthy = not all(bool(val) for val in list(data.values()))
+        return self.success if success_is_set else False if errors_exist or (data_exists and data_is_not_truthy) else True

@@ -20,7 +20,7 @@ type Error {
 type GetBoxScoresResult {
   success: Boolean!
   errors: [Error]!
-  box_scores: [BoxScore!]
+  boxScores: [BoxScore!]
 }
 
 type SetLeagueAuthResult {
@@ -36,41 +36,41 @@ input LeagueAuthInput {
 type BoxScore {
   "HOME or AWAY"
   winner: String!
-  home_team: Team!
-  home_wins: Int!
-  home_ties: Int!
-  home_losses: Int!
+  homeTeam: Team!
+  homeWins: Int!
+  homeTies: Int!
+  homeLosses: Int!
   "example {'PTS': {'value': 88.0, 'result': 'LOSS'}, 'BLK': {'value': 1.0, 'result': 'TIE'} }"
-  home_stats: [BoxStat!]!
-  away_team: Team!
-  away_wins: Int!
-  away_ties: Int!
-  away_losses: Int!
+  homeStats: [BoxStat!]!
+  awayTeam: Team!
+  awayWins: Int!
+  awayTies: Int!
+  awayLosses: Int!
   "example {'AST': {'value': 14.0, 'result': 'LOSS'}, 'FG%': {'value': 0.50793651, 'result': 'WIN'}}"
-  away_stats: [BoxStat!]!
-  home_lineup: [BoxPlayer]!
-  away_lineup: [BoxPlayer]!
+  awayStats: [BoxStat!]!
+  homeLineup: [BoxPlayer]!
+  awayLineup: [BoxPlayer]!
 }
 
 type BoxPlayer {
   "the players lineup position"
-  slot_position: String!
+  slotPosition: String!
   "points scored in the current week"
   points: Int!
   "dict of points breakdown (PTS, BLK, AST, ...)"
-  points_breakdown: [Stat!]! # confirmed Stat
+  pointsBreakdown: [Stat!]! # confirmed Stat
   "the pro team the player is going against"
-  pro_opponent: String!
+  proOpponent: String!
   "0 (not played/playing) or 100 (finished game)"
-  game_played: Int!
+  gamePlayed: Int!
 }
 
 type Team {
-  team_id: Int!
-  team_abbrev: String!
-  team_name: String!
-  division_id: String!
-  division_name: String!
+  teamId: Int!
+  teamAbbrev: String!
+  teamName: String!
+  divisionId: String!
+  divisionName: String!
   wins: Int!
   losses: Int!
   ties: Int!
@@ -79,8 +79,8 @@ type Team {
   "standing before playoffs"
   standing: Int!
   "final standing at end of season"
-  final_standing: Int!
-  logo_url: String!
+  finalStanding: Int!
+  logoUrl: String!
   roster: [Player]!
   schedule: [Matchup]!
 }
@@ -103,22 +103,22 @@ type Player {
   "SG, C, PG, SF, IR"
   lineupSlot: String!
   "players total points during the season"
-  total_points: Int!
+  totalPoints: Int!
   "players average points during the season"
-  avg_points: Int!
+  avgPoints: Int!
   "projected player points for the season"
-  projected_total_points: Int!
+  projectedTotalPoints: Int!
   "projected players average points for the season"
-  projected_avg_points: Int!
+  projectedAvgPoints: Int!
 }
 
 type Matchup {
-  home_team: Team!
-  home_team_live_score: Float # confirmed nullable, float
-  home_final_score: Int!
-  away_team: Team!
-  away_team_live_score: Float # confirmed nullable, float
-  away_final_score: Int!
+  homeTeam: Team!
+  homeTeam_live_score: Float # confirmed nullable, float
+  homeFinal_score: Int!
+  awayTeam: Team!
+  awayTeam_live_score: Float # confirmed nullable, float
+  awayFinal_score: Int!
   winner: String!
 }
 
@@ -134,15 +134,15 @@ type BoxStat {
 }
 
 type Schedule {
-  scoring_period: String!
+  scoringPeriod: String!
   team: String!
   date: String!
 }
 
 type PlayerStat {
-  scoring_period: String!
-  applied_total: Float!
-  applied_avg: Float!
+  scoringPeriod: String!
+  appliedTotal: Float!
+  appliedAvg: Float!
   team: String # confirmed nullable, in fact it's always None (TODO: update this when you see a value)
   date: String # confirmed nullable, in fact it's always None (TODO: update this when you see a value)
   avg: [Stat!] # confirmed nullable

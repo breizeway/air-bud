@@ -39,18 +39,18 @@ class ClientPlayerStat:
 class ClientPlayer:
     def __init__(self, player: Player):
         self.name = player.name
-        self.playerId = player.playerId
-        self.eligibleSlots = player.eligibleSlots
-        self.posRank = player.posRank
-        self.acquisitionType = player.acquisitionType
-        self.proTeam = player.proTeam
+        self.player_id = player.playerId
+        self.eligible_slots = player.eligibleSlots
+        self.pos_rank = player.posRank
+        self.acquisition_type = player.acquisitionType
+        self.pro_team = player.proTeam
         self.position = player.position
-        self.injuryStatus = player.injuryStatus
+        self.injury_status = player.injuryStatus
         self.injured = player.injured
         self.stats = map(lambda player_stat: ClientPlayerStat(
             player_stat), serialize_dict(player.stats, "scoring_period"))
         self.schedule = serialize_dict(player.schedule, "scoring_period")
-        self.lineupSlot = player.lineupSlot
+        self.lineup_slot = player.lineupSlot
         self.total_points = player.total_points
         self.avg_points = player.avg_points
         self.projected_total_points = player.projected_total_points

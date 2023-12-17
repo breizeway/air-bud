@@ -5,8 +5,8 @@ from resolvers.queries import query
 from resolvers.mutations import mutation
 
 app = Flask(__name__)
-schema = make_executable_schema(
-    load_schema_from_path("api/schema.graphql"), [query, mutation])
+schema = make_executable_schema(load_schema_from_path(
+    "api/schema.graphql"), convert_names_case=True, *[query, mutation])
 
 
 @app.route("/graphql", methods=["GET"])
