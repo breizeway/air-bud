@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List
+from typing import List, Union
 
 
 class ClientErrorCodes(Enum):
@@ -13,32 +13,27 @@ class ClientError:
         self.code = code.value
         self.message = message
 
+    def serialize(self):
+        return {
+            "code": self.code,
+            "message": self.message
+        }
+
 
 class Response:
     def __init__(self):
-        self.errors = list()
-        self.success = None
+        self.errors: List[ClientError] = list()
+        self.success: Union[None, bool] = None
 
-    def package(self, data: dict):
-        success = self.success if self.success else False if len(
-            self.errors) or not len(data.values) else True
-        return {"success": success, "errors": self.errors, **data}
-
-    @property
-    def success(self):
-        return self.success
-
-    @success.setter
-    def set_success(self, success: bool):
-        self.success = success
-
-    @property
-    def errors(self):
-        return self.errors
-
-    @errors.setter
-    def set_errors(self, errors: List[ClientError]):
-        self.errors = errors
+    def resolve(self, data: dict = {}):
+        return {"success": self.is_success(data), "errors": list(map(lambda error: error.serialize(), self.errors)), **data}
 
     def add_error(self, error: ClientError):
         self.errors.append(error)
+
+    def is_success(self, data: dict = {}):
+        success_is_set = self.success is not None
+        errors_exist = len(self.errors)
+        data_exists = bool(len(data.values()))
+        data_is_truthy = all(bool(val) for val in list(data.values()))
+        return self.success if success_is_set else False if errors_exist or (data_exists and data_is_truthy) else True
