@@ -10,7 +10,7 @@ import {
 } from "@urql/next";
 
 export default function UrqlWrapper({ children }: PropsWithChildren) {
-  const [client, ssr] = useMemo(() => {
+  const urqlContext = useMemo(() => {
     const ssr = ssrExchange();
     const client = createClient({
       url: process.env.NEXT_PUBLIC_LEAGUE_API ?? "",
@@ -18,12 +18,8 @@ export default function UrqlWrapper({ children }: PropsWithChildren) {
       requestPolicy: "cache-and-network",
     });
 
-    return [client, ssr];
+    return { client, ssr };
   }, []);
 
-  return (
-    <UrqlProvider client={client} ssr={ssr}>
-      {children}
-    </UrqlProvider>
-  );
+  return <UrqlProvider {...urqlContext}>{children}</UrqlProvider>;
 }

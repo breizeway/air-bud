@@ -63,7 +63,7 @@ export default function Auth() {
       // { additionalTypenames: ["Test"] }
     );
     setTimeout(() => refreshQuery(), 1000);
-    console.log(`:::RESULT::: `, mResult);
+    // console.log(`:::RESULT::: `, mResult);
   };
 
   return (
