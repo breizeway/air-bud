@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Viewport } from "next";
 import CourtLayout from "@/components/court-layout";
+import UrqlWrapper from "@/components/urql-wrapper";
 
 export const viewport: Viewport = {
   themeColor: "#e03a3e",
@@ -20,7 +21,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <CourtLayout>{children}</CourtLayout>
+        <UrqlWrapper>
+          <CourtLayout>{children}</CourtLayout>
+        </UrqlWrapper>
       </body>
     </html>
   );
