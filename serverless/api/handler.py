@@ -23,6 +23,7 @@ def graphql_server():
         data,
         context_value={"request": request},
         debug=app.debug
+
     )
 
     status_code = 200 if success else 400
