@@ -15,6 +15,10 @@ export default function Auth() {
       getBoxScores {
         __typename
         success
+        errors {
+          code
+          message
+        }
         boxScores {
           winner
           homeTeam {
@@ -38,7 +42,7 @@ export default function Auth() {
     }
   `;
   const [{ data }, refreshQuery] = useQuery({ query: getBoxScores });
-  const [setLeagueAuthResult, setLeagueAuth] = useMutation(
+  const [_, setLeagueAuth] = useMutation(
     gql`
       mutation setLeagueAuth($leagueAuth: LeagueAuthInput!) {
         setLeagueAuth(leagueAuth: $leagueAuth) {
@@ -52,18 +56,11 @@ export default function Auth() {
       }
     `
   );
-  console.log(`:::DATA::: `, data);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!swid || !espn_s2) return;
-
-    const mResult = await setLeagueAuth(
-      { leagueAuth: { swid, espn_s2 } }
-      // { additionalTypenames: ["Test"] }
-    );
-    setTimeout(() => refreshQuery(), 1000);
-    // console.log(`:::RESULT::: `, mResult);
+    await setLeagueAuth({ leagueAuth: { swid, espn_s2 } });
+    refreshQuery();
   };
 
   return (
