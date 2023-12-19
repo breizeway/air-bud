@@ -1,6 +1,7 @@
 "use client";
 
 import RemImage from "@/components/rem-image";
+import { gql, useMutation, useQuery } from "@urql/next";
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 
@@ -9,11 +10,60 @@ const LEAGUE_ID = process.env.NEXT_PUBLIC_LEAGUE_ID;
 export default function Auth() {
   const [swid, setSwid] = useState<string>("");
   const [espn_s2, setEspnS2] = useState<string>("");
+  const getBoxScores = gql`
+    query getBoxScores {
+      getBoxScores {
+        __typename
+        success
+        boxScores {
+          winner
+          homeTeam {
+            teamName
+          }
+          homeStats {
+            category
+            value
+            result
+          }
+          awayTeam {
+            teamName
+          }
+          awayStats {
+            category
+            value
+            result
+          }
+        }
+      }
+    }
+  `;
+  const [{ data }, refreshQuery] = useQuery({ query: getBoxScores });
+  const [setLeagueAuthResult, setLeagueAuth] = useMutation(
+    gql`
+      mutation setLeagueAuth($leagueAuth: LeagueAuthInput!) {
+        setLeagueAuth(leagueAuth: $leagueAuth) {
+          __typename
+          success
+          errors {
+            code
+            message
+          }
+        }
+      }
+    `
+  );
+  console.log(`:::DATA::: `, data);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!swid || !espn_s2) return;
-    console.log({ swid, espn_s2 });
+
+    const mResult = await setLeagueAuth(
+      { leagueAuth: { swid, espn_s2 } }
+      // { additionalTypenames: ["Test"] }
+    );
+    setTimeout(() => refreshQuery(), 1000);
+    console.log(`:::RESULT::: `, mResult);
   };
 
   return (
@@ -113,6 +163,7 @@ export default function Auth() {
           </button>
         </form>
       </strong>
+      {JSON.stringify(data)}
       <Link href="/">home</Link>
     </section>
   );

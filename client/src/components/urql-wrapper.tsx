@@ -15,7 +15,7 @@ export default function UrqlWrapper({ children }: PropsWithChildren) {
     const client = createClient({
       url: process.env.NEXT_PUBLIC_LEAGUE_API ?? "",
       exchanges: [cacheExchange, ssr, fetchExchange],
-      suspense: true,
+      requestPolicy: "cache-and-network",
     });
 
     return [client, ssr];
