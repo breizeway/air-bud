@@ -1,14 +1,15 @@
 .court {
   @apply relative grid;
   @apply border-2 border-[var(--background-color)];
-  @apply h-full min-h-[100dvh] w-screen;
+  @apply h-full min-h-[100dvh] w-screen overflow-x-hidden;
 
   grid-template-areas:
     "left top    right"
     "left main   right"
     "left bottom right";
   grid-template-rows: 2.5rem auto 2.5rem;
-  grid-template-columns: 1.25rem auto 1.25rem;
+  grid-template-columns: 1.25rem calc(100% - 2.5rem) 1.25rem;
+  /* grid-template-columns: 1.25rem auto 1.25rem; */
 }
 
 .court:before {
@@ -19,14 +20,14 @@
 }
 
 .main {
-  @apply h-full w-full flex flex-col items-center border-2 border-[var(--background-color)];
+  @apply h-full w-full max-w-full flex flex-col border-2 border-[var(--background-color)];
   @apply p-2 md:p-5 transition-[padding] duration-100;
 
   grid-area: main;
 }
 
 .main > section {
-  @apply grow w-full max-w-content;
+  @apply grow w-content max-w-full mx-auto;
 }
 
 .top,
