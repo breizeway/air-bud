@@ -11,7 +11,7 @@ import {
 } from "@urql/next";
 import { useRouter } from "next/navigation";
 
-interface ApiResponseWithError {
+interface ApiResponseWithErrors {
   errors?: Array<{ code: string; message: string }>;
 }
 
@@ -21,7 +21,7 @@ export default function UrqlWrapper({ children }: PropsWithChildren) {
     onResult(result) {
       if (
         (
-          Object.values(result.data ?? [{}])[0] as ApiResponseWithError
+          Object.values(result.data ?? [{}])[0] as ApiResponseWithErrors
         ).errors?.some((err) => err.code === "LEAGUE_API_AUTH")
       )
         push("/auth");

@@ -4,13 +4,13 @@ import RemImage from "@/components/rem-image";
 import { graphql } from "@/gql";
 import { useMutation } from "@urql/next";
 import { useRouter } from "next/navigation";
+import { useRef } from "react";
 
 const LEAGUE_ID = process.env.NEXT_PUBLIC_LEAGUE_ID;
 
 export default function Auth() {
   const router = useRouter();
-
-  const [_, setLeagueAuth] = useMutation(
+  const [setLeagueAuthStatus, setLeagueAuth] = useMutation(
     graphql(`
       mutation setLeagueAuth($leagueAuth: LeagueAuthInput!) {
         setLeagueAuth(leagueAuth: $leagueAuth) {
@@ -25,18 +25,18 @@ export default function Auth() {
     `)
   );
 
-  const action = async (formData: FormData) => {
-    const leagueAuth = {
-      espn_s2: formData.get("espn_s2")?.toString() ?? "",
-      swid: formData.get("swid")?.toString() ?? "",
+  const ref = useRef<HTMLFormElement>(null);
+  async function action(formData: FormData) {
+    const { swid, espn_s2 } = {
+      swid: formData.get("swid")?.valueOf().toString() ?? "",
+      espn_s2: formData.get("espn_s2")?.valueOf().toString() ?? "",
     };
 
-    const result = await setLeagueAuth({ leagueAuth });
+    ref.current?.reset();
+    const result = await setLeagueAuth({ leagueAuth: { swid, espn_s2 } });
 
     if (result.data?.setLeagueAuth.success) router.back();
-    else
-      console.error("setLeagueAuthError: ", result.data?.setLeagueAuth.errors);
-  };
+  }
 
   return (
     <section>
@@ -49,7 +49,7 @@ export default function Auth() {
       />
       <RemImage
         src="/timeout-ref.gif"
-        alt="cartoon basketball ref with their foot on a basketball making a timeout motion with their hands"
+        alt="cartoon basketball referee with their foot on a basketball making a timeout motion with their hands"
         wRem={7.5}
         hRem={12.856875}
         className="float-right"
@@ -106,12 +106,30 @@ export default function Auth() {
           wRem={12.5}
           hRem={3.625}
         />
-        <form {...{ action }}>
+        <form {...{ action, ref }}>
           <label htmlFor="swid">SWID</label>
-          <input id="swid" name="swid" type="text" className="block" />
+          <input
+            id="swid"
+            name="swid"
+            type="text"
+            className="block"
+            required={true}
+            aria-required={true}
+          />
           <label htmlFor="espn_s2">espn_s2</label>
-          <input id="espn_s2" name="espn_s2" type="text" className="block" />
-          <button type="submit" className="mt-4">
+          <input
+            id="espn_s2"
+            name="espn_s2"
+            type="text"
+            className="block"
+            required={true}
+            aria-required={true}
+          />
+          <button
+            type="submit"
+            aria-disabled={setLeagueAuthStatus.fetching}
+            className="mt-2"
+          >
             <RemImage
               src="/submit.gif"
               alt="animated submit button"
