@@ -55,7 +55,7 @@
 }
 
 .courtLogo {
-  @apply flex w-full items-center;
+  @apply flex w-full items-center min-w-fit;
 }
 
 .courtLogo a {

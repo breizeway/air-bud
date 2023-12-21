@@ -47,3 +47,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 - [gif cities](https://gifcities.org/)
 - [court lines](https://observablehq.com/@willhoup/drawing-an-nba-court)
 - [clipart library](https://clipart-library.com/)
+- [urql codegen](https://formidable.com/open-source/urql/docs/basics/typescript-integration/)

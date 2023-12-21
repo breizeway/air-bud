@@ -1,6 +1,7 @@
 import styles from "./home.module.css";
 import Link from "next/link";
 import RemImage from "@/components/rem-image";
+import BoxScores from "@/components/box-scores";
 
 export default function Home() {
   return (
@@ -35,6 +36,7 @@ export default function Home() {
           hRem={14.269375}
         />
       </div>
+      <BoxScores />
       <Link href="/auth" className="text-[#00000000]">
         /auth
       </Link>

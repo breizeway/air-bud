@@ -1,49 +1,17 @@
 "use client";
 
 import RemImage from "@/components/rem-image";
-import { gql, useMutation, useQuery } from "@urql/next";
-import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { graphql } from "@/gql";
+import { useMutation } from "@urql/next";
+import { useRouter } from "next/navigation";
 
 const LEAGUE_ID = process.env.NEXT_PUBLIC_LEAGUE_ID;
 
 export default function Auth() {
-  const [swid, setSwid] = useState<string>("");
-  const [espn_s2, setEspnS2] = useState<string>("");
-  const getBoxScores = gql`
-    query getBoxScores {
-      getBoxScores {
-        __typename
-        success
-        errors {
-          code
-          message
-        }
-        boxScores {
-          winner
-          homeTeam {
-            teamName
-          }
-          homeStats {
-            category
-            value
-            result
-          }
-          awayTeam {
-            teamName
-          }
-          awayStats {
-            category
-            value
-            result
-          }
-        }
-      }
-    }
-  `;
-  const [{ data }, refreshQuery] = useQuery({ query: getBoxScores });
+  const router = useRouter();
+
   const [_, setLeagueAuth] = useMutation(
-    gql`
+    graphql(`
       mutation setLeagueAuth($leagueAuth: LeagueAuthInput!) {
         setLeagueAuth(leagueAuth: $leagueAuth) {
           __typename
@@ -54,13 +22,20 @@ export default function Auth() {
           }
         }
       }
-    `
+    `)
   );
 
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    await setLeagueAuth({ leagueAuth: { swid, espn_s2 } });
-    refreshQuery();
+  const action = async (formData: FormData) => {
+    const leagueAuth = {
+      espn_s2: formData.get("espn_s2")?.toString() ?? "",
+      swid: formData.get("swid")?.toString() ?? "",
+    };
+
+    const result = await setLeagueAuth({ leagueAuth });
+
+    if (result.data?.setLeagueAuth.success) router.back();
+    else
+      console.error("setLeagueAuthError: ", result.data?.setLeagueAuth.errors);
   };
 
   return (
@@ -82,7 +57,7 @@ export default function Auth() {
       <h1 className="font-bold mt-0">Oh no!</h1>
       <strong className="text-lg">
         You&apos;re seeing this page because the credentials this web site uses
-        to access ESPN league data have expired.{" "}
+        to access ESPN league data have expired or are incorrect.{" "}
         <RemImage
           src="/skull.gif"
           alt="green rotating skull and crossbones"
@@ -131,25 +106,11 @@ export default function Auth() {
           wRem={12.5}
           hRem={3.625}
         />
-        <form {...{ onSubmit }}>
+        <form {...{ action }}>
           <label htmlFor="swid">SWID</label>
-          <input
-            id="swid"
-            name="swid"
-            type="text"
-            className="block"
-            value={swid}
-            onChange={(e) => setSwid(e.target.value)}
-          />
+          <input id="swid" name="swid" type="text" className="block" />
           <label htmlFor="espn_s2">espn_s2</label>
-          <input
-            id="espn_s2"
-            name="espn_s2"
-            type="text"
-            className="block"
-            value={espn_s2}
-            onChange={(e) => setEspnS2(e.target.value)}
-          />
+          <input id="espn_s2" name="espn_s2" type="text" className="block" />
           <button type="submit" className="mt-4">
             <RemImage
               src="/submit.gif"
@@ -160,8 +121,6 @@ export default function Auth() {
           </button>
         </form>
       </strong>
-      {JSON.stringify(data)}
-      <Link href="/">home</Link>
     </section>
   );
 }
