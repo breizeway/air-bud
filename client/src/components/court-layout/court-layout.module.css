@@ -9,14 +9,13 @@
     "left bottom right";
   grid-template-rows: 2.5rem auto 2.5rem;
   grid-template-columns: 1.25rem calc(100% - 2.5rem) 1.25rem;
-  /* grid-template-columns: 1.25rem auto 1.25rem; */
 }
 
 .court:before {
   @apply absolute top-0 left-0 right-0 bottom-0 z-[-1] bg-[var(--wood-color)];
-  content: " ";
-  background-image: url("/wood.svg");
-  background-size: 32rem;
+  content: "";
+  background-image: url("/wood-90.svg");
+  background-size: 24rem;
 }
 
 .main {

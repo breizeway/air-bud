@@ -16,8 +16,9 @@ export default function Home() {
                 hRem={2.633125}
               />
             </div>
-            to the official internet home of the &quot;Ball is Lyf3&quot;
-            fantasy basketball league!!!
+            to the official internet home of the{" "}
+            <span className="text-theme">Ball is Lyf3</span> fantasy basketball
+            league!!!
           </h1>
         </div>
         <p className="tracking-widest p-2 mt-4 paint">
