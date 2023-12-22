@@ -49,6 +49,7 @@ export default function Loading({
         height={0}
         style={{ width: "1.5em", height: "1.5em" }}
         alt="spinning basketball indicating a loading state"
+        priority
       />
       <span {...{ ref }}>{message + getDots(INIT_NUM_DOTS)}</span>
     </div>

@@ -112,10 +112,7 @@ export default function Auth() {
           wRem={12.5}
           hRem={3.625}
         />
-        <form
-          {...{ onSubmit, ref }}
-          className="mt-2 flex flex-col gap-2 w-fit p-4 paint"
-        >
+        <form {...{ onSubmit, ref }}>
           <div>
             <label htmlFor="swid">SWID</label>
             <input
@@ -138,15 +135,18 @@ export default function Auth() {
               aria-required={true}
             />
           </div>
-          <Loading isLoading={true} message="Sending" />
+          <Loading
+            isLoading={setLeagueAuthStatus.fetching}
+            message="Sending"
+            className="mt-2"
+          />
           <div>
-            <button type="submit" aria-disabled={setLeagueAuthStatus.fetching}>
-              {/* <RemImage
-              src="/submit.gif"
-              alt="animated submit button"
-              wRem={6.25}
-              hRem={2.225}
-            /> */}
+            <button
+              type="submit"
+              className="plaque mt-4"
+              disabled={setLeagueAuthStatus.fetching}
+              aria-disabled={setLeagueAuthStatus.fetching}
+            >
               Send
             </button>
             {/* TODO NEXT: 1) add delay to loading 2) make button baige design a tw class */}

@@ -24,3 +24,11 @@ body {
   background-color: var(--theme-color);
   overscroll-behavior: none;
 }
+
+button {
+  @apply plaque px-2 disabled:cursor-not-allowed;
+}
+
+input {
+  @apply bg-beige-100;
+}

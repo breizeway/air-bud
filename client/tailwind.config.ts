@@ -3,7 +3,7 @@ import plugin from "tailwindcss/plugin";
 
 // https://tailwindcss.com/docs/adding-custom-styles#customizing-your-theme
 const outlineShadow =
-  "calc(-1rem / 16) calc(-1rem / 16) calc(1rem / 8) black, calc(1rem / 16) calc(1rem / 16) calc(1rem / 8) black, calc(-1rem / 16) calc(1rem / 16) calc(1rem / 8) black, calc(1rem / 16) calc(-1rem / 16) calc(1rem / 8) black";
+  "-0.0625rem -0.0625rem 0.125rem black, 0.0625rem 0.0625rem 0.125rem black, -0.0625rem 0.0625rem 0.125rem black, 0.0625rem -0.0625rem 0.125rem black";
 const contentWidth = "56rem";
 
 const config: Config = {
@@ -14,6 +14,13 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        beige: {
+          "100": "#FFEFD6",
+          "300": "#D7C9B3",
+          "500": "#9C9181",
+        },
+      },
       boxShadow: {
         outline: outlineShadow,
       },
@@ -47,6 +54,7 @@ const config: Config = {
           paddingLeft: theme("padding.1"),
           paddingRight: theme("padding.1"),
         },
+        // button: {},
       }),
         addComponents({
           ".text-shadow-court": {
@@ -61,7 +69,14 @@ const config: Config = {
             color: "var(--background-color)",
             backgroundColor: "black",
             opacity: "0.85",
-            border: "calc(1rem / 8) solid var(--background-color)",
+            border: "0.125rem solid var(--background-color)",
+          },
+          ".plaque": {
+            backgroundColor: theme("colors.beige.300"),
+            borderLeft: `0.33rem solid ${theme("colors.beige.100")}`,
+            borderTop: `0.33rem solid ${theme("colors.beige.100")}`,
+            borderRight: `0.33rem solid ${theme("colors.beige.500")}`,
+            borderBottom: `0.33rem solid ${theme("colors.beige.500")}`,
           },
         });
     }),
