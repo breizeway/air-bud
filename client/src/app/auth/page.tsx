@@ -1,10 +1,11 @@
 "use client";
 
+import Loading from "@/components/loading";
 import RemImage from "@/components/rem-image";
 import { graphql } from "@/gql";
 import { useMutation } from "@urql/next";
 import { useRouter } from "next/navigation";
-import { useRef } from "react";
+import { FormEvent, useRef, useState } from "react";
 
 const LEAGUE_ID = process.env.NEXT_PUBLIC_LEAGUE_ID;
 
@@ -24,18 +25,23 @@ export default function Auth() {
       }
     `)
   );
-
+  // console.log(`:::SETLEAGUEAUTHSTATUS::: `, setLeagueAuthStatus.fetching);
   const ref = useRef<HTMLFormElement>(null);
-  async function action(formData: FormData) {
-    const { swid, espn_s2 } = {
-      swid: formData.get("swid")?.valueOf().toString() ?? "",
-      espn_s2: formData.get("espn_s2")?.valueOf().toString() ?? "",
-    };
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (ref.current) {
+      const formData = new FormData(ref.current);
 
-    ref.current?.reset();
-    const result = await setLeagueAuth({ leagueAuth: { swid, espn_s2 } });
+      const { swid, espn_s2 } = {
+        swid: formData.get("swid")?.valueOf().toString() ?? "",
+        espn_s2: formData.get("espn_s2")?.valueOf().toString() ?? "",
+      };
 
-    if (result.data?.setLeagueAuth.success) router.back();
+      ref.current?.reset();
+      const result = await setLeagueAuth({ leagueAuth: { swid, espn_s2 } });
+
+      if (result.data?.setLeagueAuth.success) router.back();
+    }
   }
 
   return (
@@ -106,37 +112,45 @@ export default function Auth() {
           wRem={12.5}
           hRem={3.625}
         />
-        <form {...{ action, ref }}>
-          <label htmlFor="swid">SWID</label>
-          <input
-            id="swid"
-            name="swid"
-            type="text"
-            className="block"
-            required={true}
-            aria-required={true}
-          />
-          <label htmlFor="espn_s2">espn_s2</label>
-          <input
-            id="espn_s2"
-            name="espn_s2"
-            type="text"
-            className="block"
-            required={true}
-            aria-required={true}
-          />
-          <button
-            type="submit"
-            aria-disabled={setLeagueAuthStatus.fetching}
-            className="mt-2"
-          >
-            <RemImage
+        <form
+          {...{ onSubmit, ref }}
+          className="mt-2 flex flex-col gap-2 w-fit p-4 paint"
+        >
+          <div>
+            <label htmlFor="swid">SWID</label>
+            <input
+              id="swid"
+              name="swid"
+              type="text"
+              className="block"
+              required={true}
+              aria-required={true}
+            />
+          </div>
+          <div>
+            <label htmlFor="espn_s2">espn_s2</label>
+            <input
+              id="espn_s2"
+              name="espn_s2"
+              type="text"
+              className="block"
+              required={true}
+              aria-required={true}
+            />
+          </div>
+          <Loading isLoading={true} message="Sending" />
+          <div>
+            <button type="submit" aria-disabled={setLeagueAuthStatus.fetching}>
+              {/* <RemImage
               src="/submit.gif"
               alt="animated submit button"
               wRem={6.25}
               hRem={2.225}
-            />
-          </button>
+            /> */}
+              Send
+            </button>
+            {/* TODO NEXT: 1) add delay to loading 2) make button baige design a tw class */}
+          </div>
         </form>
       </strong>
     </section>
