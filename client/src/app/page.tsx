@@ -28,18 +28,13 @@ export default function Home() {
           the teams are doing - you have come to the right place.
         </p>
       </div>
-      <div className="grow flex justify-center items-center">
-        <RemImage
-          src="/under-construction.gif"
-          alt="website under construction"
-          wRem={18.75}
-          hRem={14.269375}
-        />
+      <div>
+        <h2 className="text-theme">Box Scores</h2>
+        <BoxScores />
       </div>
-      <BoxScores />
-      <Link href="/auth" className="text-[#00000000]">
+      {/* <Link href="/auth" className="text-[#00000000]">
         /auth
-      </Link>
+      </Link> */}
     </section>
   );
 }
