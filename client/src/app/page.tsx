@@ -18,8 +18,8 @@ export default function Home() {
               />
             </div>
             to the official internet home of the{" "}
-            <span className="text-theme">Ball is Lyf3</span> fantasy basketball
-            league!!!
+            <span className="text-theme whitespace-nowrap">Ball is Lyf3</span>{" "}
+            fantasy basketball league!!!
           </h1>
         </div>
         <p className="tracking-widest p-2 mt-4 paint">

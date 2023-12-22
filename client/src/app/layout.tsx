@@ -3,6 +3,7 @@ import "./globals.css";
 import { Viewport } from "next";
 import CourtLayout from "@/components/court-layout";
 import UrqlWrapper from "@/components/urql-wrapper";
+import Link from "next/link";
 
 export const viewport: Viewport = {
   themeColor: "#e03a3e",
@@ -21,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <Link rel="preload" href="/loading.gif" as="image" />
         <UrqlWrapper>
           <CourtLayout>{children}</CourtLayout>
         </UrqlWrapper>

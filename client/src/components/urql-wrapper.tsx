@@ -32,7 +32,7 @@ export default function UrqlWrapper({ children }: PropsWithChildren) {
     const ssr = ssrExchange();
     const client = createClient({
       url: process.env.NEXT_PUBLIC_LEAGUE_API ?? "",
-      exchanges: [authExchange, cacheExchange, ssr, fetchExchange],
+      exchanges: [cacheExchange, ssr, authExchange, fetchExchange],
       requestPolicy: "cache-and-network",
     });
 
