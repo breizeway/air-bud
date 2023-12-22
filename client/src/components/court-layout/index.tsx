@@ -14,22 +14,10 @@ export default function CourtLayout({ children }: PropsWithChildren) {
 
         <div className="flex gap-1 items-center grow">
           <RemImage
-            src="/construction-diamond.gif"
-            alt="black silhouette of man digging in yellow diamond"
-            wRem={1.75}
-            hRem={1.75}
-          />
-          <RemImage
             src="/construction-bar.gif"
-            alt="black silhouette of man digging in yellow diamond"
+            alt='rotating "under construction" sign'
             wRem={8.259625}
             hRem={2.25}
-          />
-          <RemImage
-            src="/construction-diamond.gif"
-            alt="black silhouette of man digging in yellow diamond"
-            wRem={1.75}
-            hRem={1.75}
           />
         </div>
         <EspnLogo />
