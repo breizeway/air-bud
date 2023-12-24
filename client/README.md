@@ -48,3 +48,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 - [court lines](https://observablehq.com/@willhoup/drawing-an-nba-court)
 - [clipart library](https://clipart-library.com/)
 - [urql codegen](https://formidable.com/open-source/urql/docs/basics/typescript-integration/)
+- [90s fonts](https://fontsinuse.com/tags/400/1990s?page=4)

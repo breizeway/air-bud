@@ -8,7 +8,7 @@ export default function Home() {
     <section className="flex flex-col gap-4">
       <div>
         <div className={styles.welcome}>
-          <h1 className="mt-0">
+          <h1 className="mt-0 font-semibold">
             <div className={styles.welcomeGifBg}>
               <RemImage
                 src={`/welcome.gif`}

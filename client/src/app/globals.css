@@ -6,7 +6,7 @@
   --theme-color: #e03a3e;
   --wood-color: #ce884d;
   --foreground-color: #000000;
-  --background-color: #ffefd6;
+  /* --background-color: #ffefd6; */
 
   @apply text-[13px] md:text-[16px] transition-[font-size] duration-100;
 }
@@ -16,7 +16,6 @@ a {
 }
 
 body {
-  @apply font-semibold;
   font-family: "Times New Roman", Times, serif;
   color: var(--foreground-color);
   font-smooth: never;

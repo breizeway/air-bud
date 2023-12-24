@@ -3,6 +3,7 @@ import styles from "./court-layout.module.css";
 import Link from "next/link";
 import classNames from "classnames";
 import RemImage from "../rem-image";
+import { deatheMaachFont } from "@/assets/fonts";
 
 const LEAGUE_ID = process.env.NEXT_PUBLIC_LEAGUE_ID;
 
@@ -47,6 +48,7 @@ export default function CourtLayout({ children }: PropsWithChildren) {
 function LeagueLogo() {
   return (
     <div className={styles.courtLogo}>
+      {/* // + " " + deatheMaachFont.className}> */}
       <Link href="/" className={styles.leagueLogo}>
         <span className={styles.courtLogoStretch}>BALL IS LYF3</span>
       </Link>

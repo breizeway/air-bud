@@ -10,6 +10,7 @@ import {
   mapExchange,
 } from "@urql/next";
 import { useRouter } from "next/navigation";
+import { ErrorCodes } from "@/gql/graphql";
 
 interface ApiResponseWithErrors {
   errors?: Array<{ code: string; message: string }>;
@@ -22,7 +23,7 @@ export default function UrqlWrapper({ children }: PropsWithChildren) {
       if (
         (
           Object.values(result.data ?? [{}])[0] as ApiResponseWithErrors
-        ).errors?.some((err) => err.code === "LEAGUE_API_AUTH")
+        ).errors?.some((err) => err.code === ErrorCodes.LeagueApiAuth)
       )
         push("/auth");
     },

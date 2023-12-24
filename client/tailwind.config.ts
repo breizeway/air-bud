@@ -24,6 +24,9 @@ const config: Config = {
       boxShadow: {
         outline: outlineShadow,
       },
+      fontFamily: {
+        theme: "var(--font-theme)",
+      },
       dropShadow: {
         outline: outlineShadow,
       },
@@ -54,7 +57,6 @@ const config: Config = {
           paddingLeft: theme("padding.1"),
           paddingRight: theme("padding.1"),
         },
-        // button: {},
       }),
         addComponents({
           ".text-shadow-court": {
@@ -66,10 +68,11 @@ const config: Config = {
             textShadow: theme("dropShadow.outline"),
           },
           ".paint": {
-            color: "var(--background-color)",
+            color: theme("colors.beige.100"),
             backgroundColor: "black",
             opacity: "0.85",
-            border: "0.125rem solid var(--background-color)",
+            border: `0.125rem solid ${theme("colors.beige.100")}`,
+            fontWeight: "500",
           },
           ".plaque": {
             backgroundColor: theme("colors.beige.300"),
