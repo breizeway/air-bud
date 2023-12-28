@@ -1,5 +1,4 @@
 import styles from "./home.module.css";
-import Link from "next/link";
 import RemImage from "@/components/rem-image";
 import BoxScores from "@/components/box-scores";
 
@@ -32,9 +31,6 @@ export default function Home() {
         <h2 className="text-theme">Box Scores</h2>
         <BoxScores />
       </div>
-      {/* <Link href="/auth" className="text-[#00000000]">
-        /auth
-      </Link> */}
     </section>
   );
 }

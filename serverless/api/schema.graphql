@@ -53,6 +53,8 @@ type BoxScore {
 }
 
 type BoxPlayer {
+  # TODO: need to add the rest of the player fields
+  name: String!
   "the players lineup position"
   slotPosition: String!
   "points scored in the current week"

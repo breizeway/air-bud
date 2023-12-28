@@ -67,8 +67,8 @@ class ClientTeam:
         self.wins = team.wins
         self.losses = team.losses
         self.ties = team.ties
-        self.owners = team.owners
         # additional team owner data available in espn-api >= v0.34.0
+        self.owners = team.owners
         self.standing = team.standing
         self.final_standing = team.final_standing
         self.logo_url = team.logo_url
@@ -78,6 +78,8 @@ class ClientTeam:
 
 class ClientBoxPlayer:
     def __init__(self, box_player: BoxPlayer):
+        self.name = box_player.name
+        self.stats = box_player.stats
         self.slot_position = box_player.slot_position
         self.points = box_player.points
         self.points_breakdown = listify_stats(

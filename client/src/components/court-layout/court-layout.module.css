@@ -9,6 +9,7 @@
     "left bottom right";
   grid-template-rows: 2.5rem auto 2.5rem;
   grid-template-columns: 1.25rem calc(100% - 2.5rem) 1.25rem;
+  margin-bottom: env(safe-area-inset-bottom);
 }
 
 .court:before {
@@ -36,18 +37,17 @@
   @apply overflow-clip paint border-0;
 }
 
-.top {
-  grid-area: top;
-}
-
 .top,
 .bottom {
   @apply flex justify-between items-center gap-2;
 }
 
+.top {
+  grid-area: top;
+}
+
 .bottom {
   grid-area: bottom;
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .bottom a {
