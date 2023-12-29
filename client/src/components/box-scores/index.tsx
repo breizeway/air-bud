@@ -9,8 +9,8 @@ import { rankQuery } from "@/components/box-scores/queries";
 export default function BoxScores() {
   const [results] = useQuery({
     query: rankQuery,
+    variables: { matchupPeriodOffset: 0 },
   });
-  const { data } = results;
   const boxRanks = useMemo(
     () => getRankedBoxScores(results.data?.getBoxScores.boxScores),
     [results]
@@ -24,7 +24,7 @@ export default function BoxScores() {
       ) : !results.data?.getBoxScores?.success ? (
         <span>{"Sorry, there was an error fetching box scores :("}</span>
       ) : (
-        JSON.stringify(data)
+        JSON.stringify(boxRanks)
       )}
     </div>
   );

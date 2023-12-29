@@ -1,5 +1,5 @@
 type Query {
-  getBoxScores(year: Int): GetBoxScoresResult!
+  getBoxScores(year: Int, matchupPeriodOffset: Int): GetBoxScoresResult!
 }
 
 type Mutation {

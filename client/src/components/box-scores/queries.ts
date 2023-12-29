@@ -35,8 +35,8 @@ export const RankQueryBoxScore = graphql(`
 `);
 
 export const rankQuery = graphql(`
-  query getBoxScores {
-    getBoxScores {
+  query getBoxScores($year: Int, $matchupPeriodOffset: Int) {
+    getBoxScores(year: $year, matchupPeriodOffset: $matchupPeriodOffset) {
       __typename
       success
       errors {

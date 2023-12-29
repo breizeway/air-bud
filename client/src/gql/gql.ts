@@ -15,7 +15,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
 const documents = {
     "\n      mutation setLeagueAuth($leagueAuth: LeagueAuthInput!) {\n        setLeagueAuth(leagueAuth: $leagueAuth) {\n          __typename\n          success\n          errors {\n            code\n            message\n          }\n        }\n      }\n    ": types.SetLeagueAuthDocument,
     "\n  fragment RankQueryBoxScore on BoxScore {\n    winner\n    homeTeam {\n      teamName\n    }\n    homeStats {\n      category\n      value\n      result\n    }\n    homeLineup {\n      pointsBreakdown {\n        category\n        value\n      }\n    }\n    awayTeam {\n      teamName\n    }\n    awayStats {\n      category\n      value\n      result\n    }\n    awayLineup {\n      pointsBreakdown {\n        category\n        value\n      }\n    }\n  }\n": types.RankQueryBoxScoreFragmentDoc,
-    "\n  query getBoxScores {\n    getBoxScores {\n      __typename\n      success\n      errors {\n        code\n        message\n      }\n      boxScores {\n        ...RankQueryBoxScore\n      }\n    }\n  }\n": types.GetBoxScoresDocument,
+    "\n  query getBoxScores($year: Int, $matchupPeriodOffset: Int) {\n    getBoxScores(year: $year, matchupPeriodOffset: $matchupPeriodOffset) {\n      __typename\n      success\n      errors {\n        code\n        message\n      }\n      boxScores {\n        ...RankQueryBoxScore\n      }\n    }\n  }\n": types.GetBoxScoresDocument,
 };
 
 /**
@@ -43,7 +43,7 @@ export function graphql(source: "\n  fragment RankQueryBoxScore on BoxScore {\n 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query getBoxScores {\n    getBoxScores {\n      __typename\n      success\n      errors {\n        code\n        message\n      }\n      boxScores {\n        ...RankQueryBoxScore\n      }\n    }\n  }\n"): (typeof documents)["\n  query getBoxScores {\n    getBoxScores {\n      __typename\n      success\n      errors {\n        code\n        message\n      }\n      boxScores {\n        ...RankQueryBoxScore\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query getBoxScores($year: Int, $matchupPeriodOffset: Int) {\n    getBoxScores(year: $year, matchupPeriodOffset: $matchupPeriodOffset) {\n      __typename\n      success\n      errors {\n        code\n        message\n      }\n      boxScores {\n        ...RankQueryBoxScore\n      }\n    }\n  }\n"): (typeof documents)["\n  query getBoxScores($year: Int, $matchupPeriodOffset: Int) {\n    getBoxScores(year: $year, matchupPeriodOffset: $matchupPeriodOffset) {\n      __typename\n      success\n      errors {\n        code\n        message\n      }\n      boxScores {\n        ...RankQueryBoxScore\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

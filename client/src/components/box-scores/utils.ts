@@ -1,13 +1,6 @@
-import {
-  BoxPlayer,
-  BoxStat,
-  PlayerStat,
-  RankQueryBoxScoreFragment,
-  Stat,
-} from "@/gql/graphql";
+import { BoxStat, RankQueryBoxScoreFragment } from "@/gql/graphql";
 import { RankQueryBoxScore } from "./queries";
 import { FragmentType, useFragment } from "@/gql";
-import { TLSSocket } from "tls";
 
 export enum BoxStatCategories {
   "PTS" = "PTS",
@@ -74,12 +67,16 @@ const breakOutTeamStats = (
       const value = vals.reduce((acc, val) => acc + val, 0);
       boxRanks[cat]?.push({ teamName, value });
     });
+    // console.log(`:::PLAYERSTATS::: `, playerStats);
   } else {
     // static (non-live) box scores for prior weeks
-    boxStats.forEach((bs) => {
-      const cat = bs.category as BoxStatCategories;
-      boxRanks[cat]?.push({ teamName, value: bs.value });
-    });
+    [...boxStats, { category: BoxStatCategories.ALL, value: 0 }].forEach(
+      (bs) => {
+        const cat = bs.category as BoxStatCategories;
+        boxRanks[cat]?.push({ teamName, value: bs.value });
+      }
+    );
+    console.log("no players");
   }
 };
 
@@ -94,18 +91,19 @@ export const getRankedBoxScores = (
         acc,
         boxScore.homeStats,
         boxScore.homeLineup,
-        boxScore.homeTeam.teamName
+        boxScore.homeTeam.teamName.trim()
       );
       breakOutTeamStats(
         acc,
         boxScore.awayStats,
         boxScore.awayLineup,
-        boxScore.awayTeam.teamName
+        boxScore.awayTeam.teamName.trim()
       );
 
       return acc;
     }, initStatsByCat<TeamStat>());
 
+    console.log(`:::TEAMSTATS::: `, teamStats);
     const rankedBoxScoresByTeam = Object.keys(teamStats).reduce(
       (acc: { [teamName: string]: Partial<RankedBoxScore> }, k) => {
         const key = k as BoxStatCategories;
