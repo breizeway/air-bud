@@ -7,6 +7,7 @@ import {
 } from "@/gql/graphql";
 import { RankQueryBoxScore } from "./queries";
 import { FragmentType, useFragment } from "@/gql";
+import { TLSSocket } from "tls";
 
 export enum BoxStatCategories {
   "PTS" = "PTS",
@@ -19,10 +20,10 @@ export enum BoxStatCategories {
   "TO" = "TO",
   "FGM" = "FGM",
   "FGA" = "FGA",
-  "TOT" = "TOT",
+  "ALL" = "ALL",
 }
 
-interface CatTeamStat {
+interface TeamStat {
   teamName: string;
   value: number;
   rank?: number;
@@ -42,11 +43,17 @@ const initStatsByCat = <T>(): StatsByCat<T> => ({
   TO: [],
   FGM: [],
   FGA: [],
-  TOT: [],
+  // important that this one is last to make rankings work with only one iteration
+
+  ALL: [],
 });
 
+type RankedBoxScore = {
+  teamName: string;
+} & { [category in BoxStatCategories]: TeamStat };
+
 const breakOutTeamStats = (
-  boxRanks: StatsByCat<CatTeamStat>,
+  boxRanks: StatsByCat<TeamStat>,
   boxStats: BoxStat[],
   playerLineup:
     | RankQueryBoxScoreFragment["homeLineup"]
@@ -80,7 +87,7 @@ export const getRankedBoxScores = (
   boxScores: FragmentType<typeof RankQueryBoxScore>[] | undefined | null
 ) => {
   if (boxScores) {
-    const teamStats = boxScores.reduce((acc: StatsByCat<CatTeamStat>, bs) => {
+    const teamStats = boxScores.reduce((acc: StatsByCat<TeamStat>, bs) => {
       const boxScore = useFragment(RankQueryBoxScore, bs);
 
       breakOutTeamStats(
@@ -97,24 +104,40 @@ export const getRankedBoxScores = (
       );
 
       return acc;
-    }, initStatsByCat<CatTeamStat>());
+    }, initStatsByCat<TeamStat>());
 
-    Object.keys(teamStats).forEach((k) => {
-      const key = k as BoxStatCategories;
+    const rankedBoxScoresByTeam = Object.keys(teamStats).reduce(
+      (acc: { [teamName: string]: Partial<RankedBoxScore> }, k) => {
+        const key = k as BoxStatCategories;
 
-      teamStats[key]?.sort((a, b) => {
-        if (!(key === BoxStatCategories.PF || key === BoxStatCategories.TO))
-          return b.value - a.value;
-        return a.value - b.value;
-      });
+        teamStats[key]?.sort((a, b) => {
+          if (!(key === BoxStatCategories.PF || key === BoxStatCategories.TO))
+            return b.value - a.value;
+          return a.value - b.value;
+        });
 
-      teamStats[key].forEach((ts, idx) => {
-        const rank = idx + 1;
-        const score = 10 - idx;
-        Object.assign(ts, { rank, score });
-      });
-    });
+        teamStats[key].forEach((ts, idx) => {
+          const rank = idx + 1;
+          const score = 10 - idx;
+          Object.assign(ts, { rank, score });
 
-    return teamStats;
+          const allStatIdx = teamStats[BoxStatCategories.ALL].findIndex(
+            (bts) => bts.teamName === ts.teamName
+          );
+
+          if (key !== BoxStatCategories.ALL) {
+            teamStats[BoxStatCategories.ALL][allStatIdx].value += score;
+          }
+
+          if (!acc[ts.teamName]) acc[ts.teamName] = {};
+          acc[ts.teamName][key] = ts;
+        });
+
+        return acc;
+      },
+      {}
+    );
+
+    return rankedBoxScoresByTeam;
   }
 };

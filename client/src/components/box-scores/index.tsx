@@ -10,10 +10,7 @@ export default function BoxScores() {
   const [results] = useQuery({
     query: rankQuery,
   });
-
   const { data } = results;
-  console.log(`:::DATA.GETBOXSCORES::: `, data?.getBoxScores.boxScores?.at(0));
-
   const boxRanks = useMemo(
     () => getRankedBoxScores(results.data?.getBoxScores.boxScores),
     [results]

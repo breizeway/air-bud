@@ -11,7 +11,7 @@ query = QueryType()
 def resolve_get_box_scores(*_, year=None, matchup_period_offset=0):
     league, response = LeagueApi(year).init()
     matchup_period = matchup_period_offset + \
-        (league.current_matchup_period or 0)
+        (league.currentMatchupPeriod or 0)
 
     try:
         box_scores = league.box_scores(matchup_period=matchup_period)
