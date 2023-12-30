@@ -67,7 +67,6 @@ const breakOutTeamStats = (
       const value = vals.reduce((acc, val) => acc + val, 0);
       boxRanks[cat]?.push({ teamName, value });
     });
-    // console.log(`:::PLAYERSTATS::: `, playerStats);
   } else {
     // static (non-live) box scores for prior weeks
     [...boxStats, { category: BoxStatCategories.ALL, value: 0 }].forEach(
@@ -80,9 +79,10 @@ const breakOutTeamStats = (
   }
 };
 
+export type RankedBoxScores = { [teamName: string]: RankedBoxScore };
 export const getRankedBoxScores = (
   boxScores: FragmentType<typeof RankQueryBoxScore>[] | undefined | null
-) => {
+): RankedBoxScores | undefined => {
   if (boxScores) {
     const teamStats = boxScores.reduce((acc: StatsByCat<TeamStat>, bs) => {
       const boxScore = useFragment(RankQueryBoxScore, bs);
@@ -127,7 +127,7 @@ export const getRankedBoxScores = (
             teamStats[BoxStatCategories.ALL][allStatIdx].value += score;
           }
 
-          if (!acc[ts.teamName]) acc[ts.teamName] = {};
+          if (!acc[ts.teamName]) acc[ts.teamName] = { teamName: ts.teamName };
           acc[ts.teamName][key] = ts;
         });
 
@@ -136,6 +136,6 @@ export const getRankedBoxScores = (
       {}
     );
 
-    return rankedBoxScoresByTeam;
+    return rankedBoxScoresByTeam as RankedBoxScores;
   }
 };
