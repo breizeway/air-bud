@@ -22,6 +22,10 @@ const columns = [
     header: "FG%",
     cell: (info) => info.getValue().toFixed(3).slice(1),
   }),
+  columnHelper.accessor("3PTM.value", {
+    header: "3PM",
+    cell: (info) => info.getValue(),
+  }),
   columnHelper.accessor("REB.value", {
     header: "REB",
     cell: (info) => info.getValue(),
@@ -75,17 +79,22 @@ export default function BoxScores() {
     data: Object.values(boxRanks ?? defaultBoxRanks),
     getCoreRowModel,
   });
+  const headerGroups = useMemo(
+    () => table.getHeaderGroups(),
+    [table, boxRanks]
+  );
+  const tableRows = useMemo(() => table.getRowModel().rows, [table, boxRanks]);
 
   return (
     <div className="flex justify-center items-center border-2 border-black p-3">
       {results.fetching ? (
         <Loading isLoading={results.fetching} />
+      ) : !results.data?.getBoxScores?.success ? (
+        <span>{"Sorry, there was an error fetching box scores :("}</span>
       ) : (
-        // ) : !results.data?.getBoxScores?.success ? (
-        //   <span>{"Sorry, there was an error fetching box scores :("}</span>
         <table>
           <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
+            {headerGroups.map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th key={header.id}>
@@ -101,7 +110,7 @@ export default function BoxScores() {
             ))}
           </thead>
           <tbody>
-            {table.getRowModel().rows.map((row) => (
+            {tableRows.map((row) => (
               <tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id}>
@@ -112,7 +121,6 @@ export default function BoxScores() {
             ))}
           </tbody>
         </table>
-        // JSON.stringify(boxRanks)
       )}
     </div>
   );
