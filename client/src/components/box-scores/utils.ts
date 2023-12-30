@@ -3,16 +3,17 @@ import { RankQueryBoxScore } from "./queries";
 import { FragmentType, useFragment } from "@/gql";
 
 export enum BoxStatCategories {
-  "PTS" = "PTS",
-  "BLK" = "BLK",
-  "3PTM" = "3PTM",
-  "STL" = "STL",
-  "AST" = "AST",
-  "REB" = "REB",
-  "PF" = "PF",
-  "TO" = "TO",
-  "FGM" = "FGM",
   "FGA" = "FGA",
+  "FGM" = "FGM",
+  "FG%" = "FG%",
+  "3PTM" = "3PTM",
+  "REB" = "REB",
+  "AST" = "AST",
+  "STL" = "STL",
+  "BLK" = "BLK",
+  "TO" = "TO",
+  "PF" = "PF",
+  "PTS" = "PTS",
   "ALL" = "ALL",
 }
 
@@ -26,24 +27,26 @@ type StatsByCat<T> = {
   [Category in BoxStatCategories]: T[];
 };
 const initStatsByCat = <T>(): StatsByCat<T> => ({
-  PTS: [],
-  BLK: [],
-  "3PTM": [],
-  STL: [],
-  AST: [],
-  REB: [],
-  PF: [],
-  TO: [],
-  FGM: [],
   FGA: [],
+  FGM: [],
+  "FG%": [],
+  "3PTM": [],
+  REB: [],
+  AST: [],
+  STL: [],
+  BLK: [],
+  TO: [],
+  PF: [],
+  PTS: [],
   // important that this one is last to make rankings work with only one iteration
 
   ALL: [],
 });
 
-type RankedBoxScore = {
+export type RankedBoxScore = {
   teamName: string;
 } & { [category in BoxStatCategories]: TeamStat };
+export type RankedBoxScores = { [teamName: string]: RankedBoxScore };
 
 const breakOutTeamStats = (
   boxRanks: StatsByCat<TeamStat>,
@@ -62,10 +65,20 @@ const breakOutTeamStats = (
       });
       return acc;
     }, initStatsByCat<number>());
+
+    const fieldGoals = { FGM: 0, FGA: 0 };
     Object.entries(playerStats).forEach(([category, vals]) => {
       const cat = category as BoxStatCategories;
       const value = vals.reduce((acc, val) => acc + val, 0);
-      boxRanks[cat]?.push({ teamName, value });
+
+      if (cat === BoxStatCategories["FGM"]) fieldGoals.FGM = value;
+      if (cat === BoxStatCategories["FGA"]) fieldGoals.FGA = value;
+      if (cat !== BoxStatCategories["FG%"])
+        boxRanks[cat]?.push({ teamName, value });
+    });
+    boxRanks[BoxStatCategories["FG%"]]?.push({
+      teamName,
+      value: fieldGoals.FGM / fieldGoals.FGA,
     });
   } else {
     // static (non-live) box scores for prior weeks
@@ -79,7 +92,6 @@ const breakOutTeamStats = (
   }
 };
 
-export type RankedBoxScores = { [teamName: string]: RankedBoxScore };
 export const getRankedBoxScores = (
   boxScores: FragmentType<typeof RankQueryBoxScore>[] | undefined | null
 ): RankedBoxScores | undefined => {
@@ -103,7 +115,6 @@ export const getRankedBoxScores = (
       return acc;
     }, initStatsByCat<TeamStat>());
 
-    console.log(`:::TEAMSTATS::: `, teamStats);
     const rankedBoxScoresByTeam = Object.keys(teamStats).reduce(
       (acc: { [teamName: string]: Partial<RankedBoxScore> }, k) => {
         const key = k as BoxStatCategories;
@@ -116,7 +127,10 @@ export const getRankedBoxScores = (
 
         teamStats[key].forEach((ts, idx) => {
           const rank = idx + 1;
-          const score = 10 - idx;
+          const score =
+            key === BoxStatCategories.FGM || key === BoxStatCategories.FGA
+              ? 0
+              : 10 - idx;
           Object.assign(ts, { rank, score });
 
           const allStatIdx = teamStats[BoxStatCategories.ALL].findIndex(
