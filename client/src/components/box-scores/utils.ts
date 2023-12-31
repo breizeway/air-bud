@@ -88,7 +88,6 @@ const breakOutTeamStats = (
         boxRanks[cat]?.push({ teamName, value: bs.value });
       }
     );
-    console.log("no players");
   }
 };
 

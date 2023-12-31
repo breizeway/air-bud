@@ -2,13 +2,15 @@
 
 import { useQuery } from "@urql/next";
 import Loading from "../loading";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { RankedBoxScore, RankedBoxScores, getRankedBoxScores } from "./utils";
-import { RankQueryBoxScore, rankQuery } from "@/components/box-scores/queries";
+import { rankQuery } from "@/components/box-scores/queries";
 import {
+  SortingState,
   createColumnHelper,
   flexRender,
-  getCoreRowModel as getCoreRowModelFunction,
+  getCoreRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 
@@ -45,10 +47,12 @@ const columns = [
   columnHelper.accessor("TO.value", {
     header: "TO",
     cell: (info) => info.getValue(),
+    invertSorting: true,
   }),
   columnHelper.accessor("PF.value", {
     header: "PF",
     cell: (info) => info.getValue(),
+    invertSorting: true,
   }),
   columnHelper.accessor("PTS.value", {
     header: "PTS",
@@ -61,67 +65,130 @@ const columns = [
 ];
 
 const defaultBoxRanks: RankedBoxScores = {};
-const getCoreRowModel = getCoreRowModelFunction();
+const stickyColumnClasses = " sticky left-0 z-10 paint border-0";
 
 export default function BoxScores() {
+  const [matchupPeriodOffset, setMatchupPeriodOffset] = useState(0);
   const [results] = useQuery({
     query: rankQuery,
-    variables: { matchupPeriodOffset: 0 },
+    variables: { matchupPeriodOffset },
   });
   const boxRanks = useMemo(
-    () => getRankedBoxScores(results.data?.getBoxScores.boxScores),
+    () =>
+      Object.values(
+        getRankedBoxScores(results.data?.getBoxScores.boxScores) ??
+          defaultBoxRanks
+      ).sort((a, b) => (a.ALL.rank ?? 0) - (b.ALL.rank ?? 0)),
     [results]
   );
-  console.log(`:::BOXRANKS::: `, boxRanks);
+
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const table = useReactTable({
     columns,
-    data: Object.values(boxRanks ?? defaultBoxRanks),
-    getCoreRowModel,
+    data: boxRanks,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: setSorting,
+
+    state: { sorting },
   });
   const headerGroups = useMemo(
     () => table.getHeaderGroups(),
     [table, boxRanks]
   );
-  const tableRows = useMemo(() => table.getRowModel().rows, [table, boxRanks]);
+  const tableRows = useMemo(
+    () => table.getRowModel().rows,
+    [table, boxRanks, sorting]
+  );
 
+  // TODO: next - 1) fix visible stats on table scroll 2) matchup period scrolling 3) loading states
   return (
-    <div className="flex justify-center items-center border-2 border-black p-3">
-      {results.fetching ? (
-        <Loading isLoading={results.fetching} />
-      ) : !results.data?.getBoxScores?.success ? (
-        <span>{"Sorry, there was an error fetching box scores :("}</span>
-      ) : (
-        <table>
-          <thead>
-            {headerGroups.map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {tableRows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+    <div className="w-fit max-w-full">
+      <div className="flex gap-2 justify-between items-end mb-1">
+        <span className="text-2xl font-semibold">Box Score Rankings</span>
+        <div className="flex gap-2 mb-1">
+          <button
+            onClick={() => setMatchupPeriodOffset(matchupPeriodOffset - 1)}
+          >
+            {"<"}
+          </button>
+          <button
+            onClick={() =>
+              setMatchupPeriodOffset(
+                matchupPeriodOffset
+                  ? matchupPeriodOffset + 1
+                  : matchupPeriodOffset
+              )
+            }
+          >
+            {">"}
+          </button>
+        </div>
+      </div>
+      <div className="paint font-mono px-2 py-1 overflow-x-scroll max-w-full">
+        {results.fetching && !results.data ? (
+          <Loading isLoading={results.fetching} />
+        ) : !results.data?.getBoxScores?.success ? (
+          <span>{"Sorry, there was an error fetching box scores :("}</span>
+        ) : (
+          <table>
+            <thead className="text-left">
+              {headerGroups.map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header, idx) => (
+                    <th
+                      key={header.id}
+                      className={`p-1${
+                        !idx ? stickyColumnClasses : " text-right"
+                      }`}
+                    >
+                      {header.isPlaceholder ? null : (
+                        <div
+                          {...{
+                            className: header.column.getCanSort()
+                              ? "cursor-pointer select-none"
+                              : "",
+                            onClick: header.column.getToggleSortingHandler(),
+                          }}
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {{
+                            asc: <span className="ml-1">{"▴"}</span>,
+                            desc: <span className="ml-1">{"▾"}</span>,
+                          }[header.column.getIsSorted() as string] ?? null}
+                        </div>
+                      )}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody className="">
+              {tableRows.map((row) => (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map((cell, idx) => (
+                    <td
+                      key={cell.id}
+                      className={`p-1${
+                        !idx ? stickyColumnClasses : " text-right"
+                      }`}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 }

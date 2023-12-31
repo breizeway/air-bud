@@ -28,7 +28,6 @@ export default function Home() {
         </p>
       </div>
       <div>
-        <h2 className="text-theme">Box Scores</h2>
         <BoxScores />
       </div>
     </section>

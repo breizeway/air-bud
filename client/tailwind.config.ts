@@ -70,7 +70,7 @@ const config: Config = {
           ".paint": {
             color: theme("colors.beige.100"),
             backgroundColor: "black",
-            opacity: "0.85",
+            // opacity: "0.85",
             border: `0.125rem solid ${theme("colors.beige.100")}`,
             fontWeight: "500",
           },
