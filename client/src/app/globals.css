@@ -24,7 +24,7 @@ body {
   overscroll-behavior: none;
 }
 
-button {
+.button {
   @apply plaque px-2 disabled:cursor-not-allowed;
 }
 

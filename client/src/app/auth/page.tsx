@@ -143,7 +143,7 @@ export default function Auth() {
           <div>
             <button
               type="submit"
-              className="plaque mt-4"
+              className="button mt-4"
               disabled={setLeagueAuthStatus.fetching}
               aria-disabled={setLeagueAuthStatus.fetching}
             >

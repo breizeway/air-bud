@@ -124,12 +124,16 @@ export const getRankedBoxScores = (
           return a.value - b.value;
         });
 
-        teamStats[key].forEach((ts, idx) => {
+        teamStats[key].forEach((ts, idx, arr) => {
           const rank = idx + 1;
+          const calculatedScore =
+            ts.value === arr[idx - 1]?.value
+              ? arr[idx - 1]?.score ?? 0
+              : 10 - idx;
           const score =
             key === BoxStatCategories.FGM || key === BoxStatCategories.FGA
               ? 0
-              : 10 - idx;
+              : calculatedScore;
           Object.assign(ts, { rank, score });
 
           const allStatIdx = teamStats[BoxStatCategories.ALL].findIndex(

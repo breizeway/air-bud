@@ -1,9 +1,8 @@
 import { PropsWithChildren } from "react";
 import styles from "./court-layout.module.css";
 import Link from "next/link";
-import classNames from "classnames";
 import RemImage from "../rem-image";
-import { deatheMaachFont } from "@/assets/fonts";
+import { classNames } from "@/utils";
 
 const LEAGUE_ID = process.env.NEXT_PUBLIC_LEAGUE_ID;
 
