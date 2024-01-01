@@ -2,10 +2,16 @@
 
 import { useQuery } from "@urql/next";
 import Loading from "../loading";
-import { ReactNode, useMemo, useRef, useState } from "react";
-import { RankedBoxScore, RankedBoxScores, getRankedBoxScores } from "./utils";
+import { useMemo, useRef, useState } from "react";
+import {
+  BoxStatCategories,
+  RankedBoxScore,
+  RankedBoxScores,
+  getRankedBoxScores,
+} from "./utils";
 import { rankQuery } from "@/components/box-scores/queries";
 import {
+  SortingFn,
   SortingState,
   createColumnHelper,
   flexRender,
@@ -15,102 +21,81 @@ import {
 } from "@tanstack/react-table";
 import { classNames } from "@/utils";
 
+declare module "@tanstack/table-core" {
+  interface SortingFns {
+    byRank: SortingFn<unknown>;
+  }
+}
+
 const columnHelper = createColumnHelper<RankedBoxScore>();
+const sortingFn = "byRank";
 const columns = [
   columnHelper.accessor("teamName", {
     header: "Team",
     cell: (info) => info.getValue(),
   }),
-  columnHelper.accessor("FG%.value", {
+  columnHelper.accessor(BoxStatCategories["FG%"], {
     header: "FG%",
-    cell: (info) => info.getValue().toFixed(3).slice(1),
+    cell: (info) => (
+      <span>
+        {info
+          .getValue()
+          .value.toFixed(3)
+          .slice(info.getValue().value < 1 ? 1 : 0)}
+      </span>
+    ),
+    sortingFn,
   }),
-  columnHelper.accessor("3PTM.value", {
+  columnHelper.accessor(BoxStatCategories["3PTM"], {
     header: "3PM",
-    cell: (info) => (
-      <span>
-        {info.getValue()}
-        <sup className="opacity-50">1</sup>
-      </span>
-    ),
+    cell: (info) => <span>{info.getValue().value}</span>,
+    sortingFn,
   }),
-  columnHelper.accessor("REB.value", {
+  columnHelper.accessor(BoxStatCategories.REB, {
     header: "REB",
-    cell: (info) => (
-      <span>
-        {info.getValue()}
-        <sup className="opacity-50">1</sup>
-      </span>
-    ),
+    cell: (info) => <span>{info.getValue().value}</span>,
+    sortingFn,
   }),
-  columnHelper.accessor("AST.value", {
+  columnHelper.accessor(BoxStatCategories.AST, {
     header: "AST",
-    cell: (info) => (
-      <span>
-        {info.getValue()}
-        <sup className="opacity-50">1</sup>
-      </span>
-    ),
+    cell: (info) => <span>{info.getValue().value}</span>,
+    sortingFn,
   }),
-  columnHelper.accessor("STL.value", {
+  columnHelper.accessor(BoxStatCategories.STL, {
     header: "STL",
-    cell: (info) => (
-      <span>
-        {info.getValue()}
-        <sup className="opacity-50">1</sup>
-      </span>
-    ),
+    cell: (info) => <span>{info.getValue().value}</span>,
+    sortingFn,
   }),
-  columnHelper.accessor("BLK.value", {
+  columnHelper.accessor(BoxStatCategories.BLK, {
     header: "BLK",
-    cell: (info) => (
-      <span>
-        {info.getValue()}
-        <sup className="opacity-50">1</sup>
-      </span>
-    ),
+    cell: (info) => <span>{info.getValue().value}</span>,
+    sortingFn,
   }),
-  columnHelper.accessor("TO.value", {
+  columnHelper.accessor(BoxStatCategories.TO, {
     header: "TO",
-    cell: (info) => (
-      <span>
-        {info.getValue()}
-        <sup className="opacity-50">1</sup>
-      </span>
-    ),
-    invertSorting: true,
+    cell: (info) => <span>{info.getValue().value}</span>,
+    sortingFn,
+    sortDescFirst: true,
   }),
-  columnHelper.accessor("PF.value", {
+  columnHelper.accessor(BoxStatCategories.PF, {
     header: "PF",
-    cell: (info) => (
-      <span>
-        {info.getValue()}
-        <sup className="opacity-50">1</sup>
-      </span>
-    ),
-    invertSorting: true,
+    cell: (info) => <span>{info.getValue().value}</span>,
+    sortingFn,
+    sortDescFirst: true,
   }),
-  columnHelper.accessor("PTS.value", {
+  columnHelper.accessor(BoxStatCategories.PTS, {
     header: "PTS",
-    cell: (info) => (
-      <span>
-        {info.getValue()}
-        <sup className="opacity-50">1</sup>
-      </span>
-    ),
+    cell: (info) => <span>{info.getValue().value}</span>,
+    sortingFn,
   }),
-  columnHelper.accessor("ALL.value", {
+  columnHelper.accessor(BoxStatCategories.ALL, {
     header: () => (
       <span>
         ALL<sup className="text-xs">*</sup>
       </span>
     ),
-    cell: (info) => (
-      <span>
-        {info.getValue()}
-        <sup className="opacity-50">1</sup>
-      </span>
-    ),
+    cell: (info) => <span>{info.getValue().value}</span>,
+    sortingFn,
   }),
 ];
 
@@ -155,8 +140,11 @@ export default function BoxScores() {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
-
     state: { sorting },
+    sortingFns: {
+      byRank: (rowA: any, rowB: any, columnId: any): number =>
+        rowA.getValue(columnId).rank < rowB.getValue(columnId).rank ? 1 : -1,
+    },
   });
   const headerGroups = useMemo(
     () => table.getHeaderGroups(),
@@ -177,7 +165,7 @@ export default function BoxScores() {
             className="button"
             onClick={() => setMatchupPeriodOffset(matchupPeriodOffset - 1)}
           >
-            {"<"}
+            &#9668;
           </button>
           <button
             className="button"
@@ -189,7 +177,7 @@ export default function BoxScores() {
               )
             }
           >
-            {">"}
+            &#9658;
           </button>
         </div>
       </div>
@@ -262,11 +250,12 @@ export default function BoxScores() {
                 * The <code>ALL</code>, or "Overall" category indicates how a
                 team is performing across <em>all</em> categories as compared to
                 the other teams in the league. It's calculated by assigning a
-                score of 1-10 for each category based on how that category ranks
+                score of 0-10 for each category based on how that category ranks
                 across the league. If the team ranks first in that category, a
                 score of <code>10</code> is given; if 2nd, <code>9</code>; and
-                so on, ending with <code>1</code> for 10th place. Those scores
-                then tallied up to make the overall score for the week.{" "}
+                so on, ending with <code>1</code> for 10th place (and/or 0 if
+                there is no value). Those scores then tallied up to make the
+                overall score for the week.{" "}
               </span>
             ) : (
               <span>

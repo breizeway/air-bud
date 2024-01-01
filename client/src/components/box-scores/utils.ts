@@ -17,7 +17,7 @@ export enum BoxStatCategories {
   "ALL" = "ALL",
 }
 
-interface TeamStat {
+export interface TeamStat {
   teamName: string;
   value: number;
   rank?: number;
@@ -126,14 +126,19 @@ export const getRankedBoxScores = (
 
         teamStats[key].forEach((ts, idx, arr) => {
           const rank = idx + 1;
-          const calculatedScore =
-            ts.value === arr[idx - 1]?.value
-              ? arr[idx - 1]?.score ?? 0
-              : 10 - idx;
           const score =
-            key === BoxStatCategories.FGM || key === BoxStatCategories.FGA
-              ? 0
-              : calculatedScore;
+            key === BoxStatCategories.FGM ||
+            key === BoxStatCategories.FGA ||
+            // cat shouldn't count toward total
+            (!(key === BoxStatCategories.TO || key === BoxStatCategories.PF) &&
+              ts.value === 0)
+              ? // cat values are 0
+                0
+              : ts.value === arr[idx - 1]?.value
+              ? // cat values are tied
+                arr[idx - 1]?.score ?? 0
+              : 10 - idx;
+
           Object.assign(ts, { rank, score });
 
           const allStatIdx = teamStats[BoxStatCategories.ALL].findIndex(
