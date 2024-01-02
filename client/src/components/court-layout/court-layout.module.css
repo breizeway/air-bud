@@ -1,6 +1,6 @@
 .court {
   @apply relative grid;
-  @apply border-2 border-[var(--background-color)];
+  @apply border-2 border-beige-100;
   @apply h-full min-h-[100dvh] w-screen overflow-x-hidden;
 
   grid-template-areas:
@@ -9,6 +9,7 @@
     "left bottom right";
   grid-template-rows: 2.5rem auto 2.5rem;
   grid-template-columns: 1.25rem calc(100% - 2.5rem) 1.25rem;
+  margin-bottom: env(safe-area-inset-bottom);
 }
 
 .court:before {
@@ -19,7 +20,7 @@
 }
 
 .main {
-  @apply h-full w-full max-w-full flex flex-col border-2 border-[var(--background-color)];
+  @apply h-full w-full max-w-full flex flex-col border-2 border-beige-100;
   @apply p-2 md:p-5 transition-[padding] duration-100;
 
   grid-area: main;
@@ -36,18 +37,17 @@
   @apply overflow-clip paint border-0;
 }
 
+.top,
+.bottom {
+  @apply flex justify-between items-center gap-2;
+}
+
 .top {
   grid-area: top;
 }
 
-.top,
-.bottom {
-  @apply text-theme text-lg flex justify-between items-center gap-2;
-}
-
 .bottom {
   grid-area: bottom;
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .bottom a {
@@ -55,7 +55,7 @@
 }
 
 .courtLogo {
-  @apply flex w-full items-center min-w-fit;
+  @apply flex w-full items-center min-w-fit font-bold;
 }
 
 .courtLogo a {
@@ -68,11 +68,11 @@
 }
 
 .leagueLogo {
-  @apply text-theme overflow-clip;
+  @apply overflow-clip text-[var(--theme-color)];
 }
 
 .espnLogo {
-  @apply text-[var(--background-color)] flex items-center gap-1 overflow-clip;
+  @apply text-beige-100 flex items-center gap-1 overflow-clip;
 }
 
 .left {

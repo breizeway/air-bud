@@ -8,8 +8,8 @@ import os
 
 class LeagueApi:
     def __init__(self, year: int = None):
-        self.league = None
-        self.response = Response()
+        self.league: League = None
+        self.response: Response = Response()
         league_year = year or self.get_default_league_year()
 
         try:
@@ -27,6 +27,7 @@ class LeagueApi:
         today = datetime.now()
         current_month = today.month
         current_year = today.year
+
         if (current_month >= 10):
             return current_year + 1
         return current_year

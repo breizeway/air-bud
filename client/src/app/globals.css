@@ -6,9 +6,9 @@
   --theme-color: #e03a3e;
   --wood-color: #ce884d;
   --foreground-color: #000000;
-  --background-color: #ffefd6;
+  /* --background-color: #ffefd6; */
 
-  @apply text-[14px] md:text-[16px] transition-[font-size] duration-100;
+  @apply text-[13px] md:text-[16px] transition-[font-size] duration-100;
 }
 
 a {
@@ -16,11 +16,22 @@ a {
 }
 
 body {
-  @apply font-semibold;
   font-family: "Times New Roman", Times, serif;
   color: var(--foreground-color);
   font-smooth: never;
   -webkit-font-smoothing: none;
   background-color: var(--theme-color);
   overscroll-behavior: none;
+}
+
+.button {
+  @apply plaque px-2 disabled:cursor-not-allowed;
+}
+
+input {
+  @apply bg-beige-100;
+}
+
+code {
+  @apply bg-black bg-opacity-50 text-beige-100 rounded-sm px-[0.25em] mx-[0.1em];
 }

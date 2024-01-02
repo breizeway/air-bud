@@ -1,8 +1,8 @@
 import { PropsWithChildren } from "react";
 import styles from "./court-layout.module.css";
 import Link from "next/link";
-import classNames from "classnames";
 import RemImage from "../rem-image";
+import { classNames } from "@/utils";
 
 const LEAGUE_ID = process.env.NEXT_PUBLIC_LEAGUE_ID;
 
@@ -11,6 +11,15 @@ export default function CourtLayout({ children }: PropsWithChildren) {
     <div className={styles.court}>
       <header className={styles.top}>
         <LeagueLogo />
+
+        {/* <div className="flex gap-1 items-center grow">
+          <RemImage
+            src="/construction-bar.gif"
+            alt='rotating "under construction" sign'
+            wRem={8.259625}
+            hRem={2.25}
+          />
+        </div> */}
         <EspnLogo />
       </header>
       <footer className={styles.bottom}>

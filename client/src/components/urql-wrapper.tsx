@@ -10,8 +10,9 @@ import {
   mapExchange,
 } from "@urql/next";
 import { useRouter } from "next/navigation";
+import { ErrorCodes } from "@/gql/graphql";
 
-interface ApiResponseWithError {
+interface ApiResponseWithErrors {
   errors?: Array<{ code: string; message: string }>;
 }
 
@@ -20,9 +21,10 @@ export default function UrqlWrapper({ children }: PropsWithChildren) {
   const authExchange = mapExchange({
     onResult(result) {
       if (
+        !result.stale &&
         (
-          Object.values(result.data ?? [{}])[0] as ApiResponseWithError
-        ).errors?.some((err) => err.code === "LEAGUE_API_AUTH")
+          Object.values(result.data ?? [{}])[0] as ApiResponseWithErrors
+        ).errors?.some((err) => err.code === ErrorCodes.LeagueApiAuth)
       )
         push("/auth");
     },
@@ -32,7 +34,7 @@ export default function UrqlWrapper({ children }: PropsWithChildren) {
     const ssr = ssrExchange();
     const client = createClient({
       url: process.env.NEXT_PUBLIC_LEAGUE_API ?? "",
-      exchanges: [authExchange, cacheExchange, ssr, fetchExchange],
+      exchanges: [cacheExchange, ssr, authExchange, fetchExchange],
       requestPolicy: "cache-and-network",
     });
 
