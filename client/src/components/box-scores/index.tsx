@@ -128,7 +128,7 @@ export default function BoxScores() {
   );
 
   const tableRef = useRef<HTMLTableElement>(null);
-  const maxWidth = tableRef.current?.getBoundingClientRect().width;
+  const tableWidth = tableRef.current?.getBoundingClientRect().width;
 
   const boxRanks = useMemo(
     () =>
@@ -138,6 +138,7 @@ export default function BoxScores() {
       ).sort((a, b) => (a.ALL.rank ?? 0) - (b.ALL.rank ?? 0)),
     [results]
   );
+  console.log(`:::BOXRANKS::: `, boxRanks);
 
   const table = useReactTable({
     columns,
@@ -151,14 +152,6 @@ export default function BoxScores() {
         rowA.getValue(columnId).rank < rowB.getValue(columnId).rank ? 1 : -1,
     },
   });
-  const headerGroups = useMemo(
-    () => table.getHeaderGroups(),
-    [table, boxRanks]
-  );
-  const tableRows = useMemo(
-    () => table.getRowModel().rows,
-    [table, boxRanks, sorting]
-  );
 
   const queryFetching = results.fetching;
   const queryIsSuccess = !!results.data?.getBoxScores.boxScores;
@@ -215,7 +208,7 @@ export default function BoxScores() {
         {queryIsSuccess && (
           <table ref={tableRef}>
             <thead className="text-left">
-              {headerGroups.map((headerGroup) => (
+              {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id} className="pt-10">
                   {headerGroup.headers.map((header, idx, arr) => (
                     <th
@@ -247,7 +240,7 @@ export default function BoxScores() {
               ))}
             </thead>
             <tbody className="">
-              {tableRows.map((row) => (
+              {table.getRowModel().rows.map((row) => (
                 <tr key={row.id}>
                   {row.getVisibleCells().map((cell, idx, arr) => (
                     <td
@@ -268,23 +261,25 @@ export default function BoxScores() {
       </div>
 
       {queryIsSuccess && (
-        <div style={{ maxWidth: maxWidth?.toFixed(0) + "px" }}>
+        <div style={{ maxWidth: tableWidth?.toFixed(0) + "px" }}>
           <p className="text-xs mt-1 ml-2">
-            {showMore && maxWidth ? (
+            {showMore && tableWidth ? (
               <span>
-                * The <code>ALL</code>, or "Overall" category indicates how a
-                team is performing across <em>all</em> categories as compared to
-                the other teams in the league. It's calculated by assigning a
-                score of 0-10 for each category based on how that category ranks
-                across the league. If the team ranks first in that category, a
-                score of <code>10</code> is given; if 2nd, <code>9</code>; and
-                so on, ending with <code>1</code> for 10th place (and/or 0 if
-                there is no value). Those scores then tallied up to make the
-                overall score for the week.{" "}
+                * The <code>ALL</code>, or &quot;Overall&quot; category
+                indicates how a team is performing across <em>all</em>{" "}
+                categories as compared to the other teams in the league.
+                It&apos;s calculated by assigning a score of 0-10 for each
+                category based on how that category ranks across the league. If
+                the team ranks first in that category, a score of{" "}
+                <code>10</code> is given; if 2nd, <code>9</code>; and so on,
+                ending with <code>1</code> for 10th place (and/or 0 if there is
+                no value). Those scores then tallied up to make the overall
+                score for the week.{" "}
               </span>
             ) : (
               <span>
-                * The <code>ALL</code>, or "Overall" category indicates...{" "}
+                * The <code>ALL</code>, or &quot;Overall&quot; category
+                indicates...{" "}
               </span>
             )}
             <ShowMoreButton />
