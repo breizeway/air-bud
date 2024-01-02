@@ -1,48 +1,45 @@
 "use client";
 
+import { classNames } from "@/utils";
 import Image from "next/image";
-import { useEffect, useRef } from "react";
-
-const INIT_NUM_DOTS = 3;
-const DEFAULT_MESSAGE = "Loading";
-const getDots = (numDots: number) =>
-  [...Array(numDots).keys()].map((_) => ".").join("");
+import { useEffect, useRef, useState } from "react";
 
 interface LoadingProps {
   isLoading: boolean;
   message?: string;
   className?: string;
 }
+const NUM_DOTS = 3;
 export default function Loading({
   isLoading,
-  message: propMessage,
+  message,
   className,
 }: LoadingProps) {
-  const message = propMessage ?? DEFAULT_MESSAGE;
-  const ref = useRef<HTMLSpanElement>(null);
-  useEffect(() => {
-    if (!isLoading) return;
+  const [dotIdx, _setDotIdx] = useState(-1);
+  const dotIdxRef = useRef(dotIdx);
+  const setDotIdx = (num: number) => {
+    _setDotIdx(num);
+    dotIdxRef.current = num;
+  };
 
-    let numDots = INIT_NUM_DOTS;
-    let incrementing = true;
+  useEffect(() => {
+    if (!isLoading || !message) return;
 
     const interval = setInterval(() => {
-      if (numDots === 3) incrementing = false;
-      if (numDots === 0) incrementing = true;
-
-      numDots = numDots + (incrementing ? 1 : -1);
-      const loadingMessage = message + getDots(numDots);
-
-      if (ref.current) ref.current.innerText = loadingMessage;
-    }, 400);
+      setDotIdx(dotIdxRef.current === NUM_DOTS - 1 ? 0 : dotIdxRef.current + 1);
+    }, 300);
 
     return () => clearInterval(interval);
-  }, [isLoading]);
+  }, [isLoading, message, setDotIdx]);
 
   if (!isLoading) return <></>;
 
   return (
-    <div className={"flex gap-2 items-center " + className ?? ""}>
+    <div
+      className={classNames("flex gap-2 items-center", {
+        [className ?? ""]: !!className,
+      })}
+    >
       <Image
         src="/loading.gif"
         width={0}
@@ -51,7 +48,22 @@ export default function Loading({
         alt="spinning basketball indicating a loading state"
         priority
       />
-      <span {...{ ref }}>{message + getDots(INIT_NUM_DOTS)}</span>
+      {!!message && (
+        <div className="flex items-end">
+          {message}
+          {[...Array(NUM_DOTS).keys()].map((_, idx) => (
+            <div
+              className={classNames({
+                "pb-[0.15em]": idx === dotIdx,
+                "pt-[0.15em]": idx !== dotIdx,
+              })}
+              key={idx}
+            >
+              .
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

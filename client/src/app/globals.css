@@ -31,3 +31,7 @@ body {
 input {
   @apply bg-beige-100;
 }
+
+code {
+  @apply bg-black bg-opacity-50 text-beige-100 rounded-sm px-[0.25em] mx-[0.1em];
+}

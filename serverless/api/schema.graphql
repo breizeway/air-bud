@@ -21,6 +21,7 @@ type GetBoxScoresResult {
   success: Boolean!
   errors: [Error]!
   boxScores: [BoxScore!]
+  currentMatchupPeriod: Int
 }
 
 type SetLeagueAuthResult {

@@ -46,6 +46,7 @@ export const rankQuery = graphql(`
       boxScores {
         ...RankQueryBoxScore
       }
+      currentMatchupPeriod
     }
   }
 `);

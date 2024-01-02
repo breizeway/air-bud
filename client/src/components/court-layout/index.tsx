@@ -12,14 +12,14 @@ export default function CourtLayout({ children }: PropsWithChildren) {
       <header className={styles.top}>
         <LeagueLogo />
 
-        <div className="flex gap-1 items-center grow">
+        {/* <div className="flex gap-1 items-center grow">
           <RemImage
             src="/construction-bar.gif"
             alt='rotating "under construction" sign'
             wRem={8.259625}
             hRem={2.25}
           />
-        </div>
+        </div> */}
         <EspnLogo />
       </header>
       <footer className={styles.bottom}>
@@ -47,7 +47,6 @@ export default function CourtLayout({ children }: PropsWithChildren) {
 function LeagueLogo() {
   return (
     <div className={styles.courtLogo}>
-      {/* // + " " + deatheMaachFont.className}> */}
       <Link href="/" className={styles.leagueLogo}>
         <span className={styles.courtLogoStretch}>BALL IS LYF3</span>
       </Link>

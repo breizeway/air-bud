@@ -4,29 +4,27 @@ import BoxScores from "@/components/box-scores";
 
 export default function Home() {
   return (
-    <section className="flex flex-col gap-4">
-      <div>
-        <div className={styles.welcome}>
-          <h1 className="mt-0 font-semibold">
-            <div className={styles.welcomeGifBg}>
-              <RemImage
-                src={`/welcome.gif`}
-                alt="low res orange animated welcome text with a spinning basketball where the 'o' would be"
-                wRem={16}
-                hRem={2.633125}
-              />
-            </div>
-            to the official internet home of the{" "}
-            <span className="text-theme whitespace-nowrap">Ball is Lyf3</span>{" "}
-            fantasy basketball league!!!
-          </h1>
-        </div>
-        <p className="tracking-widest p-2 mt-4 paint">
-          Hi! If you are a member of the ESPN fantasy basketball league
-          &quot;Ball is Lyf3&quot; and want to know all about the stats and how
-          the teams are doing - you have come to the right place.
-        </p>
+    <section className="flex flex-col gap-6">
+      <div className={styles.welcome}>
+        <h1 className="my-0 font-semibold">
+          <div className={styles.welcomeGifBg}>
+            <RemImage
+              src={`/welcome.gif`}
+              alt="low res orange animated welcome text with a spinning basketball where the 'o' would be"
+              wRem={16}
+              hRem={2.633125}
+            />
+          </div>
+          to the official internet home of the{" "}
+          <span className="text-theme whitespace-nowrap">Ball is Lyf3</span>{" "}
+          fantasy basketball league!!!
+        </h1>
       </div>
+      <p className="tracking-widest p-2 paint">
+        Hi! If you are a member of the ESPN fantasy basketball league &quot;Ball
+        is Lyf3&quot; and want to know all about the stats and how the teams are
+        doing - you have come to the right place.
+      </p>
       <div>
         <BoxScores />
       </div>

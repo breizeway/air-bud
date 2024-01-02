@@ -21,6 +21,7 @@ export default function UrqlWrapper({ children }: PropsWithChildren) {
   const authExchange = mapExchange({
     onResult(result) {
       if (
+        !result.stale &&
         (
           Object.values(result.data ?? [{}])[0] as ApiResponseWithErrors
         ).errors?.some((err) => err.code === ErrorCodes.LeagueApiAuth)
