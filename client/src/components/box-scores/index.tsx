@@ -138,7 +138,6 @@ export default function BoxScores() {
       ).sort((a, b) => (a.ALL.rank ?? 0) - (b.ALL.rank ?? 0)),
     [results]
   );
-  console.log(`:::BOXRANKS::: `, boxRanks);
 
   const table = useReactTable({
     columns,
