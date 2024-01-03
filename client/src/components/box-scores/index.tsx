@@ -159,9 +159,9 @@ export default function BoxScores() {
 
   return (
     <div className="w-fit max-w-full">
-      <div className="flex flex-wrap gap-1 mb-1 justify-between items-baseline font-semibold">
+      <div className="flex flex-wrap gap-1 mb-2 justify-between items-baseline font-semibold">
         <div className="flex gap-2">
-          <span className="text-xl">Box Score Rankings</span>
+          <span className="text-2xl">Box Score Rankings</span>
           <Loading isLoading={!!results.data && results.fetching} />
         </div>
         {currentMatchupPeriod && (
@@ -268,20 +268,22 @@ export default function BoxScores() {
       </div>
 
       {queryIsSuccess && (
-        <div style={{ maxWidth: tableWidth?.toFixed(0) + "px" }}>
-          <p className="text-xs mt-1 ml-2">
+        <div
+          style={{ maxWidth: tableWidth?.toFixed(0) + "px" }}
+          className="text-xs p-2"
+        >
+          <p>
             {showMore && tableWidth ? (
               <span>
                 * The <code>ALL</code>, or &quot;Overall&quot; category
-                indicates how a team is performing across all categories
+                indicates a team&apos;s performance across all categories
                 relative to other teams in the league. It&apos;s calculated by
-                assigning a score of 0-10 to each category based on how that
-                stat compares to other teams in the same category. If the team
-                ranks first in that category, a score of <code>10</code> is
-                given; if 2nd, <code>9</code>; and so on, ending with{" "}
-                <code>1</code> for 10th place (or 0 if there is no value). Those
-                scores are then tallied up to make the overall score for the
-                week.{" "}
+                assigning a score from 0-10 to each of the nine categories. If
+                the team ranks first in that category, a score of{" "}
+                <code>10</code> is given; if 2nd, <code>9</code>; and so on,
+                ending with <code>1</code> for 10th place (or 0 if there is no
+                value). Those scores are then tallied up to make the overall
+                score for the week.{" "}
               </span>
             ) : (
               <span>
