@@ -2,7 +2,7 @@
 
 import { useQuery } from "@urql/next";
 import Loading from "../loading";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { MouseEventHandler, useEffect, useMemo, useRef, useState } from "react";
 import {
   BoxStatCategories,
   RankedBoxScore,
@@ -165,29 +165,6 @@ export default function BoxScores() {
   const queryIsSuccess = !!results.data?.getBoxScores.boxScores;
   const queryFetchingInitialData = queryFetching && !queryIsSuccess;
 
-  const Refetch = () => {
-    const fetching =
-      !!results.data &&
-      (results.fetching || (results.stale && manualRefetchInFlight));
-    const className = "inline mb-[0.15em] text-xl";
-
-    return (
-      <button className="px-2" onClick={refetch} disabled={fetching}>
-        {fetching ? (
-          <Loading isLoading={fetching} {...{ className }} />
-        ) : (
-          <ScalingImage
-            alt="circular refresh arrow"
-            src="/icons/refresh-arrow.svg"
-            hEm={1}
-            wEm={1}
-            {...{ className }}
-          />
-        )}
-      </button>
-    );
-  };
-
   return (
     <div className="w-fit max-w-full">
       <div className="flex flex-wrap gap-1 mb-2 justify-between items-baseline font-semibold">
@@ -196,7 +173,13 @@ export default function BoxScores() {
         </div>
         {currentMatchupPeriod && (
           <div className="flex gap-2 items-center">
-            <Refetch />
+            <RefetchButton
+              isFetching={
+                !!results.data &&
+                (results.fetching || (results.stale && manualRefetchInFlight))
+              }
+              refetch={refetch}
+            />
             <button
               className="plaque"
               onClick={() => setMatchupPeriodOffset(matchupPeriodOffset - 1)}
@@ -329,3 +312,29 @@ export default function BoxScores() {
     </div>
   );
 }
+
+const RefetchButton = ({
+  isFetching,
+  refetch,
+}: {
+  isFetching: boolean;
+  refetch: MouseEventHandler<HTMLButtonElement>;
+}) => {
+  const className = "inline mb-[0.15em] text-xl";
+
+  return (
+    <button className="px-2" onClick={refetch} disabled={isFetching}>
+      {isFetching ? (
+        <Loading isLoading={isFetching} {...{ className }} />
+      ) : (
+        <ScalingImage
+          alt="circular refresh arrow"
+          src="/icons/refresh-arrow.svg"
+          hEm={1}
+          wEm={1}
+          {...{ className }}
+        />
+      )}
+    </button>
+  );
+};
