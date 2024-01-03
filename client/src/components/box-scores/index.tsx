@@ -161,7 +161,7 @@ export default function BoxScores() {
     <div className="w-fit max-w-full">
       <div className="flex flex-wrap gap-1 mb-1 justify-between items-baseline font-semibold">
         <div className="flex gap-2">
-          <span className="text-2xl">Box Score Rankings</span>
+          <span className="text-xl">Box Score Rankings</span>
           <Loading isLoading={!!results.data && results.fetching} />
         </div>
         {currentMatchupPeriod && (
@@ -179,7 +179,9 @@ export default function BoxScores() {
                 Week {currentMatchupPeriod + matchupPeriodOffset}
               </span>
               {!matchupPeriodOffset && (
-                <span className="text-xs mt-[-0.5em]">(current)</span>
+                <span className="text-xs mt-[-0.5em] font-normal">
+                  (current)
+                </span>
               )}
             </div>
             <button

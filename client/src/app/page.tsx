@@ -20,7 +20,7 @@ export default function Home() {
           fantasy basketball league!!!
         </h1>
       </div>
-      <p className="tracking-widest p-2 paint">
+      <p className="tracking-widest font-semibold text-lg border-2 border-black px-3 py-1">
         Hi! If you are a member of the ESPN fantasy basketball league &quot;Ball
         is Lyf3&quot; and want to know all about the stats and how the teams are
         doing - you have come to the right place.
