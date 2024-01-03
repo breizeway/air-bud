@@ -269,11 +269,13 @@ export default function BoxScores() {
 
       {queryIsSuccess && (
         <div
-          style={{ maxWidth: tableWidth?.toFixed(0) + "px" }}
+          style={
+            tableWidth ? { maxWidth: (tableWidth / 16).toFixed(0) + "rem" } : {}
+          }
           className="text-xs p-2"
         >
           <p>
-            {showMore && tableWidth ? (
+            {showMore ? (
               <span>
                 * The <code>ALL</code>, or &quot;Overall&quot; category
                 indicates a team&apos;s performance across all categories
