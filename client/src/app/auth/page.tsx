@@ -5,7 +5,7 @@ import RemImage from "@/components/rem-image";
 import { graphql } from "@/gql";
 import { useMutation } from "@urql/next";
 import { useRouter } from "next/navigation";
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useRef } from "react";
 
 const LEAGUE_ID = process.env.NEXT_PUBLIC_LEAGUE_ID;
 
@@ -25,7 +25,7 @@ export default function Auth() {
       }
     `)
   );
-  // console.log(`:::SETLEAGUEAUTHSTATUS::: `, setLeagueAuthStatus.fetching);
+
   const ref = useRef<HTMLFormElement>(null);
   async function onSubmit(e: FormEvent) {
     e.preventDefault();

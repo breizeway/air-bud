@@ -1,0 +1,7 @@
+.tableContainer {
+  /* hack to fix scrollbar under stickies in safari 
+     https://stackoverflow.com/questions/67076468/why-scrollbar-is-behind-sticky-elements-in-ios-safari
+  */
+
+  -webkit-transform: translateZ(0);
+}

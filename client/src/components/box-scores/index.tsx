@@ -2,7 +2,7 @@
 
 import { useQuery } from "@urql/next";
 import Loading from "../loading";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   BoxStatCategories,
   RankedBoxScore,
@@ -20,6 +20,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { classNames } from "@/utils";
+import styles from "./box-scores.module.css";
 
 declare module "@tanstack/table-core" {
   interface SortingFns {
@@ -191,7 +192,12 @@ export default function BoxScores() {
         )}
       </div>
 
-      <div className="paint font-mono text-sm overflow-x-scroll w-fit max-w-full">
+      <div
+        className={classNames(
+          "paint font-mono text-sm w-fit max-w-full overflow-x-scroll",
+          styles.tableContainer
+        )}
+      >
         <Loading
           isLoading={queryFetchingInitialData}
           message="Loading"
