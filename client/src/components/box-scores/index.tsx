@@ -271,15 +271,15 @@ export default function BoxScores() {
             {showMore && tableWidth ? (
               <span>
                 * The <code>ALL</code>, or &quot;Overall&quot; category
-                indicates how a team is performing across <em>all</em>{" "}
-                categories as compared to the other teams in the league.
-                It&apos;s calculated by assigning a score of 0-10 for each
-                category based on how that category ranks across the league. If
-                the team ranks first in that category, a score of{" "}
-                <code>10</code> is given; if 2nd, <code>9</code>; and so on,
-                ending with <code>1</code> for 10th place (and/or 0 if there is
-                no value). Those scores then tallied up to make the overall
-                score for the week.{" "}
+                indicates how a team is performing across all categories
+                relative to other teams in the league. It&apos;s calculated by
+                assigning a score of 0-10 to each category based on how that
+                stat compares to other teams in the same category. If the team
+                ranks first in that category, a score of <code>10</code> is
+                given; if 2nd, <code>9</code>; and so on, ending with{" "}
+                <code>1</code> for 10th place (or 0 if there is no value). Those
+                scores are then tallied up to make the overall score for the
+                week.{" "}
               </span>
             ) : (
               <span>
