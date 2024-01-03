@@ -1,8 +1,8 @@
 "use client";
 
 import { classNames } from "@/utils";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import ScalingImage from "../scaling-image";
 
 interface LoadingProps {
   isLoading: boolean;
@@ -34,36 +34,44 @@ export default function Loading({
 
   if (!isLoading) return <></>;
 
-  return (
+  return !message ? (
+    <ScalingImage
+      src="/loading.gif"
+      wEm={1}
+      hEm={1}
+      className={classNames({
+        [className ?? ""]: !!className,
+      })}
+      alt="spinning basketball indicating a loading state"
+      priority
+    />
+  ) : (
     <div
-      className={classNames("flex gap-2 items-center", {
+      className={classNames("gap-2 flex items-center", {
         [className ?? ""]: !!className,
       })}
     >
-      <Image
+      <ScalingImage
         src="/loading.gif"
-        width={0}
-        height={0}
-        style={{ width: "1.5em", height: "1.5em" }}
+        wEm={1.5}
+        hEm={1.5}
         alt="spinning basketball indicating a loading state"
         priority
       />
-      {!!message && (
-        <div className="flex items-end">
-          {message}
-          {[...Array(NUM_DOTS).keys()].map((_, idx) => (
-            <div
-              className={classNames({
-                "pb-[0.15em]": idx === dotIdx,
-                "pt-[0.15em]": idx !== dotIdx,
-              })}
-              key={idx}
-            >
-              .
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="flex items-end">
+        {message}
+        {[...Array(NUM_DOTS).keys()].map((_, idx) => (
+          <div
+            className={classNames({
+              "pb-[0.15em]": idx === dotIdx,
+              "pt-[0.15em]": idx !== dotIdx,
+            })}
+            key={idx}
+          >
+            .
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

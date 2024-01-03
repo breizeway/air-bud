@@ -24,8 +24,8 @@ body {
   overscroll-behavior: none;
 }
 
-.button {
-  @apply plaque px-2 disabled:cursor-not-allowed;
+button {
+  @apply disabled:cursor-not-allowed px-2;
 }
 
 input {

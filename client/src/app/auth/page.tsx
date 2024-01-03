@@ -1,7 +1,7 @@
 "use client";
 
 import Loading from "@/components/loading";
-import RemImage from "@/components/rem-image";
+import ScalingImage from "@/components/scaling-image";
 import { graphql } from "@/gql";
 import { useMutation } from "@urql/next";
 import { useRouter } from "next/navigation";
@@ -46,14 +46,14 @@ export default function Auth() {
 
   return (
     <section>
-      <RemImage
+      <ScalingImage
         src="/nodding-player.gif"
         alt="cartoon basketball player holding a basketball and nodding"
         wRem={10}
         hRem={13.4475}
         className="float-left"
       />
-      <RemImage
+      <ScalingImage
         src="/timeout-ref.gif"
         alt="cartoon basketball referee with their foot on a basketball making a timeout motion with their hands"
         wRem={7.5}
@@ -64,7 +64,7 @@ export default function Auth() {
       <strong className="text-lg">
         You&apos;re seeing this page because the credentials this web site uses
         to access ESPN league data have expired or are incorrect.{" "}
-        <RemImage
+        <ScalingImage
           src="/skull.gif"
           alt="green rotating skull and crossbones"
           wRem={2}
@@ -106,7 +106,7 @@ export default function Auth() {
             isn&apos;t illegal or anything.)
           </li>
         </ol>
-        <RemImage
+        <ScalingImage
           src="/thank-you.gif"
           alt="animated thank you text"
           wRem={12.5}
@@ -143,13 +143,12 @@ export default function Auth() {
           <div>
             <button
               type="submit"
-              className="button mt-4"
+              className="plaque mt-4"
               disabled={setLeagueAuthStatus.fetching}
               aria-disabled={setLeagueAuthStatus.fetching}
             >
               Send
             </button>
-            {/* TODO NEXT: 1) add delay to loading 2) make button baige design a tw class */}
           </div>
         </form>
       </strong>

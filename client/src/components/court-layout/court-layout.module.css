@@ -17,6 +17,7 @@
   content: "";
   background-image: url("/wood-90.svg");
   background-size: 24rem;
+  /* filter: brightness(0.3) saturate(0.7) contrast(1.3); */
 }
 
 .main {

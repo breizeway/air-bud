@@ -2,7 +2,7 @@
 
 import { useQuery } from "@urql/next";
 import Loading from "../loading";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   BoxStatCategories,
   RankedBoxScore,
@@ -21,6 +21,7 @@ import {
 } from "@tanstack/react-table";
 import { classNames } from "@/utils";
 import styles from "./box-scores.module.css";
+import ScalingImage from "../scaling-image";
 
 declare module "@tanstack/table-core" {
   interface SortingFns {
@@ -105,10 +106,11 @@ const getCellClasses = (idx: number, length: number) =>
     "sticky left-0 z-10 bg-black pl-4": !idx,
     "pr-4": idx === length - 1,
   });
+let manualRefetchInFlight = false;
 
 export default function BoxScores() {
   const [matchupPeriodOffset, _setMatchupPeriodOffset] = useState<number>(0);
-  const [results] = useQuery({
+  const [results, _refetch] = useQuery({
     query: rankQuery,
     variables: {
       matchupPeriodOffset,
@@ -119,7 +121,13 @@ export default function BoxScores() {
     if (offset <= 0 && (currentMatchupPeriod ?? 0) + offset > 0)
       _setMatchupPeriodOffset(offset);
   };
-
+  const refetch = async () => {
+    manualRefetchInFlight = true;
+    _refetch();
+  };
+  useEffect(() => {
+    if (!results.stale) manualRefetchInFlight = false;
+  }, [results]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [showMore, setShowMore] = useState<boolean>(false);
   const ShowMoreButton = () => (
@@ -157,17 +165,40 @@ export default function BoxScores() {
   const queryIsSuccess = !!results.data?.getBoxScores.boxScores;
   const queryFetchingInitialData = queryFetching && !queryIsSuccess;
 
+  const Refetch = () => {
+    const fetching =
+      !!results.data &&
+      (results.fetching || (results.stale && manualRefetchInFlight));
+    const className = "inline mb-[0.15em] text-xl";
+
+    return (
+      <button className="px-2" onClick={refetch} disabled={fetching}>
+        {fetching ? (
+          <Loading isLoading={fetching} {...{ className }} />
+        ) : (
+          <ScalingImage
+            alt="circular refresh arrow"
+            src="/icons/refresh-arrow.svg"
+            hEm={1}
+            wEm={1}
+            {...{ className }}
+          />
+        )}
+      </button>
+    );
+  };
+
   return (
     <div className="w-fit max-w-full">
       <div className="flex flex-wrap gap-1 mb-2 justify-between items-baseline font-semibold">
         <div className="flex gap-2">
           <span className="text-2xl">Box Score Rankings</span>
-          <Loading isLoading={!!results.data && results.fetching} />
         </div>
         {currentMatchupPeriod && (
           <div className="flex gap-2 items-center">
+            <Refetch />
             <button
-              className="button"
+              className="plaque"
               onClick={() => setMatchupPeriodOffset(matchupPeriodOffset - 1)}
             >
               &#9668;
@@ -185,7 +216,7 @@ export default function BoxScores() {
               )}
             </div>
             <button
-              className="button"
+              className="plaque"
               onClick={() => setMatchupPeriodOffset(matchupPeriodOffset + 1)}
             >
               &#9658;
@@ -269,9 +300,7 @@ export default function BoxScores() {
 
       {queryIsSuccess && (
         <div
-          style={
-            tableWidth ? { maxWidth: (tableWidth / 16).toFixed(0) + "rem" } : {}
-          }
+          style={tableWidth ? { maxWidth: tableWidth / 16 + "rem" } : {}}
           className="text-xs p-2"
         >
           <p>

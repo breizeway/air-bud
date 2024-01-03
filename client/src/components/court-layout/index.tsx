@@ -1,7 +1,7 @@
 import { PropsWithChildren } from "react";
 import styles from "./court-layout.module.css";
 import Link from "next/link";
-import RemImage from "../rem-image";
+import ScalingImage from "../scaling-image";
 import { classNames } from "@/utils";
 
 const LEAGUE_ID = process.env.NEXT_PUBLIC_LEAGUE_ID;
@@ -13,7 +13,7 @@ export default function CourtLayout({ children }: PropsWithChildren) {
         <LeagueLogo />
 
         {/* <div className="flex gap-1 items-center grow">
-          <RemImage
+          <ScalingImage
             src="/construction-bar.gif"
             alt='rotating "under construction" sign'
             wRem={8.259625}
@@ -28,7 +28,7 @@ export default function CourtLayout({ children }: PropsWithChildren) {
           href="https://github.com/breizeway/air-bud"
           className="block rounded-full overflow-hidden min-w-fit"
         >
-          <RemImage
+          <ScalingImage
             src="/github-mark.svg"
             alt="github logo"
             wRem={1.75}

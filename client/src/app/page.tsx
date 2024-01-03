@@ -1,5 +1,5 @@
 import styles from "./home.module.css";
-import RemImage from "@/components/rem-image";
+import ScalingImage from "@/components/scaling-image";
 import BoxScores from "@/components/box-scores";
 
 export default function Home() {
@@ -8,7 +8,7 @@ export default function Home() {
       <div className={styles.welcome}>
         <h1 className="my-0 font-semibold">
           <div className={styles.welcomeGifBg}>
-            <RemImage
+            <ScalingImage
               src={`/welcome.gif`}
               alt="low res orange animated welcome text with a spinning basketball where the 'o' would be"
               wRem={16}
