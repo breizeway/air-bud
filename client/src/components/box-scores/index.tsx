@@ -97,6 +97,18 @@ const columns = [
     cell: (info) => <span>{info.getValue().value}</span>,
     sortingFn,
   }),
+  columnHelper.accessor(BoxStatCategories.ALL, {
+    header: "RANK",
+    id: "ALL_rank",
+    cell: (info) => {
+      const rank = info.getValue().rank;
+      const place = `${rank}${
+        rank === 1 ? "st" : rank === 2 ? "nd" : rank === 3 ? "rd" : "th"
+      }`;
+      return <span>{place}</span>;
+    },
+    sortingFn,
+  }),
 ];
 
 const defaultBoxRanks: RankedBoxScores = {};
@@ -292,12 +304,12 @@ export default function BoxScores() {
                 * The <code>ALL</code>, or &quot;Overall&quot; category
                 indicates a team&apos;s performance across all categories
                 relative to other teams in the league. It&apos;s calculated by
-                assigning a score from 0-10 to each of the nine categories. If
-                the team ranks first in that category, a score of{" "}
-                <code>10</code> is given; if 2nd, <code>9</code>; and so on,
-                ending with <code>1</code> for 10th place (or 0 if there is no
-                value). Those scores are then tallied up to make the overall
-                score for the week.{" "}
+                assigning a score from 0-10 to each of the nine categories. If a
+                team ranks first in that category, a score of <code>10</code> is
+                given; if 2nd, <code>9</code>; and so on, ending with{" "}
+                <code>1</code> for 10th place (or 0 if there is no value). Those
+                scores are then tallied up to make the overall score for the
+                week.{" "}
               </span>
             ) : (
               <span>

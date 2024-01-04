@@ -18,8 +18,6 @@ a {
 body {
   font-family: "Times New Roman", Times, serif;
   color: var(--foreground-color);
-  font-smooth: never;
-  -webkit-font-smoothing: none;
   background-color: var(--theme-color);
   overscroll-behavior: none;
 }
