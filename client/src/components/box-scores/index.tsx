@@ -2,15 +2,27 @@
 
 import { useQuery } from "@urql/next";
 import Loading from "../loading";
-import { MouseEventHandler, useEffect, useMemo, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  HTMLInputTypeAttribute,
+  MouseEventHandler,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   BoxStatCategories,
   RankedBoxScore,
   RankedBoxScores,
+  TeamStat,
   getRankedBoxScores,
 } from "./utils";
 import { rankQuery } from "@/components/box-scores/queries";
 import {
+  CellContext,
+  HeaderContext,
   SortingFn,
   SortingState,
   createColumnHelper,
@@ -22,6 +34,8 @@ import {
 import { classNames } from "@/utils";
 import styles from "./box-scores.module.css";
 import ScalingImage from "../scaling-image";
+import Popover from "../popover";
+import useClient from "@/utils/use-client";
 
 declare module "@tanstack/table-core" {
   interface SortingFns {
@@ -29,98 +43,28 @@ declare module "@tanstack/table-core" {
   }
 }
 
+interface TableOptions {
+  showDetails: boolean;
+}
+const formatRank = (rank: number | undefined) =>
+  rank
+    ? `${rank}${
+        rank === 1 ? "st" : rank === 2 ? "nd" : rank === 3 ? "rd" : "th"
+      }`
+    : null;
 const columnHelper = createColumnHelper<RankedBoxScore>();
 const sortingFn = "byRank";
-const columns = [
-  columnHelper.accessor("teamName", {
-    header: "Team",
-    cell: (info) => info.getValue(),
-  }),
-  columnHelper.accessor(BoxStatCategories["FG%"], {
-    header: "FG%",
-    cell: (info) => (
-      <span>
-        {info
-          .getValue()
-          .value.toFixed(3)
-          .slice(info.getValue().value < 1 ? 1 : 0)}
-      </span>
-    ),
-    sortingFn,
-  }),
-  columnHelper.accessor(BoxStatCategories["3PTM"], {
-    header: "3PM",
-    cell: (info) => <span>{info.getValue().value}</span>,
-    sortingFn,
-  }),
-  columnHelper.accessor(BoxStatCategories.REB, {
-    header: "REB",
-    cell: (info) => <span>{info.getValue().value}</span>,
-    sortingFn,
-  }),
-  columnHelper.accessor(BoxStatCategories.AST, {
-    header: "AST",
-    cell: (info) => <span>{info.getValue().value}</span>,
-    sortingFn,
-  }),
-  columnHelper.accessor(BoxStatCategories.STL, {
-    header: "STL",
-    cell: (info) => <span>{info.getValue().value}</span>,
-    sortingFn,
-  }),
-  columnHelper.accessor(BoxStatCategories.BLK, {
-    header: "BLK",
-    cell: (info) => <span>{info.getValue().value}</span>,
-    sortingFn,
-  }),
-  columnHelper.accessor(BoxStatCategories.TO, {
-    header: "TO",
-    cell: (info) => <span>{info.getValue().value}</span>,
-    sortingFn,
-  }),
-  columnHelper.accessor(BoxStatCategories.PF, {
-    header: "PF",
-    cell: (info) => <span>{info.getValue().value}</span>,
-    sortingFn,
-  }),
-  columnHelper.accessor(BoxStatCategories.PTS, {
-    header: "PTS",
-    cell: (info) => <span>{info.getValue().value}</span>,
-    sortingFn,
-  }),
-  columnHelper.accessor(BoxStatCategories.ALL, {
-    header: () => (
-      <span>
-        ALL<sup className="text-xs">*</sup>
-      </span>
-    ),
-    cell: (info) => <span>{info.getValue().value}</span>,
-    sortingFn,
-  }),
-  columnHelper.accessor(BoxStatCategories.ALL, {
-    header: "RANK",
-    id: "ALL_rank",
-    cell: (info) => {
-      const rank = info.getValue().rank;
-      const place = `${rank}${
-        rank === 1 ? "st" : rank === 2 ? "nd" : rank === 3 ? "rd" : "th"
-      }`;
-      return <span>{place}</span>;
-    },
-    sortingFn,
-  }),
-];
-
 const defaultBoxRanks: RankedBoxScores = {};
 const getCellClasses = (idx: number, length: number) =>
-  classNames("p-2", {
+  classNames("px-2", {
     "text-right": !!idx,
     "sticky left-0 z-10 bg-black pl-4": !idx,
     "pr-4": idx === length - 1,
   });
-let manualRefetchInFlight = false;
 
 export default function BoxScores() {
+  const { window } = useClient();
+  const localStorage = window?.localStorage;
   const [matchupPeriodOffset, _setMatchupPeriodOffset] = useState<number>(0);
   const [results, _refetch] = useQuery({
     query: rankQuery,
@@ -133,20 +77,51 @@ export default function BoxScores() {
     if (offset <= 0 && (currentMatchupPeriod ?? 0) + offset > 0)
       _setMatchupPeriodOffset(offset);
   };
+  const manualRefetchInFlight = useRef(false);
   const refetch = async () => {
-    manualRefetchInFlight = true;
+    manualRefetchInFlight.current = true;
     _refetch();
   };
   useEffect(() => {
-    if (!results.stale) manualRefetchInFlight = false;
+    if (!results.stale) manualRefetchInFlight.current = false;
   }, [results]);
+
   const [sorting, setSorting] = useState<SortingState>([]);
+
   const [showMore, setShowMore] = useState<boolean>(false);
-  const ShowMoreButton = () => (
-    <button className="font-bold" onClick={() => setShowMore(!showMore)}>
-      Show {showMore ? "less" : "more"}
-    </button>
-  );
+
+  const optionsLsKey = "boxScoreRankingsOptions";
+  const [options, _setOptions] = useState<TableOptions>({
+    showDetails: false,
+  });
+  useEffect(() => {
+    const optionsFromStorage = localStorage?.getItem("boxScoreRankingsOptions");
+    if (optionsFromStorage) {
+      _setOptions(JSON.parse(optionsFromStorage));
+    }
+  }, [localStorage]);
+  const setOptions = (options: TableOptions) => {
+    _setOptions(options);
+    localStorage?.setItem(optionsLsKey, JSON.stringify(options));
+  };
+  const registerOption = (
+    name: keyof TableOptions,
+    inputType: HTMLInputTypeAttribute | undefined = undefined
+  ) => ({
+    name,
+    [inputType === "checkbox" ? "checked" : "value"]: options[name],
+    onChange: (event: ChangeEvent<HTMLInputElement>) => {
+      const newOptions = {
+        ...options,
+      };
+      if (inputType === "checkbox") {
+        Object.assign(newOptions, { [name]: event.target.checked });
+      } else {
+        Object.assign(newOptions, { [name]: event.target.value });
+      }
+      setOptions(newOptions);
+    },
+  });
 
   const tableRef = useRef<HTMLTableElement>(null);
   const tableWidth = tableRef.current?.getBoundingClientRect().width;
@@ -159,6 +134,240 @@ export default function BoxScores() {
       ).sort((a, b) => (a.ALL.rank ?? 0) - (b.ALL.rank ?? 0)),
     [results]
   );
+
+  const columns = useMemo(() => {
+    return [
+      columnHelper.accessor(BoxStatCategories["ALL"], {
+        id: "teamName",
+        header: (info) => (
+          <Cell
+            primary={
+              <span>
+                {"Team"}
+                {<SortSymbol {...{ info }} />}
+              </span>
+            }
+          />
+        ),
+        cell: (info) => (
+          <Cell
+            primary={<span>{info.getValue().teamName}</span>}
+            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            showDetails={options.showDetails}
+          />
+        ),
+        sortingFn,
+      }),
+      columnHelper.accessor(BoxStatCategories["FG%"], {
+        header: (info) => (
+          <Cell
+            primary={
+              <span>
+                {"FG%"}
+                {<SortSymbol {...{ info }} />}
+              </span>
+            }
+          />
+        ),
+        cell: (info) => (
+          <Cell
+            primary={
+              <span>
+                {info
+                  .getValue()
+                  .value.toFixed(3)
+                  .slice(info.getValue().value < 1 ? 1 : 0)}
+              </span>
+            }
+            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            showDetails={options.showDetails}
+          />
+        ),
+        sortingFn,
+      }),
+      columnHelper.accessor(BoxStatCategories["3PTM"], {
+        header: (info) => (
+          <Cell
+            primary={
+              <span>
+                {"3PM"}
+                {<SortSymbol {...{ info }} />}
+              </span>
+            }
+          />
+        ),
+        cell: (info) => (
+          <Cell
+            primary={<span>{info.getValue().value}</span>}
+            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            showDetails={options.showDetails}
+          />
+        ),
+        sortingFn,
+      }),
+      columnHelper.accessor(BoxStatCategories.REB, {
+        header: (info) => (
+          <Cell
+            primary={
+              <span>
+                {"REB"}
+                {<SortSymbol {...{ info }} />}
+              </span>
+            }
+          />
+        ),
+        cell: (info) => (
+          <Cell
+            primary={<span>{info.getValue().value}</span>}
+            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            showDetails={options.showDetails}
+          />
+        ),
+        sortingFn,
+      }),
+      columnHelper.accessor(BoxStatCategories.AST, {
+        header: (info) => (
+          <Cell
+            primary={
+              <span>
+                {"AST"}
+                {<SortSymbol {...{ info }} />}
+              </span>
+            }
+          />
+        ),
+        cell: (info) => (
+          <Cell
+            primary={<span>{info.getValue().value}</span>}
+            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            showDetails={options.showDetails}
+          />
+        ),
+        sortingFn,
+      }),
+      columnHelper.accessor(BoxStatCategories.STL, {
+        header: (info) => (
+          <Cell
+            primary={
+              <span>
+                {"STL"}
+                {<SortSymbol {...{ info }} />}
+              </span>
+            }
+          />
+        ),
+        cell: (info) => (
+          <Cell
+            primary={<span>{info.getValue().value}</span>}
+            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            showDetails={options.showDetails}
+          />
+        ),
+        sortingFn,
+      }),
+      columnHelper.accessor(BoxStatCategories.BLK, {
+        header: (info) => (
+          <Cell
+            primary={
+              <span>
+                {"BLK"}
+                {<SortSymbol {...{ info }} />}
+              </span>
+            }
+          />
+        ),
+        cell: (info) => (
+          <Cell
+            primary={<span>{info.getValue().value}</span>}
+            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            showDetails={options.showDetails}
+          />
+        ),
+        sortingFn,
+      }),
+      columnHelper.accessor(BoxStatCategories.TO, {
+        header: (info) => (
+          <Cell
+            primary={
+              <span>
+                {"TO"}
+                {<SortSymbol {...{ info }} />}
+              </span>
+            }
+          />
+        ),
+        cell: (info) => (
+          <Cell
+            primary={<span>{info.getValue().value}</span>}
+            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            showDetails={options.showDetails}
+          />
+        ),
+        sortingFn,
+      }),
+      columnHelper.accessor(BoxStatCategories.PF, {
+        header: (info) => (
+          <Cell
+            primary={
+              <span>
+                {"PF"}
+                {<SortSymbol {...{ info }} />}
+              </span>
+            }
+          />
+        ),
+        cell: (info) => (
+          <Cell
+            primary={<span>{info.getValue().value}</span>}
+            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            showDetails={options.showDetails}
+          />
+        ),
+        sortingFn,
+      }),
+      columnHelper.accessor(BoxStatCategories.PTS, {
+        header: (info) => (
+          <Cell
+            primary={
+              <span>
+                {"PTS"}
+                {<SortSymbol {...{ info }} />}
+              </span>
+            }
+          />
+        ),
+        cell: (info) => (
+          <Cell
+            primary={<span>{info.getValue().value}</span>}
+            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            showDetails={options.showDetails}
+          />
+        ),
+        sortingFn,
+      }),
+      columnHelper.accessor(BoxStatCategories.ALL, {
+        header: (info) => (
+          <Cell
+            primary={
+              <span>
+                {"ALL"}
+                <sup className="text-xs">*</sup>
+                {<SortSymbol {...{ info }} />}
+              </span>
+            }
+          />
+        ),
+        cell: (info) => (
+          <Cell
+            primary={<span>{info.getValue().value}</span>}
+            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            showDetails={options.showDetails}
+          />
+        ),
+        sortingFn,
+      }),
+    ];
+  }, [options.showDetails]);
 
   const table = useReactTable({
     columns,
@@ -179,43 +388,88 @@ export default function BoxScores() {
 
   return (
     <div className="w-fit max-w-full">
-      <div className="flex flex-wrap gap-1 mb-2 justify-between items-baseline font-semibold">
-        <div className="flex gap-2">
-          <span className="text-2xl">Box Score Rankings</span>
-        </div>
+      <div className="flex flex-wrap gap-2 mb-2 items-center font-semibold">
+        <span className="text-2xl ml-2">Box Score Rankings</span>
+
         {currentMatchupPeriod && (
-          <div className="flex gap-2 items-center">
-            <RefetchButton
-              isFetching={
-                !!results.data &&
-                (results.fetching || (results.stale && manualRefetchInFlight))
-              }
-              refetch={refetch}
-            />
-            <button
-              className="plaque"
-              onClick={() => setMatchupPeriodOffset(matchupPeriodOffset - 1)}
-            >
-              &#9668;
-            </button>
-            <div className="flex flex-col justify-center items-center">
-              <span
-                className={classNames({ "mt-[-0.25em]": !matchupPeriodOffset })}
+          <div className="flex flex-wrap gap-2 grow justify-between">
+            <div className="flex items-center">
+              <button
+                onClick={() => setMatchupPeriodOffset(matchupPeriodOffset - 1)}
               >
-                Week {currentMatchupPeriod + matchupPeriodOffset}
-              </span>
-              {!matchupPeriodOffset && (
-                <span className="text-xs mt-[-0.5em] font-normal">
-                  (current)
-                </span>
-              )}
+                &#9668;
+              </button>
+              <button
+                className="flex flex-col justify-center items-center min-w-[4.5rem] border-0 p-0"
+                onClick={() => setMatchupPeriodOffset(0)}
+              >
+                <div
+                  className={classNames({
+                    "mt-[-0.25em]": !matchupPeriodOffset,
+                  })}
+                >
+                  Week {currentMatchupPeriod + matchupPeriodOffset}
+                </div>
+                {!matchupPeriodOffset && (
+                  <span className="text-xs mt-[-0.5em] font-normal">
+                    (current)
+                  </span>
+                )}
+              </button>
+              <button
+                onClick={() => setMatchupPeriodOffset(matchupPeriodOffset + 1)}
+              >
+                &#9658;
+              </button>
             </div>
-            <button
-              className="plaque"
-              onClick={() => setMatchupPeriodOffset(matchupPeriodOffset + 1)}
-            >
-              &#9658;
-            </button>
+            <div className="flex items-center">
+              <Popover
+                button={({ setIsOpen }) => (
+                  <button
+                    className="border-[0.25rem] border-transparent"
+                    onClick={() => setIsOpen(true)}
+                  >
+                    <ScalingImage
+                      alt="three vertical dots"
+                      src="/icons/three-dots-vertical.svg"
+                      hEm={1}
+                      wEm={1}
+                      className="inline text-lg mb-[0.1em] my-auto"
+                    />
+                  </button>
+                )}
+                content={({ isOpen }) => (
+                  <>
+                    {isOpen && (
+                      <div className="px-4 py-1 text-lg bg-beige-100 flex flex-col shadow-xl">
+                        <div className="flex gap-2 py-1">
+                          <input
+                            id="options__show-details"
+                            type="checkbox"
+                            className="inline"
+                            {...registerOption("showDetails", "checkbox")}
+                          />
+                          <label
+                            htmlFor="options__show-details"
+                            className="whitespace-nowrap"
+                          >
+                            Show details
+                          </label>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              />
+              <RefetchButton
+                isFetching={
+                  !!results.data &&
+                  (results.fetching ||
+                    (results.stale && manualRefetchInFlight.current))
+                }
+                refetch={refetch}
+              />
+            </div>
           </div>
         )}
       </div>
@@ -239,7 +493,7 @@ export default function BoxScores() {
         )}
 
         {queryIsSuccess && (
-          <table ref={tableRef}>
+          <table ref={tableRef} className="my-2">
             <thead className="text-left">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id} className="pt-10">
@@ -261,10 +515,6 @@ export default function BoxScores() {
                             header.column.columnDef.header,
                             header.getContext()
                           )}
-                          {{
-                            asc: <span className="ml-1">{"▴"}</span>,
-                            desc: <span className="ml-1">{"▾"}</span>,
-                          }[header.column.getIsSorted() as string] ?? null}
                         </div>
                       )}
                     </th>
@@ -317,7 +567,12 @@ export default function BoxScores() {
                 indicates...{" "}
               </span>
             )}
-            <ShowMoreButton />
+            <button
+              className="font-bold border-0"
+              onClick={() => setShowMore(!showMore)}
+            >
+              Show {showMore ? "less" : "more"}
+            </button>
           </p>
         </div>
       )}
@@ -332,10 +587,14 @@ const RefetchButton = ({
   isFetching: boolean;
   refetch: MouseEventHandler<HTMLButtonElement>;
 }) => {
-  const className = "inline mb-[0.15em] text-xl";
+  const className = "inline text-lg mb-[0.1em] items-center";
 
   return (
-    <button className="px-2" onClick={refetch} disabled={isFetching}>
+    <button
+      onClick={refetch}
+      disabled={isFetching}
+      className="border-[0.25rem] border-transparent"
+    >
       {isFetching ? (
         <Loading isLoading={isFetching} {...{ className }} />
       ) : (
@@ -350,3 +609,36 @@ const RefetchButton = ({
     </button>
   );
 };
+
+type CellProps = {
+  primary: ReactNode;
+  secondary?: JSX.Element;
+} & Partial<Pick<TableOptions, "showDetails">>;
+const Cell = ({ primary, secondary, showDetails }: CellProps) => {
+  return (
+    <div
+      className={classNames("flex flex-col justify-start", {
+        "mb-2": !secondary,
+      })}
+    >
+      <div>{primary}</div>
+      <div
+        className={classNames("text-xs opacity-50 mt-[-0.25em]", {
+          invisible: !showDetails,
+        })}
+      >
+        {secondary}
+      </div>
+    </div>
+  );
+};
+
+const SortSymbol = ({
+  info,
+}: {
+  info: HeaderContext<RankedBoxScore, TeamStat>;
+}) =>
+  ({
+    asc: <span className="ml-1">{"▴"}</span>,
+    desc: <span className="ml-1">{"▾"}</span>,
+  }[info.column.getIsSorted() as string] ?? null);

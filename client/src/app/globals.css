@@ -6,9 +6,8 @@
   --theme-color: #e03a3e;
   --wood-color: #ce884d;
   --foreground-color: #000000;
-  /* --background-color: #ffefd6; */
 
-  @apply text-[12px] md:text-[16px] transition-[font-size] duration-100;
+  @apply text-[12px] sm:text-[16px] transition-[font-size] duration-100;
 }
 
 a {
@@ -23,11 +22,17 @@ body {
 }
 
 button {
-  @apply disabled:cursor-not-allowed px-2;
+  @apply disabled:cursor-not-allowed px-2 border-[0.25rem] border-transparent;
 }
 
 input {
   @apply bg-beige-100;
+}
+
+input[type="checkbox"] {
+  margin: auto;
+  height: 1em;
+  width: 1em;
 }
 
 code {

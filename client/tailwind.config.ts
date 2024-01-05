@@ -76,10 +76,10 @@ const config: Config = {
           },
           ".plaque": {
             backgroundColor: theme("colors.beige.300"),
-            borderLeft: `0.33rem solid ${theme("colors.beige.100")}`,
-            borderTop: `0.33rem solid ${theme("colors.beige.100")}`,
-            borderRight: `0.33rem solid ${theme("colors.beige.500")}`,
-            borderBottom: `0.33rem solid ${theme("colors.beige.500")}`,
+            borderLeft: `0.25rem solid ${theme("colors.beige.100")}`,
+            borderTop: `0.25rem solid ${theme("colors.beige.100")}`,
+            borderRight: `0.25rem solid ${theme("colors.beige.500")}`,
+            borderBottom: `0.25rem solid ${theme("colors.beige.500")}`,
           },
         });
     }),
