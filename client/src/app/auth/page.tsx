@@ -40,7 +40,7 @@ export default function Auth() {
       ref.current?.reset();
       const result = await setLeagueAuth({ leagueAuth: { swid, espn_s2 } });
 
-      if (result.data?.setLeagueAuth.success) router.back();
+      if (result.data?.setLeagueAuth.success) router.push("/");
     }
   }
 

@@ -22,7 +22,7 @@
 
 .main {
   @apply h-full w-full max-w-full flex flex-col border-2 border-beige-100;
-  @apply p-2 md:p-5 transition-[padding] duration-100;
+  @apply p-2 sm:p-5 transition-[padding] duration-100;
 
   grid-area: main;
 }
