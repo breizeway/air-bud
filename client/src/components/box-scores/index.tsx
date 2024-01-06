@@ -21,7 +21,6 @@ import {
 } from "./utils";
 import { rankQuery } from "@/components/box-scores/queries";
 import {
-  CellContext,
   HeaderContext,
   SortingFn,
   SortingState,
@@ -40,6 +39,7 @@ import useClient from "@/utils/use-client";
 declare module "@tanstack/table-core" {
   interface SortingFns {
     byRank: SortingFn<unknown>;
+    byTeamName: SortingFn<unknown>;
   }
 }
 
@@ -156,7 +156,7 @@ export default function BoxScores() {
             showDetails={options.showDetails}
           />
         ),
-        sortingFn,
+        sortingFn: "byTeamName",
       }),
       columnHelper.accessor(BoxStatCategories["FG%"], {
         header: (info) => (
@@ -379,6 +379,10 @@ export default function BoxScores() {
     sortingFns: {
       byRank: (rowA: any, rowB: any, columnId: any): number =>
         rowA.getValue(columnId).rank < rowB.getValue(columnId).rank ? 1 : -1,
+      byTeamName: (rowA: any, rowB: any, columnId: any): number =>
+        rowA.getValue(columnId).teamName < rowB.getValue(columnId).teamName
+          ? 1
+          : -1,
     },
   });
 
