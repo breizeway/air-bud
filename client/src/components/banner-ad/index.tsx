@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import ScalingImage from "../scaling-image";
 
-const NUM_ADS = 32;
+const NUM_ADS = 59;
 export default function BannerAd() {
   const [src, setSrc] = useState("");
   useEffect(() => {
