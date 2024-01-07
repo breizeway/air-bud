@@ -44,7 +44,7 @@ declare module "@tanstack/table-core" {
 }
 
 interface TableOptions {
-  showDetails: boolean;
+  showDetail: boolean;
 }
 const formatRank = (rank: number | undefined) =>
   rank
@@ -92,7 +92,7 @@ export default function BoxScores() {
 
   const optionsLsKey = "boxScoreRankingsOptions";
   const [options, _setOptions] = useState<TableOptions>({
-    showDetails: false,
+    showDetail: false,
   });
   useEffect(() => {
     const optionsFromStorage = localStorage?.getItem("boxScoreRankingsOptions");
@@ -153,7 +153,7 @@ export default function BoxScores() {
           <Cell
             primary={<span>{info.getValue().teamName}</span>}
             secondary={<span>{formatRank(info.getValue().rank)}</span>}
-            showDetails={options.showDetails}
+            showDetail={options.showDetail}
           />
         ),
         sortingFn: "byTeamName",
@@ -180,7 +180,7 @@ export default function BoxScores() {
               </span>
             }
             secondary={<span>{formatRank(info.getValue().rank)}</span>}
-            showDetails={options.showDetails}
+            showDetail={options.showDetail}
           />
         ),
         sortingFn,
@@ -200,7 +200,7 @@ export default function BoxScores() {
           <Cell
             primary={<span>{info.getValue().value}</span>}
             secondary={<span>{formatRank(info.getValue().rank)}</span>}
-            showDetails={options.showDetails}
+            showDetail={options.showDetail}
           />
         ),
         sortingFn,
@@ -220,7 +220,7 @@ export default function BoxScores() {
           <Cell
             primary={<span>{info.getValue().value}</span>}
             secondary={<span>{formatRank(info.getValue().rank)}</span>}
-            showDetails={options.showDetails}
+            showDetail={options.showDetail}
           />
         ),
         sortingFn,
@@ -240,7 +240,7 @@ export default function BoxScores() {
           <Cell
             primary={<span>{info.getValue().value}</span>}
             secondary={<span>{formatRank(info.getValue().rank)}</span>}
-            showDetails={options.showDetails}
+            showDetail={options.showDetail}
           />
         ),
         sortingFn,
@@ -260,7 +260,7 @@ export default function BoxScores() {
           <Cell
             primary={<span>{info.getValue().value}</span>}
             secondary={<span>{formatRank(info.getValue().rank)}</span>}
-            showDetails={options.showDetails}
+            showDetail={options.showDetail}
           />
         ),
         sortingFn,
@@ -280,7 +280,7 @@ export default function BoxScores() {
           <Cell
             primary={<span>{info.getValue().value}</span>}
             secondary={<span>{formatRank(info.getValue().rank)}</span>}
-            showDetails={options.showDetails}
+            showDetail={options.showDetail}
           />
         ),
         sortingFn,
@@ -300,7 +300,7 @@ export default function BoxScores() {
           <Cell
             primary={<span>{info.getValue().value}</span>}
             secondary={<span>{formatRank(info.getValue().rank)}</span>}
-            showDetails={options.showDetails}
+            showDetail={options.showDetail}
           />
         ),
         sortingFn,
@@ -320,7 +320,7 @@ export default function BoxScores() {
           <Cell
             primary={<span>{info.getValue().value}</span>}
             secondary={<span>{formatRank(info.getValue().rank)}</span>}
-            showDetails={options.showDetails}
+            showDetail={options.showDetail}
           />
         ),
         sortingFn,
@@ -340,7 +340,7 @@ export default function BoxScores() {
           <Cell
             primary={<span>{info.getValue().value}</span>}
             secondary={<span>{formatRank(info.getValue().rank)}</span>}
-            showDetails={options.showDetails}
+            showDetail={options.showDetail}
           />
         ),
         sortingFn,
@@ -361,13 +361,13 @@ export default function BoxScores() {
           <Cell
             primary={<span>{info.getValue().value}</span>}
             secondary={<span>{formatRank(info.getValue().rank)}</span>}
-            showDetails={options.showDetails}
+            showDetail={options.showDetail}
           />
         ),
         sortingFn,
       }),
     ];
-  }, [options.showDetails]);
+  }, [options.showDetail]);
 
   const table = useReactTable({
     columns,
@@ -448,16 +448,16 @@ export default function BoxScores() {
                       <div className="px-4 py-1 text-lg bg-beige-100 flex flex-col shadow-xl">
                         <div className="flex gap-2 py-1">
                           <input
-                            id="options__show-details"
+                            id="options__show-detail"
                             type="checkbox"
                             className="inline"
-                            {...registerOption("showDetails", "checkbox")}
+                            {...registerOption("showDetail", "checkbox")}
                           />
                           <label
-                            htmlFor="options__show-details"
+                            htmlFor="options__show-detail"
                             className="whitespace-nowrap"
                           >
-                            Show details
+                            Show detail
                           </label>
                         </div>
                       </div>
@@ -624,8 +624,8 @@ const RefetchButton = ({
 type CellProps = {
   primary: ReactNode;
   secondary?: JSX.Element;
-} & Partial<Pick<TableOptions, "showDetails">>;
-const Cell = ({ primary, secondary, showDetails }: CellProps) => {
+} & Partial<Pick<TableOptions, "showDetail">>;
+const Cell = ({ primary, secondary, showDetail }: CellProps) => {
   return (
     <div
       className={classNames("flex flex-col justify-start", {
@@ -635,7 +635,7 @@ const Cell = ({ primary, secondary, showDetails }: CellProps) => {
       <div>{primary}</div>
       <div
         className={classNames("text-xs opacity-50 mt-[-0.25em]", {
-          invisible: !showDetails,
+          invisible: !showDetail,
         })}
       >
         {secondary}
