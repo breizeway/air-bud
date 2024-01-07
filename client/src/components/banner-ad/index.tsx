@@ -1,3 +1,5 @@
+"use client";
+
 import ScalingImage from "../scaling-image";
 
 const NUM_ADS = 32;
