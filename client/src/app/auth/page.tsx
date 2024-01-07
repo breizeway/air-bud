@@ -63,14 +63,7 @@ export default function Auth() {
       <h1 className="font-bold mt-0">Oh no!</h1>
       <strong className="text-lg">
         You&apos;re seeing this page because the credentials this web site uses
-        to access ESPN league data have expired or are incorrect.{" "}
-        <ScalingImage
-          src="/skull.gif"
-          alt="green rotating skull and crossbones"
-          wRem={2}
-          hRem={1.5}
-          className="inline mt-[-0.4em]"
-        />
+        to access ESPN league data have expired or are incorrect.
       </strong>
       <h2 className="text-theme">
         If you&apos;re a member of the league, Ball is Lyf3 needs YOUR help to

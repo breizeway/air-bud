@@ -492,7 +492,14 @@ export default function BoxScores() {
 
         {!queryFetchingInitialData && !queryIsSuccess && (
           <div className="py-2 px-4">
-            {"Sorry, there was an error fetching box scores :("}
+            Sorry, there was an error fetching box scores{" "}
+            <ScalingImage
+              src="/skull.gif"
+              alt="green rotating skull and crossbones"
+              wEm={2}
+              hEm={1.6}
+              className="inline"
+            />
           </div>
         )}
 
