@@ -1,6 +1,7 @@
 import styles from "./home.module.css";
 import ScalingImage from "@/components/scaling-image";
 import BoxScores from "@/components/box-scores";
+import BannerAd from "@/components/banner-ad";
 
 export default function Home() {
   return (
@@ -25,9 +26,8 @@ export default function Home() {
         is Lyf3&quot; and want to know all about the stats and how the teams are
         doing - you have come to the right place.
       </p>
-      <div>
-        <BoxScores />
-      </div>
+      <BoxScores />
+      <BannerAd />
     </section>
   );
 }
