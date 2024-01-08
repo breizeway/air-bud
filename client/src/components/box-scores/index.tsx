@@ -158,7 +158,7 @@ export default function BoxScores() {
               primary={<span>{info.getValue().teamName}</span>}
               secondary={
                 <span>
-                  {formatRank(rank)}{" "}
+                  <Rank rank={rank} />{" "}
                   <span
                     className={classNames({
                       "text-green-500": rankChange > 0,
@@ -198,7 +198,7 @@ export default function BoxScores() {
                   .slice(info.getValue().value < 1 ? 1 : 0)}
               </span>
             }
-            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            secondary={<Rank rank={info.getValue().rank} />}
             showDetail={options.showDetail}
           />
         ),
@@ -218,7 +218,7 @@ export default function BoxScores() {
         cell: (info) => (
           <Cell
             primary={<span>{info.getValue().value}</span>}
-            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            secondary={<Rank rank={info.getValue().rank} />}
             showDetail={options.showDetail}
           />
         ),
@@ -238,7 +238,7 @@ export default function BoxScores() {
         cell: (info) => (
           <Cell
             primary={<span>{info.getValue().value}</span>}
-            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            secondary={<Rank rank={info.getValue().rank} />}
             showDetail={options.showDetail}
           />
         ),
@@ -258,7 +258,7 @@ export default function BoxScores() {
         cell: (info) => (
           <Cell
             primary={<span>{info.getValue().value}</span>}
-            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            secondary={<Rank rank={info.getValue().rank} />}
             showDetail={options.showDetail}
           />
         ),
@@ -278,7 +278,7 @@ export default function BoxScores() {
         cell: (info) => (
           <Cell
             primary={<span>{info.getValue().value}</span>}
-            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            secondary={<Rank rank={info.getValue().rank} />}
             showDetail={options.showDetail}
           />
         ),
@@ -298,7 +298,7 @@ export default function BoxScores() {
         cell: (info) => (
           <Cell
             primary={<span>{info.getValue().value}</span>}
-            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            secondary={<Rank rank={info.getValue().rank} />}
             showDetail={options.showDetail}
           />
         ),
@@ -318,7 +318,7 @@ export default function BoxScores() {
         cell: (info) => (
           <Cell
             primary={<span>{info.getValue().value}</span>}
-            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            secondary={<Rank rank={info.getValue().rank} />}
             showDetail={options.showDetail}
           />
         ),
@@ -338,7 +338,7 @@ export default function BoxScores() {
         cell: (info) => (
           <Cell
             primary={<span>{info.getValue().value}</span>}
-            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            secondary={<Rank rank={info.getValue().rank} />}
             showDetail={options.showDetail}
           />
         ),
@@ -358,7 +358,7 @@ export default function BoxScores() {
         cell: (info) => (
           <Cell
             primary={<span>{info.getValue().value}</span>}
-            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            secondary={<Rank rank={info.getValue().rank} />}
             showDetail={options.showDetail}
           />
         ),
@@ -379,7 +379,7 @@ export default function BoxScores() {
         cell: (info) => (
           <Cell
             primary={<span>{info.getValue().value}</span>}
-            secondary={<span>{formatRank(info.getValue().rank)}</span>}
+            secondary={<Rank rank={info.getValue().rank} />}
             showDetail={options.showDetail}
           />
         ),
@@ -653,7 +653,7 @@ const Cell = ({ primary, secondary, showDetail }: CellProps) => {
     >
       <div>{primary}</div>
       <div
-        className={classNames("text-xs opacity-50 mt-[-0.25em]", {
+        className={classNames("text-xs mt-[-0.25em]", {
           invisible: !showDetail,
         })}
       >
@@ -679,3 +679,13 @@ const ChangeSymbol = ({ change }: { change: number }) =>
     decrease: <span className="mr-1">{"▾"}</span>,
     noChange: <span className="mr-1">{"-"}</span>,
   }[change > 0 ? "increase" : change < 0 ? "decrease" : "noChange"]);
+
+const Rank = ({ rank }: { rank?: number }) => (
+  <span className="opacity-50">
+    {rank
+      ? `${rank}${
+          rank === 1 ? "st" : rank === 2 ? "nd" : rank === 3 ? "rd" : "th"
+        }`
+      : null}
+  </span>
+);
