@@ -16,7 +16,7 @@ def resolve_set_league_auth(*_, league_auth):
     try:
         result: requests.Response = EdgeStore().set_league_auth(
             LeagueAuth(**league_auth))
-        sleep(2)
+        sleep(3)
         if not result.ok:
             response.add_error(ClientError(
                 ClientErrorCodes.EDGE_API, f'{result.status_code}: {result.reason}'))
