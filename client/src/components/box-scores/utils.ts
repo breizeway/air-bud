@@ -17,12 +17,13 @@ export enum BoxStatCategories {
   "ALL" = "ALL",
 }
 
-export interface TeamStat {
+export type TeamStat = {
   teamName: string;
+  standing: number;
   value: number;
   rank?: number;
   score?: number;
-}
+};
 type StatsByCat<T> = {
   [Category in BoxStatCategories]: T[];
 };
@@ -39,13 +40,10 @@ const initStatsByCat = <T>(): StatsByCat<T> => ({
   PF: [],
   PTS: [],
   // important that this one is last to make rankings work with only one iteration
-
   ALL: [],
 });
 
-export type RankedBoxScore = {
-  teamName: string;
-} & { [category in BoxStatCategories]: TeamStat };
+export type RankedBoxScore = { [category in BoxStatCategories]: TeamStat };
 export type RankedBoxScores = { [teamName: string]: RankedBoxScore };
 
 const breakOutTeamStats = (
@@ -54,8 +52,10 @@ const breakOutTeamStats = (
   playerLineup:
     | RankQueryBoxScoreFragment["homeLineup"]
     | RankQueryBoxScoreFragment["awayLineup"],
-  teamName: string
+  teamName: string,
+  standing: number
 ) => {
+  const teamStats = { teamName, standing };
   if (playerLineup.length) {
     // accum player stats for live scores from the current week
     const playerStats = playerLineup.reduce((acc: StatsByCat<number>, pl) => {
@@ -74,10 +74,10 @@ const breakOutTeamStats = (
       if (cat === BoxStatCategories["FGM"]) fieldGoals.FGM = value;
       if (cat === BoxStatCategories["FGA"]) fieldGoals.FGA = value;
       if (cat !== BoxStatCategories["FG%"])
-        boxRanks[cat]?.push({ teamName, value });
+        boxRanks[cat]?.push({ ...teamStats, value });
     });
     boxRanks[BoxStatCategories["FG%"]]?.push({
-      teamName,
+      ...teamStats,
       value: fieldGoals.FGM / fieldGoals.FGA,
     });
   } else {
@@ -85,7 +85,7 @@ const breakOutTeamStats = (
     [...boxStats, { category: BoxStatCategories.ALL, value: 0 }].forEach(
       (bs) => {
         const cat = bs.category as BoxStatCategories;
-        boxRanks[cat]?.push({ teamName, value: bs.value });
+        boxRanks[cat]?.push({ ...teamStats, value: bs.value });
       }
     );
   }
@@ -102,20 +102,22 @@ export const getRankedBoxScores = (
         acc,
         boxScore.homeStats,
         boxScore.homeLineup,
-        boxScore.homeTeam.teamName.trim()
+        boxScore.homeTeam.teamName.trim(),
+        boxScore.homeTeam.standing
       );
       breakOutTeamStats(
         acc,
         boxScore.awayStats,
         boxScore.awayLineup,
-        boxScore.awayTeam.teamName.trim()
+        boxScore.awayTeam.teamName.trim(),
+        boxScore.awayTeam.standing
       );
 
       return acc;
     }, initStatsByCat<TeamStat>());
 
     const rankedBoxScoresByTeam = Object.keys(teamStats).reduce(
-      (acc: { [teamName: string]: Partial<RankedBoxScore> }, k) => {
+      (acc: { [teamName: string]: RankedBoxScore }, k) => {
         const key = k as BoxStatCategories;
 
         teamStats[key]?.sort((a, b) => {
@@ -148,9 +150,17 @@ export const getRankedBoxScores = (
           if (key !== BoxStatCategories.ALL) {
             teamStats[BoxStatCategories.ALL][allStatIdx].value += score;
           }
+          // if (key === BoxStatCategories.ALL) {
+          //   (
+          //     teamStats[BoxStatCategories.ALL][allStatIdx] as TeamStat<{
+          //       standing: number;
+          //     }>
+          //   ).standing = ts.;
+          // }
 
-          if (!acc[ts.teamName]) acc[ts.teamName] = { teamName: ts.teamName };
-          acc[ts.teamName][key] = ts;
+          if (!acc[ts.teamName])
+            Object.assign(acc, { [ts.teamName]: { [key]: ts } });
+          else acc[ts.teamName][key] = ts;
         });
 
         return acc;
@@ -158,6 +168,6 @@ export const getRankedBoxScores = (
       {}
     );
 
-    return rankedBoxScoresByTeam as RankedBoxScores;
+    return rankedBoxScoresByTeam;
   }
 };

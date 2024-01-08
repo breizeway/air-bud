@@ -5,6 +5,7 @@ export const RankQueryBoxScore = graphql(`
     winner
     homeTeam {
       teamName
+      standing
     }
     homeStats {
       category
@@ -19,6 +20,7 @@ export const RankQueryBoxScore = graphql(`
     }
     awayTeam {
       teamName
+      standing
     }
     awayStats {
       category

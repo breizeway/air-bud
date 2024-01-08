@@ -149,13 +149,32 @@ export default function BoxScores() {
             }
           />
         ),
-        cell: (info) => (
-          <Cell
-            primary={<span>{info.getValue().teamName}</span>}
-            secondary={<span>{formatRank(info.getValue().rank)}</span>}
-            showDetail={options.showDetail}
-          />
-        ),
+        cell: (info) => {
+          const rank = info.getValue().rank ?? 0;
+          const rankChange = info.getValue().standing - rank;
+
+          return (
+            <Cell
+              primary={<span>{info.getValue().teamName}</span>}
+              secondary={
+                <span>
+                  {formatRank(rank)}{" "}
+                  <span
+                    className={classNames({
+                      "text-green-500": rankChange > 0,
+                      "text-red-500": rankChange < 0,
+                      "text-yellow-500": rankChange === 0,
+                    })}
+                  >
+                    <ChangeSymbol change={rankChange} />
+                    {Math.abs(rankChange)}
+                  </span>
+                </span>
+              }
+              showDetail={options.showDetail}
+            />
+          );
+        },
         sortingFn: "byTeamName",
       }),
       columnHelper.accessor(BoxStatCategories["FG%"], {
@@ -653,3 +672,10 @@ const SortSymbol = ({
     asc: <span className="ml-1">{"▴"}</span>,
     desc: <span className="ml-1">{"▾"}</span>,
   }[info.column.getIsSorted() as string] ?? null);
+
+const ChangeSymbol = ({ change }: { change: number }) =>
+  ({
+    increase: <span className="mr-1">{"▴"}</span>,
+    decrease: <span className="mr-1">{"▾"}</span>,
+    noChange: <span className="mr-1">{"-"}</span>,
+  }[change > 0 ? "increase" : change < 0 ? "decrease" : "noChange"]);
