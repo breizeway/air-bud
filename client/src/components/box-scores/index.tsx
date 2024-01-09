@@ -195,7 +195,7 @@ export default function BoxScores() {
                 {info
                   .getValue()
                   .value.toFixed(3)
-                  .slice(info.getValue().value < 1 ? 1 : 0)}
+                  .slice([0, 1].includes(info.getValue().value) ? 0 : 1)}
               </span>
             }
             secondary={<Rank rank={info.getValue().rank} />}

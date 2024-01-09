@@ -76,9 +76,10 @@ const breakOutTeamStats = (
       if (cat !== BoxStatCategories["FG%"])
         boxRanks[cat]?.push({ ...teamStats, value });
     });
+
     boxRanks[BoxStatCategories["FG%"]]?.push({
       ...teamStats,
-      value: fieldGoals.FGM / fieldGoals.FGA,
+      value: fieldGoals.FGA === 0 ? 0 : fieldGoals.FGM / fieldGoals.FGA,
     });
   } else {
     // static (non-live) box scores for prior weeks
