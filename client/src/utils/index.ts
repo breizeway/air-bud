@@ -1,5 +1,5 @@
-type ClassDict = { [key: string]: boolean };
-type StringOrClassDict = string | ClassDict;
+type ClassDict = { [classNames: string]: boolean };
+type StringOrClassDict = string | ClassDict | undefined;
 const isClassDict = (
   stringOrClassDict: StringOrClassDict
 ): stringOrClassDict is ClassDict => typeof stringOrClassDict === "object";
@@ -12,7 +12,7 @@ export const classNames = (...classes: StringOrClassDict[]) => {
             acc.push(k);
           }
         });
-      } else {
+      } else if (cls) {
         acc.push(cls);
       }
       return acc;
