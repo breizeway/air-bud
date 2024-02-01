@@ -412,7 +412,7 @@ export default function BoxScores() {
   return (
     <div className="w-fit max-w-full">
       <div className="flex flex-wrap gap-2 mb-2 items-center font-semibold">
-        <span className="text-2xl ml-2">Box Score Rankings</span>
+        <span className="text-2xl ml-2">Leaderboard</span>
 
         {currentMatchupPeriod && (
           <div className="flex flex-wrap gap-2 grow justify-between">
