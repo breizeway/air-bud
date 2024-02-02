@@ -27,7 +27,7 @@ export default function Home() {
         doing - you have come to the right place.
       </p>
       <BoxScores />
-      <BannerAd />
+{/*       <BannerAd /> */}
     </section>
   );
 }
