@@ -19,7 +19,7 @@ import {
   TeamStat,
   getRankedBoxScores,
 } from "./utils";
-import { rankQuery } from "@/components/box-scores/queries";
+import { rankQuery } from "@/components/leaderboard/queries";
 import {
   HeaderContext,
   SortingFn,
@@ -31,7 +31,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { classNames } from "@/utils";
-import styles from "./box-scores.module.css";
+import styles from "./leaderboard.module.css";
 import ScalingImage from "../scaling-image";
 import Popover from "../popover";
 import useClient from "@/utils/use-client";
@@ -46,12 +46,6 @@ declare module "@tanstack/table-core" {
 interface TableOptions {
   showDetail: boolean;
 }
-const formatRank = (rank: number | undefined) =>
-  rank
-    ? `${rank}${
-        rank === 1 ? "st" : rank === 2 ? "nd" : rank === 3 ? "rd" : "th"
-      }`
-    : null;
 const columnHelper = createColumnHelper<RankedBoxScore>();
 const sortingFn = "byRank";
 const defaultBoxRanks: RankedBoxScores = {};
@@ -62,7 +56,7 @@ const getCellClasses = (idx: number, length: number) =>
     "pr-4": idx === length - 1,
   });
 
-export default function BoxScores() {
+export default function Leaderboard({ cheat }: { cheat?: boolean }) {
   const { window } = useClient();
   const localStorage = window?.localStorage;
   const [matchupPeriodOffset, _setMatchupPeriodOffset] = useState<number>(0);
@@ -129,10 +123,10 @@ export default function BoxScores() {
   const boxRanks = useMemo(
     () =>
       Object.values(
-        getRankedBoxScores(results.data?.getBoxScores.boxScores) ??
+        getRankedBoxScores(results.data?.getBoxScores.boxScores, cheat) ??
           defaultBoxRanks
       ).sort((a, b) => (a.ALL.rank ?? 0) - (b.ALL.rank ?? 0)),
-    [results]
+    [results, cheat]
   );
 
   const columns = useMemo(() => {
@@ -410,7 +404,7 @@ export default function BoxScores() {
   const queryFetchingInitialData = queryFetching && !queryIsSuccess;
 
   return (
-    <div className="w-fit max-w-full">
+    <div className={classNames(styles.leaderboard, "w-fit max-w-full")}>
       <div className="flex flex-wrap gap-2 mb-2 items-center font-semibold">
         <span className="text-2xl ml-2">Leaderboard</span>
 

@@ -5,3 +5,7 @@
 
   -webkit-transform: translateZ(0);
 }
+
+.leaderboard tr:nth-child(odd) {
+  /* background-color: red; */
+}

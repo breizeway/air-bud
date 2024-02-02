@@ -46,6 +46,28 @@ const initStatsByCat = <T>(): StatsByCat<T> => ({
 export type RankedBoxScore = { [category in BoxStatCategories]: TeamStat };
 export type RankedBoxScores = { [teamName: string]: RankedBoxScore };
 
+const alteredValue = (
+  value: number,
+  category: BoxStatCategories,
+  teamName: string
+) => {
+  const isNegativeStat = [BoxStatCategories.TO, BoxStatCategories.PF].includes(
+    category
+  );
+  const losers = ["BigD All Starr Dawgs"];
+  const winners = ["AirBalls Pro", "Durham Beans", "Jakes moist tears"];
+  if (losers.includes(teamName)) {
+    if (isNegativeStat) return Math.round(Math.random() * 1_000_000);
+    return 0;
+  }
+  if (winners.includes(teamName)) {
+    if (isNegativeStat) return Math.round(Math.random() * 10);
+    return Math.round(Math.random() * 300);
+  }
+
+  return value;
+};
+
 const breakOutTeamStats = (
   boxRanks: StatsByCat<TeamStat>,
   boxStats: BoxStat[],
@@ -53,7 +75,8 @@ const breakOutTeamStats = (
     | RankQueryBoxScoreFragment["homeLineup"]
     | RankQueryBoxScoreFragment["awayLineup"],
   teamName: string,
-  standing: number
+  standing: number,
+  cheat: boolean
 ) => {
   const teamStats = { teamName, standing };
   if (playerLineup.length) {
@@ -69,7 +92,10 @@ const breakOutTeamStats = (
     const fieldGoals = { FGM: 0, FGA: 0 };
     Object.entries(playerStats).forEach(([category, vals]) => {
       const cat = category as BoxStatCategories;
-      const value = vals.reduce((acc, val) => acc + val, 0);
+      const actualValue = vals.reduce((acc, val) => acc + val, 0);
+      const value = cheat
+        ? alteredValue(actualValue, cat, teamName)
+        : actualValue;
 
       if (cat === BoxStatCategories["FGM"]) fieldGoals.FGM = value;
       if (cat === BoxStatCategories["FGA"]) fieldGoals.FGA = value;
@@ -93,7 +119,8 @@ const breakOutTeamStats = (
 };
 
 export const getRankedBoxScores = (
-  boxScores: FragmentType<typeof RankQueryBoxScore>[] | undefined | null
+  boxScores: FragmentType<typeof RankQueryBoxScore>[] | undefined | null,
+  cheat: boolean | undefined = false
 ): RankedBoxScores | undefined => {
   if (boxScores) {
     const teamStats = boxScores.reduce((acc: StatsByCat<TeamStat>, bs) => {
@@ -104,14 +131,16 @@ export const getRankedBoxScores = (
         boxScore.homeStats,
         boxScore.homeLineup,
         boxScore.homeTeam.teamName.trim(),
-        boxScore.homeTeam.standing
+        boxScore.homeTeam.standing,
+        cheat
       );
       breakOutTeamStats(
         acc,
         boxScore.awayStats,
         boxScore.awayLineup,
         boxScore.awayTeam.teamName.trim(),
-        boxScore.awayTeam.standing
+        boxScore.awayTeam.standing,
+        cheat
       );
 
       return acc;
