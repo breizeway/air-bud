@@ -52,7 +52,7 @@ const defaultBoxRanks: RankedBoxScores = {};
 const getCellClasses = (idx: number, length: number) =>
   classNames("px-2", {
     "text-right": !!idx,
-    "sticky left-0 z-10 bg-black pl-4": !idx,
+    [styles.firstColumn]: !idx,
     "pr-4": idx === length - 1,
   });
 
@@ -640,14 +640,14 @@ type CellProps = {
 const Cell = ({ primary, secondary, showDetail }: CellProps) => {
   return (
     <div
-      className={classNames("flex flex-col justify-start", {
-        "mb-2": !secondary,
+      className={classNames("flex flex-col justify-start py-1", {
+        "py-[0.08rem]": !!showDetail,
       })}
     >
       <div>{primary}</div>
       <div
         className={classNames("text-xs mt-[-0.25em]", {
-          invisible: !showDetail,
+          hidden: !showDetail,
         })}
       >
         {secondary}

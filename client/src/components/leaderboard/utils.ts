@@ -157,7 +157,8 @@ export const getRankedBoxScores = (
         });
 
         teamStats[key].forEach((ts, idx, arr) => {
-          const rank = idx + 1;
+          const isTied = ts.value === arr[idx - 1]?.value;
+          const rank = isTied ? arr[idx - 1]?.rank ?? 0 : idx + 1;
           const score =
             key === BoxStatCategories.FGM ||
             key === BoxStatCategories.FGA ||
@@ -166,9 +167,8 @@ export const getRankedBoxScores = (
               ts.value === 0)
               ? // cat values are 0
                 0
-              : ts.value === arr[idx - 1]?.value
-              ? // cat values are tied
-                arr[idx - 1]?.score ?? 0
+              : isTied
+              ? arr[idx - 1]?.score ?? 0
               : 10 - idx;
 
           Object.assign(ts, { rank, score });
@@ -180,13 +180,6 @@ export const getRankedBoxScores = (
           if (key !== BoxStatCategories.ALL) {
             teamStats[BoxStatCategories.ALL][allStatIdx].value += score;
           }
-          // if (key === BoxStatCategories.ALL) {
-          //   (
-          //     teamStats[BoxStatCategories.ALL][allStatIdx] as TeamStat<{
-          //       standing: number;
-          //     }>
-          //   ).standing = ts.;
-          // }
 
           if (!acc[ts.teamName])
             Object.assign(acc, { [ts.teamName]: { [key]: ts } });
