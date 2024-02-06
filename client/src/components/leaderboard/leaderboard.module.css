@@ -10,10 +10,21 @@
   background-color: black;
 }
 
+/* i used this clunky shadow system because border doesn't work well with sticky positioning in safari */
+.leaderboard thead tr > * {
+  box-shadow: inset 0 -0.05rem #34302c;
+}
+
+.leaderboard tbody tr > * {
+  box-shadow: inset 0 0.05rem #34302c, inset 0 -0.05rem #34302c;
+}
+
+.leaderboard tbody tr:last-child > * {
+  box-shadow: inset 0 0.05rem #34302c;
+}
+
 .leaderboard tbody tr:nth-child(odd) {
   background-color: #1a1816;
-  border-top: 0.1rem solid #34302c;
-  border-bottom: 0.1rem solid #34302c;
 }
 
 .leaderboard tbody tr:nth-child(even) {
@@ -24,5 +35,4 @@
   @apply sticky left-0 z-10 pl-4;
 
   background-color: inherit;
-  border: inherit;
 }
