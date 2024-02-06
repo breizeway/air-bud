@@ -46,6 +46,7 @@ declare module "@tanstack/table-core" {
 interface TableOptions {
   showRank: boolean;
 }
+const defaultTableOptions = { showRank: true };
 const columnHelper = createColumnHelper<RankedBoxScore>();
 const sortingFn = "byRank";
 const defaultBoxRanks: RankedBoxScores = {};
@@ -85,13 +86,15 @@ export default function Leaderboard({ cheat }: { cheat?: boolean }) {
   const [showMore, setShowMore] = useState<boolean>(false);
 
   const optionsLsKey = "boxScoreRankingsOptions";
-  const [options, _setOptions] = useState<TableOptions>({
-    showRank: true,
-  });
+  const [options, _setOptions] = useState<TableOptions>(defaultTableOptions);
   useEffect(() => {
-    const optionsFromStorage = localStorage?.getItem("boxScoreRankingsOptions");
-    if (optionsFromStorage) {
-      _setOptions(JSON.parse(optionsFromStorage));
+    const optionsFromStorage =
+      localStorage?.getItem("boxScoreRankingsOptions") ?? "{}";
+    if (localStorage) {
+      _setOptions({
+        ...defaultTableOptions,
+        ...JSON.parse(optionsFromStorage),
+      });
     }
   }, [localStorage]);
   const setOptions = (options: TableOptions) => {

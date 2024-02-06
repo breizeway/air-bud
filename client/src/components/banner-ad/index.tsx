@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import ScalingImage from "../scaling-image";
 import { classNames } from "@/utils";
 
-const NUM_ADS = 64;
+const NUM_ADS = 63;
 export default function BannerAd() {
   const [src, setSrc] = useState("");
   const [invisible, setInvisible] = useState(true);
