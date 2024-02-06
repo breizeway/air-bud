@@ -44,7 +44,7 @@ declare module "@tanstack/table-core" {
 }
 
 interface TableOptions {
-  showDetail: boolean;
+  showRank: boolean;
 }
 const columnHelper = createColumnHelper<RankedBoxScore>();
 const sortingFn = "byRank";
@@ -86,7 +86,7 @@ export default function Leaderboard({ cheat }: { cheat?: boolean }) {
 
   const optionsLsKey = "boxScoreRankingsOptions";
   const [options, _setOptions] = useState<TableOptions>({
-    showDetail: false,
+    showRank: true,
   });
   useEffect(() => {
     const optionsFromStorage = localStorage?.getItem("boxScoreRankingsOptions");
@@ -165,7 +165,7 @@ export default function Leaderboard({ cheat }: { cheat?: boolean }) {
                   </span>
                 </span>
               }
-              showDetail={options.showDetail}
+              showRank={options.showRank}
             />
           );
         },
@@ -193,7 +193,7 @@ export default function Leaderboard({ cheat }: { cheat?: boolean }) {
               </span>
             }
             secondary={<Rank rank={info.getValue().rank} />}
-            showDetail={options.showDetail}
+            showRank={options.showRank}
           />
         ),
         sortingFn,
@@ -213,7 +213,7 @@ export default function Leaderboard({ cheat }: { cheat?: boolean }) {
           <Cell
             primary={<span>{info.getValue().value}</span>}
             secondary={<Rank rank={info.getValue().rank} />}
-            showDetail={options.showDetail}
+            showRank={options.showRank}
           />
         ),
         sortingFn,
@@ -233,7 +233,7 @@ export default function Leaderboard({ cheat }: { cheat?: boolean }) {
           <Cell
             primary={<span>{info.getValue().value}</span>}
             secondary={<Rank rank={info.getValue().rank} />}
-            showDetail={options.showDetail}
+            showRank={options.showRank}
           />
         ),
         sortingFn,
@@ -253,7 +253,7 @@ export default function Leaderboard({ cheat }: { cheat?: boolean }) {
           <Cell
             primary={<span>{info.getValue().value}</span>}
             secondary={<Rank rank={info.getValue().rank} />}
-            showDetail={options.showDetail}
+            showRank={options.showRank}
           />
         ),
         sortingFn,
@@ -273,7 +273,7 @@ export default function Leaderboard({ cheat }: { cheat?: boolean }) {
           <Cell
             primary={<span>{info.getValue().value}</span>}
             secondary={<Rank rank={info.getValue().rank} />}
-            showDetail={options.showDetail}
+            showRank={options.showRank}
           />
         ),
         sortingFn,
@@ -293,7 +293,7 @@ export default function Leaderboard({ cheat }: { cheat?: boolean }) {
           <Cell
             primary={<span>{info.getValue().value}</span>}
             secondary={<Rank rank={info.getValue().rank} />}
-            showDetail={options.showDetail}
+            showRank={options.showRank}
           />
         ),
         sortingFn,
@@ -313,7 +313,7 @@ export default function Leaderboard({ cheat }: { cheat?: boolean }) {
           <Cell
             primary={<span>{info.getValue().value}</span>}
             secondary={<Rank rank={info.getValue().rank} />}
-            showDetail={options.showDetail}
+            showRank={options.showRank}
           />
         ),
         sortingFn,
@@ -333,7 +333,7 @@ export default function Leaderboard({ cheat }: { cheat?: boolean }) {
           <Cell
             primary={<span>{info.getValue().value}</span>}
             secondary={<Rank rank={info.getValue().rank} />}
-            showDetail={options.showDetail}
+            showRank={options.showRank}
           />
         ),
         sortingFn,
@@ -353,7 +353,7 @@ export default function Leaderboard({ cheat }: { cheat?: boolean }) {
           <Cell
             primary={<span>{info.getValue().value}</span>}
             secondary={<Rank rank={info.getValue().rank} />}
-            showDetail={options.showDetail}
+            showRank={options.showRank}
           />
         ),
         sortingFn,
@@ -374,13 +374,13 @@ export default function Leaderboard({ cheat }: { cheat?: boolean }) {
           <Cell
             primary={<span>{info.getValue().value}</span>}
             secondary={<Rank rank={info.getValue().rank} />}
-            showDetail={options.showDetail}
+            showRank={options.showRank}
           />
         ),
         sortingFn,
       }),
     ];
-  }, [options.showDetail]);
+  }, [options.showRank]);
 
   const table = useReactTable({
     columns,
@@ -464,13 +464,13 @@ export default function Leaderboard({ cheat }: { cheat?: boolean }) {
                             id="options__show-detail"
                             type="checkbox"
                             className="inline"
-                            {...registerOption("showDetail", "checkbox")}
+                            {...registerOption("showRank", "checkbox")}
                           />
                           <label
                             htmlFor="options__show-detail"
                             className="whitespace-nowrap"
                           >
-                            Show detail
+                            Show rank
                           </label>
                         </div>
                       </div>
@@ -636,18 +636,18 @@ const RefetchButton = ({
 type CellProps = {
   primary: ReactNode;
   secondary?: JSX.Element;
-} & Partial<Pick<TableOptions, "showDetail">>;
-const Cell = ({ primary, secondary, showDetail }: CellProps) => {
+} & Partial<Pick<TableOptions, "showRank">>;
+const Cell = ({ primary, secondary, showRank }: CellProps) => {
   return (
     <div
       className={classNames("flex flex-col justify-start py-1", {
-        "py-[0.08rem]": !!showDetail,
+        "py-[0.08rem]": !!showRank,
       })}
     >
       <div>{primary}</div>
       <div
         className={classNames("text-xs mt-[-0.25em]", {
-          hidden: !showDetail,
+          hidden: !showRank,
         })}
       >
         {secondary}

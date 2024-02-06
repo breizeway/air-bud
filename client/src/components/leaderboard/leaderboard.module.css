@@ -11,9 +11,9 @@
 }
 
 .leaderboard tbody tr:nth-child(odd) {
-  background-color: #1f1d1b;
-  border-top: 0.1rem solid #2f2d2b;
-  border-bottom: 0.1rem solid #2f2d2b;
+  background-color: #1a1816;
+  border-top: 0.1rem solid #34302c;
+  border-bottom: 0.1rem solid #34302c;
 }
 
 .leaderboard tbody tr:nth-child(even) {
@@ -24,4 +24,5 @@
   @apply sticky left-0 z-10 pl-4;
 
   background-color: inherit;
+  border: inherit;
 }
