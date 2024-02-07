@@ -76,7 +76,7 @@ const breakOutTeamStats = (
     | RankQueryBoxScoreFragment["awayLineup"],
   teamName: string,
   standing: number,
-  cheat: boolean
+  leaderboardMode: string | null
 ) => {
   const teamStats = { teamName, standing };
   if (playerLineup.length) {
@@ -93,9 +93,10 @@ const breakOutTeamStats = (
     Object.entries(playerStats).forEach(([category, vals]) => {
       const cat = category as BoxStatCategories;
       const actualValue = vals.reduce((acc, val) => acc + val, 0);
-      const value = cheat
-        ? alteredValue(actualValue, cat, teamName)
-        : actualValue;
+      const value =
+        leaderboardMode === "cheat"
+          ? alteredValue(actualValue, cat, teamName)
+          : actualValue;
 
       if (cat === BoxStatCategories["FGM"]) fieldGoals.FGM = value;
       if (cat === BoxStatCategories["FGA"]) fieldGoals.FGA = value;
@@ -118,29 +119,40 @@ const breakOutTeamStats = (
   }
 };
 
+const alterTeamName = (teamName: string, leaderboardMode: string | null) => {
+  let trimmedTeamName = teamName.trim();
+  if (leaderboardMode === "safe") {
+    trimmedTeamName = trimmedTeamName.replace("BigD ", "");
+    trimmedTeamName = trimmedTeamName.replace(
+      "Scott Likes Men",
+      "Scott's Team Sucks"
+    );
+  }
+  return trimmedTeamName;
+};
+
 export const getRankedBoxScores = (
   boxScores: FragmentType<typeof RankQueryBoxScore>[] | undefined | null,
-  cheat: boolean | undefined = false
+  leaderboardMode: string | null
 ): RankedBoxScores | undefined => {
   if (boxScores) {
     const teamStats = boxScores.reduce((acc: StatsByCat<TeamStat>, bs) => {
       const boxScore = useFragment(RankQueryBoxScore, bs);
-
-      breakOutTeamStats(
+      const teamName = breakOutTeamStats(
         acc,
         boxScore.homeStats,
         boxScore.homeLineup,
-        boxScore.homeTeam.teamName.trim(),
+        alterTeamName(boxScore.homeTeam.teamName, leaderboardMode),
         boxScore.homeTeam.standing,
-        cheat
+        leaderboardMode
       );
       breakOutTeamStats(
         acc,
         boxScore.awayStats,
         boxScore.awayLineup,
-        boxScore.awayTeam.teamName.trim(),
+        alterTeamName(boxScore.awayTeam.teamName, leaderboardMode),
         boxScore.awayTeam.standing,
-        cheat
+        leaderboardMode
       );
 
       return acc;

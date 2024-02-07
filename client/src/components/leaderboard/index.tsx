@@ -35,6 +35,7 @@ import styles from "./leaderboard.module.css";
 import ScalingImage from "../scaling-image";
 import Popover from "../popover";
 import useClient from "@/utils/use-client";
+import { useSearchParams } from "next/navigation";
 
 declare module "@tanstack/table-core" {
   interface SortingFns {
@@ -57,9 +58,13 @@ const getCellClasses = (idx: number, length: number) =>
     "pr-4": idx === length - 1,
   });
 
-export default function Leaderboard({ cheat }: { cheat?: boolean }) {
+export default function Leaderboard() {
   const { window } = useClient();
   const localStorage = window?.localStorage;
+
+  const searchParams = useSearchParams();
+  const leaderboardMode = searchParams.get("leaderboard_mode");
+
   const [matchupPeriodOffset, _setMatchupPeriodOffset] = useState<number>(0);
   const [results, _refetch] = useQuery({
     query: rankQuery,
@@ -126,10 +131,12 @@ export default function Leaderboard({ cheat }: { cheat?: boolean }) {
   const boxRanks = useMemo(
     () =>
       Object.values(
-        getRankedBoxScores(results.data?.getBoxScores.boxScores, cheat) ??
-          defaultBoxRanks
+        getRankedBoxScores(
+          results.data?.getBoxScores.boxScores,
+          leaderboardMode
+        ) ?? defaultBoxRanks
       ).sort((a, b) => (a.ALL.rank ?? 0) - (b.ALL.rank ?? 0)),
-    [results, cheat]
+    [results, leaderboardMode]
   );
 
   const columns = useMemo(() => {
