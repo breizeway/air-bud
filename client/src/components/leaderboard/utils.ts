@@ -175,13 +175,11 @@ export const getRankedBoxScores = (
             key === BoxStatCategories.FGM ||
             key === BoxStatCategories.FGA ||
             // cat shouldn't count toward total
-            (!(key === BoxStatCategories.TO || key === BoxStatCategories.PF) &&
-              ts.value === 0)
-              ? // cat values are 0
-                0
+            ts.value === 0 // cat values are 0
+              ? 0 
               : isTied
-              ? arr[idx - 1]?.score ?? 0
-              : 10 - idx;
+                ? arr[idx - 1]?.score ?? 0
+                : 10 - idx;
 
           Object.assign(ts, { rank, score });
 
