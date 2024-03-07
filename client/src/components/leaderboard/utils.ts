@@ -1,6 +1,7 @@
 import { BoxStat, RankQueryBoxScoreFragment } from "@/gql/graphql";
 import { RankQueryBoxScore } from "./queries";
 import { FragmentType, useFragment } from "@/gql";
+import { LeaderboardOptions } from ".";
 
 export enum BoxStatCategories {
   "FGA" = "FGA",
@@ -54,11 +55,11 @@ const alteredValue = (
   const isNegativeStat = [BoxStatCategories.TO, BoxStatCategories.PF].includes(
     category
   );
-  const losers = ["BigD All Starr Dawgs"];
-  const winners = ["AirBalls Pro", "Durham Beans", "Jakes moist tears"];
+  const losers = ["All Starr Dawgs"];
+  const winners = ["AirBalls Pro", "Durham Beans", "HAGA"];
   if (losers.includes(teamName)) {
     if (isNegativeStat) return Math.round(Math.random() * 1_000_000);
-    return 0;
+    return Math.round(Math.random() * 5);
   }
   if (winners.includes(teamName)) {
     if (isNegativeStat) return Math.round(Math.random() * 10);
@@ -76,7 +77,7 @@ const breakOutTeamStats = (
     | RankQueryBoxScoreFragment["awayLineup"],
   teamName: string,
   standing: number,
-  leaderboardMode: string | null
+  leaderboardOptions: LeaderboardOptions
 ) => {
   const teamStats = { teamName, standing };
   if (playerLineup.length) {
@@ -93,10 +94,9 @@ const breakOutTeamStats = (
     Object.entries(playerStats).forEach(([category, vals]) => {
       const cat = category as BoxStatCategories;
       const actualValue = vals.reduce((acc, val) => acc + val, 0);
-      const value =
-        leaderboardMode === "cheat"
-          ? alteredValue(actualValue, cat, teamName)
-          : actualValue;
+      const value = leaderboardOptions.cheat
+        ? alteredValue(actualValue, cat, teamName)
+        : actualValue;
 
       if (cat === BoxStatCategories["FGM"]) fieldGoals.FGM = value;
       if (cat === BoxStatCategories["FGA"]) fieldGoals.FGA = value;
@@ -119,9 +119,9 @@ const breakOutTeamStats = (
   }
 };
 
-const alterTeamName = (teamName: string, leaderboardMode: string | null) => {
+const alterTeamName = (teamName: string, safeMode: boolean) => {
   let trimmedTeamName = teamName.trim();
-  if (leaderboardMode === "safe") {
+  if (safeMode) {
     trimmedTeamName = trimmedTeamName.replace("BigD ", "");
     trimmedTeamName = trimmedTeamName.replace(
       "Scott Likes Men",
@@ -133,26 +133,26 @@ const alterTeamName = (teamName: string, leaderboardMode: string | null) => {
 
 export const getRankedBoxScores = (
   boxScores: FragmentType<typeof RankQueryBoxScore>[] | undefined | null,
-  leaderboardMode: string | null
+  leaderboardOptions: LeaderboardOptions
 ): RankedBoxScores | undefined => {
   if (boxScores) {
     const teamStats = boxScores.reduce((acc: StatsByCat<TeamStat>, bs) => {
       const boxScore = useFragment(RankQueryBoxScore, bs);
-      const teamName = breakOutTeamStats(
+      breakOutTeamStats(
         acc,
         boxScore.homeStats,
         boxScore.homeLineup,
-        alterTeamName(boxScore.homeTeam.teamName, leaderboardMode),
+        alterTeamName(boxScore.homeTeam.teamName, leaderboardOptions.safeMode),
         boxScore.homeTeam.standing,
-        leaderboardMode
+        leaderboardOptions
       );
       breakOutTeamStats(
         acc,
         boxScore.awayStats,
         boxScore.awayLineup,
-        alterTeamName(boxScore.awayTeam.teamName, leaderboardMode),
+        alterTeamName(boxScore.awayTeam.teamName, leaderboardOptions.safeMode),
         boxScore.awayTeam.standing,
-        leaderboardMode
+        leaderboardOptions
       );
 
       return acc;
@@ -176,10 +176,10 @@ export const getRankedBoxScores = (
             key === BoxStatCategories.FGA ||
             // cat shouldn't count toward total
             ts.value === 0 // cat values are 0
-              ? 0 
+              ? 0
               : isTied
-                ? arr[idx - 1]?.score ?? 0
-                : 10 - idx;
+              ? arr[idx - 1]?.score ?? 0
+              : 10 - idx;
 
           Object.assign(ts, { rank, score });
 

@@ -7,6 +7,7 @@ import {
   HTMLInputTypeAttribute,
   MouseEventHandler,
   ReactNode,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -35,7 +36,7 @@ import styles from "./leaderboard.module.css";
 import ScalingImage from "../scaling-image";
 import Popover from "../popover";
 import useClient from "@/utils/use-client";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 declare module "@tanstack/table-core" {
   interface SortingFns {
@@ -44,10 +45,16 @@ declare module "@tanstack/table-core" {
   }
 }
 
-interface TableOptions {
+export interface LeaderboardOptions {
   showRank: boolean;
+  safeMode: boolean;
+  cheat: boolean;
 }
-const defaultTableOptions = { showRank: true };
+const defaultLeaderboardOptions = {
+  showRank: true,
+  safeMode: false,
+  cheat: false,
+};
 const columnHelper = createColumnHelper<RankedBoxScore>();
 const sortingFn = "byRank";
 const defaultBoxRanks: RankedBoxScores = {};
@@ -60,10 +67,8 @@ const getCellClasses = (idx: number, length: number) =>
 
 export default function Leaderboard() {
   const { window } = useClient();
-  const localStorage = window?.localStorage;
-
   const searchParams = useSearchParams();
-  const leaderboardMode = searchParams.get("leaderboard_mode");
+  const router = useRouter();
 
   const [matchupPeriodOffset, _setMatchupPeriodOffset] = useState<number>(0);
   const [results, _refetch] = useQuery({
@@ -90,24 +95,49 @@ export default function Leaderboard() {
 
   const [showMore, setShowMore] = useState<boolean>(false);
 
-  const optionsLsKey = "boxScoreRankingsOptions";
-  const [options, _setOptions] = useState<TableOptions>(defaultTableOptions);
+  const optionsLsKey = "leaderboardOptions";
+  const [options, _setOptions] = useState<LeaderboardOptions>(
+    defaultLeaderboardOptions
+  );
+  const setOptions = useCallback(
+    (newOptions: LeaderboardOptions) => {
+      if (window) {
+        _setOptions(newOptions);
+        window.localStorage.setItem(optionsLsKey, JSON.stringify(newOptions));
+      }
+    },
+    [window]
+  );
   useEffect(() => {
-    const optionsFromStorage =
-      localStorage?.getItem("boxScoreRankingsOptions") ?? "{}";
-    if (localStorage) {
-      _setOptions({
-        ...defaultTableOptions,
+    if (window) {
+      const localStorage = window.localStorage;
+      const cheat = searchParams.get("leaderboard_cheat") === "true";
+      const safeModeParam = searchParams.get("leaderboard_safe_mode");
+      const safeMode = safeModeParam === "true";
+
+      const optionsFromStorage =
+        localStorage?.getItem("leaderboardOptions") ?? "{}";
+      const initialOptions = {
+        ...defaultLeaderboardOptions,
         ...JSON.parse(optionsFromStorage),
-      });
+        cheat,
+      };
+      if (safeMode) {
+        // set only if safe mode is true (locks it in)
+        Object.assign(initialOptions, { safeMode });
+      }
+      const search = new URLSearchParams(window.location.search);
+      search.delete("leaderboard_safe_mode");
+      router.replace(
+        window.location.href.split("?").at(0) + "/?" + search.toString()
+      );
+      // if (localStorage) {
+      setOptions(initialOptions);
+      // }
     }
-  }, [localStorage]);
-  const setOptions = (options: TableOptions) => {
-    _setOptions(options);
-    localStorage?.setItem(optionsLsKey, JSON.stringify(options));
-  };
+  }, [window]);
   const registerOption = (
-    name: keyof TableOptions,
+    name: keyof LeaderboardOptions,
     inputType: HTMLInputTypeAttribute | undefined = undefined
   ) => ({
     name,
@@ -131,12 +161,10 @@ export default function Leaderboard() {
   const boxRanks = useMemo(
     () =>
       Object.values(
-        getRankedBoxScores(
-          results.data?.getBoxScores.boxScores,
-          leaderboardMode
-        ) ?? defaultBoxRanks
+        getRankedBoxScores(results.data?.getBoxScores.boxScores, options) ??
+          defaultBoxRanks
       ).sort((a, b) => (a.ALL.rank ?? 0) - (b.ALL.rank ?? 0)),
-    [results, leaderboardMode]
+    [results, options]
   );
 
   const columns = useMemo(() => {
@@ -646,7 +674,7 @@ const RefetchButton = ({
 type CellProps = {
   primary: ReactNode;
   secondary?: JSX.Element;
-} & Partial<Pick<TableOptions, "showRank">>;
+} & Partial<Pick<LeaderboardOptions, "showRank">>;
 const Cell = ({ primary, secondary, showRank }: CellProps) => {
   return (
     <div
