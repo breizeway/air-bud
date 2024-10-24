@@ -7,13 +7,16 @@ export enum BoxStatCategories {
   "FGA" = "FGA",
   "FGM" = "FGM",
   "FG%" = "FG%",
-  "3PTM" = "3PTM",
+  "FTA" = "FTA",
+  "FTM" = "FTM",
+  "FT%" = "FT%",
+  "3PM" = "3PM",
   "REB" = "REB",
   "AST" = "AST",
   "STL" = "STL",
   "BLK" = "BLK",
   "TO" = "TO",
-  "PF" = "PF",
+  // "PF" = "PF",
   "PTS" = "PTS",
   "ALL" = "ALL",
 }
@@ -32,13 +35,16 @@ const initStatsByCat = <T>(): StatsByCat<T> => ({
   FGA: [],
   FGM: [],
   "FG%": [],
-  "3PTM": [],
+  FTA: [],
+  FTM: [],
+  "FT%": [],
+  "3PM": [],
   REB: [],
   AST: [],
   STL: [],
   BLK: [],
   TO: [],
-  PF: [],
+  // PF: [],
   PTS: [],
   // important that this one is last to make rankings work with only one iteration
   ALL: [],
@@ -52,9 +58,10 @@ const alteredValue = (
   category: BoxStatCategories,
   teamName: string
 ) => {
-  const isNegativeStat = [BoxStatCategories.TO, BoxStatCategories.PF].includes(
-    category
-  );
+  const isNegativeStat = [
+    BoxStatCategories.TO,
+    // , BoxStatCategories.PF
+  ].includes(category);
   const losers = ["All Starr Dawgs"];
   const winners = ["AirBalls Pro", "Durham Beans", "HAGA"];
   if (losers.includes(teamName)) {
@@ -91,6 +98,7 @@ const breakOutTeamStats = (
     }, initStatsByCat<number>());
 
     const fieldGoals = { FGM: 0, FGA: 0 };
+    const freeThrows = { FTM: 0, FTA: 0 };
     Object.entries(playerStats).forEach(([category, vals]) => {
       const cat = category as BoxStatCategories;
       const actualValue = vals.reduce((acc, val) => acc + val, 0);
@@ -100,13 +108,19 @@ const breakOutTeamStats = (
 
       if (cat === BoxStatCategories["FGM"]) fieldGoals.FGM = value;
       if (cat === BoxStatCategories["FGA"]) fieldGoals.FGA = value;
-      if (cat !== BoxStatCategories["FG%"])
+      if (cat === BoxStatCategories["FTM"]) freeThrows.FTM = value;
+      if (cat === BoxStatCategories["FTA"]) freeThrows.FTA = value;
+      if (![BoxStatCategories["FG%"], BoxStatCategories["FT%"]].includes(cat))
         boxRanks[cat]?.push({ ...teamStats, value });
     });
 
     boxRanks[BoxStatCategories["FG%"]]?.push({
       ...teamStats,
       value: fieldGoals.FGA === 0 ? 0 : fieldGoals.FGM / fieldGoals.FGA,
+    });
+    boxRanks[BoxStatCategories["FT%"]]?.push({
+      ...teamStats,
+      value: freeThrows.FTA === 0 ? 0 : freeThrows.FTM / freeThrows.FTA,
     });
   } else {
     // static (non-live) box scores for prior weeks
@@ -163,7 +177,12 @@ export const getRankedBoxScores = (
         const key = k as BoxStatCategories;
 
         teamStats[key]?.sort((a, b) => {
-          if (!(key === BoxStatCategories.PF || key === BoxStatCategories.TO))
+          if (
+            !(
+              // key === BoxStatCategories.PF ||
+              (key === BoxStatCategories.TO)
+            )
+          )
             return b.value - a.value;
           return a.value - b.value;
         });
@@ -172,10 +191,13 @@ export const getRankedBoxScores = (
           const isTied = ts.value === arr[idx - 1]?.value;
           const rank = isTied ? arr[idx - 1]?.rank ?? 0 : idx + 1;
           const score =
-            key === BoxStatCategories.FGM ||
-            key === BoxStatCategories.FGA ||
             // cat shouldn't count toward total
-            ts.value === 0 // cat values are 0
+            [
+              BoxStatCategories.FGM,
+              BoxStatCategories.FGA,
+              BoxStatCategories.FTM,
+              BoxStatCategories.FTA,
+            ].includes(key) || ts.value === 0 // cat values are 0
               ? 0
               : isTied
               ? arr[idx - 1]?.score ?? 0

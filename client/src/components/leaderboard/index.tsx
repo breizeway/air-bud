@@ -182,12 +182,12 @@ export default function Leaderboard() {
           />
         ),
         cell: (info) => {
-          const rank = info.getValue().rank ?? 0;
-          const rankChange = info.getValue().standing - rank;
+          const rank = info.getValue()?.rank ?? 0;
+          const rankChange = info.getValue()?.standing - rank;
 
           return (
             <Cell
-              primary={<span>{info.getValue().teamName}</span>}
+              primary={<span>{info.getValue()?.teamName}</span>}
               secondary={
                 <span>
                   <Rank rank={rank} />{" "}
@@ -227,16 +227,43 @@ export default function Leaderboard() {
                 {info
                   .getValue()
                   .value.toFixed(3)
-                  .slice([0, 1].includes(info.getValue().value) ? 0 : 1)}
+                  .slice([0, 1].includes(info.getValue()?.value) ? 0 : 1)}
               </span>
             }
-            secondary={<Rank rank={info.getValue().rank} />}
+            secondary={<Rank rank={info.getValue()?.rank} />}
             showRank={options.showRank}
           />
         ),
         sortingFn,
       }),
-      columnHelper.accessor(BoxStatCategories["3PTM"], {
+      columnHelper.accessor(BoxStatCategories["FT%"], {
+        header: (info) => (
+          <Cell
+            primary={
+              <span>
+                {"FT%"}
+                {<SortSymbol {...{ info }} />}
+              </span>
+            }
+          />
+        ),
+        cell: (info) => (
+          <Cell
+            primary={
+              <span>
+                {info
+                  .getValue()
+                  .value.toFixed(3)
+                  .slice([0, 1].includes(info.getValue()?.value) ? 0 : 1)}
+              </span>
+            }
+            secondary={<Rank rank={info.getValue()?.rank} />}
+            showRank={options.showRank}
+          />
+        ),
+        sortingFn,
+      }),
+      columnHelper.accessor(BoxStatCategories["3PM"], {
         header: (info) => (
           <Cell
             primary={
@@ -249,8 +276,8 @@ export default function Leaderboard() {
         ),
         cell: (info) => (
           <Cell
-            primary={<span>{info.getValue().value}</span>}
-            secondary={<Rank rank={info.getValue().rank} />}
+            primary={<span>{info.getValue()?.value}</span>}
+            secondary={<Rank rank={info.getValue()?.rank} />}
             showRank={options.showRank}
           />
         ),
@@ -269,8 +296,8 @@ export default function Leaderboard() {
         ),
         cell: (info) => (
           <Cell
-            primary={<span>{info.getValue().value}</span>}
-            secondary={<Rank rank={info.getValue().rank} />}
+            primary={<span>{info.getValue()?.value}</span>}
+            secondary={<Rank rank={info.getValue()?.rank} />}
             showRank={options.showRank}
           />
         ),
@@ -289,8 +316,8 @@ export default function Leaderboard() {
         ),
         cell: (info) => (
           <Cell
-            primary={<span>{info.getValue().value}</span>}
-            secondary={<Rank rank={info.getValue().rank} />}
+            primary={<span>{info.getValue()?.value}</span>}
+            secondary={<Rank rank={info.getValue()?.rank} />}
             showRank={options.showRank}
           />
         ),
@@ -309,8 +336,8 @@ export default function Leaderboard() {
         ),
         cell: (info) => (
           <Cell
-            primary={<span>{info.getValue().value}</span>}
-            secondary={<Rank rank={info.getValue().rank} />}
+            primary={<span>{info.getValue()?.value}</span>}
+            secondary={<Rank rank={info.getValue()?.rank} />}
             showRank={options.showRank}
           />
         ),
@@ -329,8 +356,8 @@ export default function Leaderboard() {
         ),
         cell: (info) => (
           <Cell
-            primary={<span>{info.getValue().value}</span>}
-            secondary={<Rank rank={info.getValue().rank} />}
+            primary={<span>{info.getValue()?.value}</span>}
+            secondary={<Rank rank={info.getValue()?.rank} />}
             showRank={options.showRank}
           />
         ),
@@ -349,28 +376,8 @@ export default function Leaderboard() {
         ),
         cell: (info) => (
           <Cell
-            primary={<span>{info.getValue().value}</span>}
-            secondary={<Rank rank={info.getValue().rank} />}
-            showRank={options.showRank}
-          />
-        ),
-        sortingFn,
-      }),
-      columnHelper.accessor(BoxStatCategories.PF, {
-        header: (info) => (
-          <Cell
-            primary={
-              <span>
-                {"PF"}
-                {<SortSymbol {...{ info }} />}
-              </span>
-            }
-          />
-        ),
-        cell: (info) => (
-          <Cell
-            primary={<span>{info.getValue().value}</span>}
-            secondary={<Rank rank={info.getValue().rank} />}
+            primary={<span>{info.getValue()?.value}</span>}
+            secondary={<Rank rank={info.getValue()?.rank} />}
             showRank={options.showRank}
           />
         ),
@@ -389,8 +396,8 @@ export default function Leaderboard() {
         ),
         cell: (info) => (
           <Cell
-            primary={<span>{info.getValue().value}</span>}
-            secondary={<Rank rank={info.getValue().rank} />}
+            primary={<span>{info.getValue()?.value}</span>}
+            secondary={<Rank rank={info.getValue()?.rank} />}
             showRank={options.showRank}
           />
         ),
@@ -410,8 +417,8 @@ export default function Leaderboard() {
         ),
         cell: (info) => (
           <Cell
-            primary={<span>{info.getValue().value}</span>}
-            secondary={<Rank rank={info.getValue().rank} />}
+            primary={<span>{info.getValue()?.value}</span>}
+            secondary={<Rank rank={info.getValue()?.rank} />}
             showRank={options.showRank}
           />
         ),
