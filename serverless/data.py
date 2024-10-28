@@ -14,6 +14,7 @@ def serialize_dict(box_stats: STATS_MAP, key_name: str):
 
 def listify_stats(stats: STATS_MAP):
     result = list()
+    print(":::STATS.ITEMS()::: ", stats.items())
     for k, v in (stats.items() or dict()):
         val = float(v)
         result.append(
