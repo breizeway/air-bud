@@ -1,9 +1,10 @@
+import os
+from datetime import datetime
+
 from espn_api.basketball import League
 from espn_api.requests.espn_requests import ESPNAccessDenied
-from resolvers.response import ClientErrorCodes, ClientError, Response
-from datetime import datetime
+from resolvers.response import ClientError, ClientErrorCodes, Response
 from resources.edge import EdgeStore
-import os
 
 
 class LeagueApi:
@@ -15,7 +16,7 @@ class LeagueApi:
         try:
             league_auth = EdgeStore().league_auth
             self.league = League(league_id=int(
-                os.environ["LEAGUE_ID"]), year=league_year, swid=league_auth.swid, espn_s2=league_auth.espn_s2, debug=True)
+                os.environ["LEAGUE_ID"]), year=league_year, swid=league_auth.swid, espn_s2=league_auth.espn_s2, debug=False)
         except ESPNAccessDenied:
             self.response.add_error(ClientError(
                 ClientErrorCodes.LEAGUE_API_AUTH, "ESPN api private league authentication credentials are not valid"))

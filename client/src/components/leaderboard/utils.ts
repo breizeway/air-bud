@@ -1,7 +1,11 @@
-import { BoxStat, RankQueryBoxScoreFragment } from "@/gql/graphql";
-import { RankQueryBoxScore } from "./queries";
 import { FragmentType, useFragment } from "@/gql";
+import {
+  BoxScoreFragmentFragment,
+  BoxStat,
+  TeamFragmentFragment,
+} from "@/gql/graphql";
 import { LeaderboardOptions } from ".";
+import { BoxScoreFragment, TeamFragment } from "./queries";
 
 export enum BoxStatCategories {
   "FGA" = "FGA",
@@ -80,8 +84,8 @@ const breakOutTeamStats = (
   boxRanks: StatsByCat<TeamStat>,
   boxStats: BoxStat[],
   playerLineup:
-    | RankQueryBoxScoreFragment["homeLineup"]
-    | RankQueryBoxScoreFragment["awayLineup"],
+    | BoxScoreFragmentFragment["homeLineup"]
+    | BoxScoreFragmentFragment["awayLineup"],
   teamName: string,
   standing: number,
   leaderboardOptions: LeaderboardOptions
@@ -133,39 +137,38 @@ const breakOutTeamStats = (
   }
 };
 
-const alterTeamName = (teamName: string, safeMode: boolean) => {
-  let trimmedTeamName = teamName.trim();
+const getTeamName = (team: TeamFragmentFragment, safeMode: boolean) => {
+  let teamName = team.teamName.trim();
   if (safeMode) {
-    trimmedTeamName = trimmedTeamName.replace("BigD ", "");
-    trimmedTeamName = trimmedTeamName.replace(
-      "Scott Likes Men",
-      "Scott's Team Sucks"
-    );
+    const firstName = team.owners.at(0)?.firstName ?? "";
+    teamName = `${firstName}'s Team`;
   }
-  return trimmedTeamName;
+  return teamName;
 };
 
 export const getRankedBoxScores = (
-  boxScores: FragmentType<typeof RankQueryBoxScore>[] | undefined | null,
+  boxScores: FragmentType<typeof BoxScoreFragment>[] | undefined | null,
   leaderboardOptions: LeaderboardOptions
 ): RankedBoxScores | undefined => {
   if (boxScores) {
     const teamStats = boxScores.reduce((acc: StatsByCat<TeamStat>, bs) => {
-      const boxScore = useFragment(RankQueryBoxScore, bs);
+      const boxScore = useFragment(BoxScoreFragment, bs);
+      const homeTeam = useFragment(TeamFragment, boxScore.homeTeam);
+      const awayTeam = useFragment(TeamFragment, boxScore.awayTeam);
       breakOutTeamStats(
         acc,
         boxScore.homeStats,
         boxScore.homeLineup,
-        alterTeamName(boxScore.homeTeam.teamName, leaderboardOptions.safeMode),
-        boxScore.homeTeam.standing,
+        getTeamName(homeTeam, leaderboardOptions.safeMode),
+        homeTeam.standing,
         leaderboardOptions
       );
       breakOutTeamStats(
         acc,
         boxScore.awayStats,
         boxScore.awayLineup,
-        alterTeamName(boxScore.awayTeam.teamName, leaderboardOptions.safeMode),
-        boxScore.awayTeam.standing,
+        getTeamName(awayTeam, leaderboardOptions.safeMode),
+        awayTeam.standing,
         leaderboardOptions
       );
 

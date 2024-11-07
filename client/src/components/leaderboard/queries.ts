@@ -1,11 +1,21 @@
 import { graphql } from "../../gql";
 
-export const RankQueryBoxScore = graphql(`
-  fragment RankQueryBoxScore on BoxScore {
+export const TeamFragment = graphql(`
+  fragment TeamFragment on Team {
+    teamName
+    standing
+    owners {
+      firstName
+      displayName
+    }
+  }
+`);
+
+export const BoxScoreFragment = graphql(`
+  fragment BoxScoreFragment on BoxScore {
     winner
     homeTeam {
-      teamName
-      standing
+      ...TeamFragment
     }
     homeStats {
       category
@@ -19,8 +29,7 @@ export const RankQueryBoxScore = graphql(`
       }
     }
     awayTeam {
-      teamName
-      standing
+      ...TeamFragment
     }
     awayStats {
       category
@@ -46,7 +55,7 @@ export const rankQuery = graphql(`
         message
       }
       boxScores {
-        ...RankQueryBoxScore
+        ...BoxScoreFragment
       }
       currentMatchupPeriod
     }

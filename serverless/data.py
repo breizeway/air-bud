@@ -1,8 +1,10 @@
+import json
 import math
-from espn_api.basketball.box_score import BoxScore, STATS_MAP
-from espn_api.basketball.team import Team
+
 from espn_api.basketball.box_player import BoxPlayer
+from espn_api.basketball.box_score import STATS_MAP, BoxScore
 from espn_api.basketball.player import Player
+from espn_api.basketball.team import Team
 
 
 def serialize_dict(box_stats: STATS_MAP, key_name: str):
@@ -57,6 +59,14 @@ class ClientPlayer:
         self.projected_avg_points = player.projected_avg_points
 
 
+class ClientOwner:
+    def __init__(self, owner: dict):
+        self.id = owner.get("id")
+        self.display_name = owner.get("displayName")
+        self.first_name = owner.get("firstName")
+        self.lastName = owner.get("lastName")
+
+
 class ClientTeam:
     def __init__(self, team: Team):
         self.team_id = team.team_id
@@ -67,8 +77,7 @@ class ClientTeam:
         self.wins = team.wins
         self.losses = team.losses
         self.ties = team.ties
-        # additional team owner data available in espn-api >= v0.34.0
-        self.owners = team.owners
+        self.owners = map(lambda owner: ClientOwner(owner), team.owners)
         self.standing = team.standing
         self.final_standing = team.final_standing
         self.logo_url = team.logo_url

@@ -68,6 +68,13 @@ type BoxPlayer {
   gamePlayed: Int!
 }
 
+type Owner {
+  id: ID!
+  displayName: String!
+  firstName: String!
+  lastName: String
+}
+
 type Team {
   teamId: Int!
   teamAbbrev: String!
@@ -77,8 +84,7 @@ type Team {
   wins: Int!
   losses: Int!
   ties: Int!
-  "array of owner ids"
-  owners: [String!]!
+  owners: [Owner!]!
   "standing before playoffs"
   standing: Int!
   "final standing at end of season"

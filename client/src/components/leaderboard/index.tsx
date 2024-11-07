@@ -1,7 +1,20 @@
 "use client";
 
+import { rankQuery } from "@/components/leaderboard/queries";
+import { classNames } from "@/utils";
+import useClient from "@/utils/use-client";
+import {
+  HeaderContext,
+  SortingFn,
+  SortingState,
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import { useQuery } from "@urql/next";
-import Loading from "../loading";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   ChangeEvent,
   HTMLInputTypeAttribute,
@@ -13,6 +26,10 @@ import {
   useRef,
   useState,
 } from "react";
+import Loading from "../loading";
+import Popover from "../popover";
+import ScalingImage from "../scaling-image";
+import styles from "./leaderboard.module.css";
 import {
   BoxStatCategories,
   RankedBoxScore,
@@ -20,23 +37,6 @@ import {
   TeamStat,
   getRankedBoxScores,
 } from "./utils";
-import { rankQuery } from "@/components/leaderboard/queries";
-import {
-  HeaderContext,
-  SortingFn,
-  SortingState,
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-import { classNames } from "@/utils";
-import styles from "./leaderboard.module.css";
-import ScalingImage from "../scaling-image";
-import Popover from "../popover";
-import useClient from "@/utils/use-client";
-import { useRouter, useSearchParams } from "next/navigation";
 
 declare module "@tanstack/table-core" {
   interface SortingFns {
@@ -77,6 +77,7 @@ export default function Leaderboard() {
       matchupPeriodOffset,
     },
   });
+  console.log(`:::RESULTS::: `, results);
   const currentMatchupPeriod = results.data?.getBoxScores.currentMatchupPeriod;
   const setMatchupPeriodOffset = (offset: number) => {
     if (offset <= 0 && (currentMatchupPeriod ?? 0) + offset > 0)
