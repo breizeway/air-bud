@@ -105,10 +105,7 @@ const breakOutTeamStats = (
     const freeThrows = { FTM: 0, FTA: 0 };
     Object.entries(playerStats).forEach(([category, vals]) => {
       const cat = category as BoxStatCategories;
-      const actualValue = vals.reduce((acc, val) => acc + val, 0);
-      const value = leaderboardOptions.cheat
-        ? alteredValue(actualValue, cat, teamName)
-        : actualValue;
+      const value = vals.reduce((acc, val) => acc + val, 0);
 
       if (cat === BoxStatCategories["FGM"]) fieldGoals.FGM = value;
       if (cat === BoxStatCategories["FGA"]) fieldGoals.FGA = value;
@@ -137,9 +134,9 @@ const breakOutTeamStats = (
   }
 };
 
-const getTeamName = (team: TeamFragmentFragment, safeMode: boolean) => {
+const getTeamName = (team: TeamFragmentFragment, sfwMode: boolean) => {
   let teamName = team.teamName.trim();
-  if (safeMode) {
+  if (sfwMode) {
     const firstName = team.owners.at(0)?.firstName ?? "";
     teamName = `${firstName}'s Team`;
   }
@@ -159,7 +156,7 @@ export const getRankedBoxScores = (
         acc,
         boxScore.homeStats,
         boxScore.homeLineup,
-        getTeamName(homeTeam, leaderboardOptions.safeMode),
+        getTeamName(homeTeam, leaderboardOptions.sfwMode),
         homeTeam.standing,
         leaderboardOptions
       );
@@ -167,7 +164,7 @@ export const getRankedBoxScores = (
         acc,
         boxScore.awayStats,
         boxScore.awayLineup,
-        getTeamName(awayTeam, leaderboardOptions.safeMode),
+        getTeamName(awayTeam, leaderboardOptions.sfwMode),
         awayTeam.standing,
         leaderboardOptions
       );

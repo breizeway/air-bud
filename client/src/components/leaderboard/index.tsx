@@ -46,14 +46,12 @@ declare module "@tanstack/table-core" {
 }
 
 export interface LeaderboardOptions {
-  showRank: boolean;
-  safeMode: boolean;
-  cheat: boolean;
+  hideRank: boolean;
+  sfwMode: boolean;
 }
 const defaultLeaderboardOptions = {
-  showRank: true,
-  safeMode: false,
-  cheat: false,
+  hideRank: false,
+  sfwMode: false,
 };
 const columnHelper = createColumnHelper<RankedBoxScore>();
 const sortingFn = "byRank";
@@ -77,7 +75,6 @@ export default function Leaderboard() {
       matchupPeriodOffset,
     },
   });
-  console.log(`:::RESULTS::: `, results);
   const currentMatchupPeriod = results.data?.getBoxScores.currentMatchupPeriod;
   const setMatchupPeriodOffset = (offset: number) => {
     if (offset <= 0 && (currentMatchupPeriod ?? 0) + offset > 0)
@@ -112,29 +109,25 @@ export default function Leaderboard() {
   useEffect(() => {
     if (window) {
       const localStorage = window.localStorage;
-      const cheat = searchParams.get("leaderboard_cheat") === "true";
-      const safeModeParam = searchParams.get("leaderboard_safe_mode");
-      const safeMode = safeModeParam === "true";
+      const sfwModeParam = searchParams.get("sfw-mode");
+      const sfwMode = sfwModeParam === "true";
 
       const optionsFromStorage =
         localStorage?.getItem("leaderboardOptions") ?? "{}";
       const initialOptions = {
         ...defaultLeaderboardOptions,
         ...JSON.parse(optionsFromStorage),
-        cheat,
       };
-      if (safeMode) {
+      if (sfwMode) {
         // set only if safe mode is true (locks it in)
-        Object.assign(initialOptions, { safeMode });
+        Object.assign(initialOptions, { sfwMode });
       }
       const search = new URLSearchParams(window.location.search);
-      search.delete("leaderboard_safe_mode");
+      search.delete("sfw-mode");
       router.replace(
         window.location.href.split("?").at(0) + "/?" + search.toString()
       );
-      // if (localStorage) {
       setOptions(initialOptions);
-      // }
     }
   }, [window]);
   const registerOption = (
@@ -204,7 +197,7 @@ export default function Leaderboard() {
                   </span>
                 </span>
               }
-              showRank={options.showRank}
+              hideRank={options.hideRank}
             />
           );
         },
@@ -232,7 +225,7 @@ export default function Leaderboard() {
               </span>
             }
             secondary={<Rank rank={info.getValue()?.rank} />}
-            showRank={options.showRank}
+            hideRank={options.hideRank}
           />
         ),
         sortingFn,
@@ -259,7 +252,7 @@ export default function Leaderboard() {
               </span>
             }
             secondary={<Rank rank={info.getValue()?.rank} />}
-            showRank={options.showRank}
+            hideRank={options.hideRank}
           />
         ),
         sortingFn,
@@ -279,7 +272,7 @@ export default function Leaderboard() {
           <Cell
             primary={<span>{info.getValue()?.value}</span>}
             secondary={<Rank rank={info.getValue()?.rank} />}
-            showRank={options.showRank}
+            hideRank={options.hideRank}
           />
         ),
         sortingFn,
@@ -299,7 +292,7 @@ export default function Leaderboard() {
           <Cell
             primary={<span>{info.getValue()?.value}</span>}
             secondary={<Rank rank={info.getValue()?.rank} />}
-            showRank={options.showRank}
+            hideRank={options.hideRank}
           />
         ),
         sortingFn,
@@ -319,7 +312,7 @@ export default function Leaderboard() {
           <Cell
             primary={<span>{info.getValue()?.value}</span>}
             secondary={<Rank rank={info.getValue()?.rank} />}
-            showRank={options.showRank}
+            hideRank={options.hideRank}
           />
         ),
         sortingFn,
@@ -339,7 +332,7 @@ export default function Leaderboard() {
           <Cell
             primary={<span>{info.getValue()?.value}</span>}
             secondary={<Rank rank={info.getValue()?.rank} />}
-            showRank={options.showRank}
+            hideRank={options.hideRank}
           />
         ),
         sortingFn,
@@ -359,7 +352,7 @@ export default function Leaderboard() {
           <Cell
             primary={<span>{info.getValue()?.value}</span>}
             secondary={<Rank rank={info.getValue()?.rank} />}
-            showRank={options.showRank}
+            hideRank={options.hideRank}
           />
         ),
         sortingFn,
@@ -379,7 +372,7 @@ export default function Leaderboard() {
           <Cell
             primary={<span>{info.getValue()?.value}</span>}
             secondary={<Rank rank={info.getValue()?.rank} />}
-            showRank={options.showRank}
+            hideRank={options.hideRank}
           />
         ),
         sortingFn,
@@ -399,7 +392,7 @@ export default function Leaderboard() {
           <Cell
             primary={<span>{info.getValue()?.value}</span>}
             secondary={<Rank rank={info.getValue()?.rank} />}
-            showRank={options.showRank}
+            hideRank={options.hideRank}
           />
         ),
         sortingFn,
@@ -420,13 +413,13 @@ export default function Leaderboard() {
           <Cell
             primary={<span>{info.getValue()?.value}</span>}
             secondary={<Rank rank={info.getValue()?.rank} />}
-            showRank={options.showRank}
+            hideRank={options.hideRank}
           />
         ),
         sortingFn,
       }),
     ];
-  }, [options.showRank]);
+  }, [options.hideRank]);
 
   const table = useReactTable({
     columns,
@@ -505,20 +498,46 @@ export default function Leaderboard() {
                   <>
                     {isOpen && (
                       <div className="px-4 py-1 text-lg bg-beige-100 flex flex-col shadow-xl">
-                        <div className="flex gap-2 py-1">
-                          <input
-                            id="options__show-detail"
-                            type="checkbox"
-                            className="inline"
-                            {...registerOption("showRank", "checkbox")}
-                          />
-                          <label
-                            htmlFor="options__show-detail"
-                            className="whitespace-nowrap"
-                          >
-                            Show rank
-                          </label>
-                        </div>
+                        <table className="[&_input]:mr-4">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <input
+                                  id="options__hide-rank"
+                                  type="checkbox"
+                                  className="inline"
+                                  {...registerOption("hideRank", "checkbox")}
+                                />
+                              </td>
+                              <td>
+                                <label
+                                  htmlFor="options__hide-rank"
+                                  className="whitespace-nowrap"
+                                >
+                                  Hide Rank
+                                </label>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <input
+                                  id="options__sfw-mode"
+                                  type="checkbox"
+                                  className="inline"
+                                  {...registerOption("sfwMode", "checkbox")}
+                                />
+                              </td>
+                              <td>
+                                <label
+                                  htmlFor="options__sfw-mode"
+                                  className="whitespace-nowrap"
+                                >
+                                  SFW Mode
+                                </label>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     )}
                   </>
@@ -563,7 +582,7 @@ export default function Leaderboard() {
         )}
 
         {queryIsSuccess && (
-          <table ref={tableRef} className="my-2">
+          <table ref={tableRef} className={styles.leaderboardTable}>
             <thead className="text-left">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id} className="pt-10">
@@ -682,18 +701,18 @@ const RefetchButton = ({
 type CellProps = {
   primary: ReactNode;
   secondary?: JSX.Element;
-} & Partial<Pick<LeaderboardOptions, "showRank">>;
-const Cell = ({ primary, secondary, showRank }: CellProps) => {
+} & Partial<Pick<LeaderboardOptions, "hideRank">>;
+const Cell = ({ primary, secondary, hideRank }: CellProps) => {
   return (
     <div
       className={classNames("flex flex-col justify-start py-1", {
-        "py-[0.08rem]": !!showRank,
+        "py-[0.08rem]": !hideRank,
       })}
     >
       <div>{primary}</div>
       <div
         className={classNames("text-xs mt-[-0.25em]", {
-          hidden: !showRank,
+          hidden: !!hideRank,
         })}
       >
         {secondary}

@@ -6,32 +6,36 @@
   -webkit-transform: translateZ(0);
 }
 
-.leaderboard thead tr {
+.leaderboardTable {
+  @apply my-2;
+}
+
+.leaderboardTable thead tr {
   background-color: black;
 }
 
 /* i used this clunky shadow system because border doesn't work well with sticky positioning in safari */
-.leaderboard thead tr > * {
+.leaderboardTable thead tr > * {
   box-shadow: inset 0 -0.05rem #34302c;
 }
 
-.leaderboard tbody tr > * {
+.leaderboardTable tbody tr > * {
   box-shadow: inset 0 0.05rem #34302c, inset 0 -0.05rem #34302c;
 }
 
-.leaderboard tbody tr:last-child > * {
+.leaderboardTable tbody tr:last-child > * {
   box-shadow: inset 0 0.05rem #34302c;
 }
 
-.leaderboard tbody tr:nth-child(odd) {
+.leaderboardTable tbody tr:nth-child(odd) {
   background-color: #1a1816;
 }
 
-.leaderboard tbody tr:nth-child(even) {
+.leaderboardTable tbody tr:nth-child(even) {
   background-color: black;
 }
 
-.leaderboard .firstColumn {
+.leaderboardTable .firstColumn {
   @apply sticky left-0 z-10 pl-4;
 
   background-color: inherit;
