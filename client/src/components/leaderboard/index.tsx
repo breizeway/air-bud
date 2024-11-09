@@ -57,7 +57,7 @@ const columnHelper = createColumnHelper<RankedBoxScore>();
 const sortingFn = "byRank";
 const defaultBoxRanks: RankedBoxScores = {};
 const getCellClasses = (idx: number, length: number) =>
-  classNames("px-2", {
+  classNames("px-1 sm:px-2 text-xs sm:text-sm", {
     "text-right": !!idx,
     [styles.firstColumn]: !idx,
     "pr-4": idx === length - 1,
@@ -451,6 +451,7 @@ export default function Leaderboard() {
           <div className="flex flex-wrap gap-2 grow justify-between">
             <div className="flex items-center">
               <button
+                className="text-xl"
                 onClick={() => setMatchupPeriodOffset(matchupPeriodOffset - 1)}
               >
                 &#9668;
@@ -473,6 +474,7 @@ export default function Leaderboard() {
                 )}
               </button>
               <button
+                className="text-xl"
                 onClick={() => setMatchupPeriodOffset(matchupPeriodOffset + 1)}
               >
                 &#9658;
@@ -490,14 +492,14 @@ export default function Leaderboard() {
                       src="/icons/three-dots-vertical.svg"
                       hEm={1}
                       wEm={1}
-                      className="inline text-lg mb-[0.1em] my-auto"
+                      className="inline text-xl mb-[0.1em] my-auto"
                     />
                   </button>
                 )}
                 content={({ isOpen }) => (
                   <>
                     {isOpen && (
-                      <div className="px-4 py-1 text-lg bg-beige-100 flex flex-col shadow-xl">
+                      <div className="p-3 text-lg bg-beige-100 flex flex-col shadow-xl">
                         <table className="[&_input]:mr-4">
                           <tbody>
                             <tr>
@@ -675,7 +677,7 @@ const RefetchButton = ({
   isFetching: boolean;
   refetch: MouseEventHandler<HTMLButtonElement>;
 }) => {
-  const className = "inline text-lg mb-[0.1em] items-center";
+  const className = "inline text-xl mb-[0.1em] items-center";
 
   return (
     <button
