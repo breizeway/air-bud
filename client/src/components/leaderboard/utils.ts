@@ -1,3 +1,4 @@
+import { TEAM_NAME_ADJS } from "@/constants";
 import { FragmentType, useFragment } from "@/gql";
 import {
   BoxScoreFragmentFragment,
@@ -138,7 +139,7 @@ const getTeamName = (team: TeamFragmentFragment, sfwMode: boolean) => {
   let teamName = team.teamName.trim();
   if (sfwMode) {
     const firstName = team.owners.at(0)?.firstName ?? "";
-    teamName = `${firstName}'s Team`;
+    teamName = `${firstName}'s ${getTeamAdj(firstName)} Team`;
   }
   return teamName;
 };
@@ -224,5 +225,19 @@ export const getRankedBoxScores = (
     );
 
     return rankedBoxScoresByTeam;
+  }
+};
+
+const teamAdjCache: { [ownerFirstName: string]: string } = {};
+const getTeamAdj = (ownerFirstName: string) => {
+  const cachedAdj = teamAdjCache[ownerFirstName];
+  if (cachedAdj) return cachedAdj;
+  else {
+    const teamAdj =
+      TEAM_NAME_ADJS.at(
+        Math.round(Math.random() * (TEAM_NAME_ADJS.length - 1))
+      ) ?? "";
+    teamAdjCache[ownerFirstName] = teamAdj;
+    return teamAdj;
   }
 };
