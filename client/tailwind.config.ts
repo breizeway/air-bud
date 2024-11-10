@@ -36,6 +36,17 @@ const config: Config = {
       maxWidth: {
         content: contentWidth,
       },
+      animation: {
+        ping: "ping 3s ease-in-out infinite",
+      },
+      keyframes: {
+        ping: {
+          "50%": {
+            transform: "scale(2.4)",
+            opacity: "0",
+          },
+        },
+      },
     },
   },
   plugins: [

@@ -202,6 +202,7 @@ export const TEAM_NAME_ADJS: string[] = [
 ];
 
 export const TEAM_NAME_NOUNS: string[] = [
+  "Athletes",
   "Ball Hogs",
   "Ballers",
   "Ballistic Buddies",
@@ -247,7 +248,7 @@ export const TEAM_NAME_NOUNS: string[] = [
   "Legends",
   "Mates",
   "Mavericks",
-  "Mischiefs",
+  "Mischief Makers",
   "Nerds",
   "Ninjas",
   "Noodleheads",
@@ -256,7 +257,6 @@ export const TEAM_NAME_NOUNS: string[] = [
   "Players",
   "Posse",
   "Pros",
-  "Pundits",
   "Rascals",
   "Rim Rockers",
   "Rim Runners",
@@ -272,8 +272,10 @@ export const TEAM_NAME_NOUNS: string[] = [
   "Silly Geese",
   "Silly Sausages",
   "Slam Dunkers",
+  "Slam Dunkos",
   "Slam Jam Squad",
   "Slammin' Squad",
+  "Slammy Jammies",
   "Slayers",
   "Squad",
   "Stars",

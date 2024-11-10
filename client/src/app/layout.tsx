@@ -1,10 +1,10 @@
-import "./globals.css";
+import UrqlWrapper from "@/app/_providers/urql-wrapper";
+import { deatheMaachFont } from "@/assets/fonts";
+import CourtLayout from "@/components/court-layout";
 import type { Metadata } from "next";
 import { Viewport } from "next";
-import CourtLayout from "@/components/court-layout";
-import UrqlWrapper from "@/components/urql-wrapper";
 import Link from "next/link";
-import { deatheMaachFont } from "@/assets/fonts";
+import "./globals.css";
 
 export const viewport: Viewport = {
   themeColor: "#e03a3e",

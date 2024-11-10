@@ -1,6 +1,8 @@
 "use client";
 
+import { UrqlSubscription } from "@/app/_providers/urql-wrapper";
 import { rankQuery } from "@/components/leaderboard/queries";
+import { LiveIndicator } from "@/components/live-indicator";
 import { classNames } from "@/utils";
 import useClient from "@/utils/use-client";
 import {
@@ -69,7 +71,7 @@ export default function Leaderboard() {
   const router = useRouter();
 
   const [matchupPeriodOffset, _setMatchupPeriodOffset] = useState<number>(0);
-  const [results, _refetch] = useQuery({
+  const [results, refetch] = useQuery({
     query: rankQuery,
     variables: {
       matchupPeriodOffset,
@@ -81,13 +83,18 @@ export default function Leaderboard() {
       _setMatchupPeriodOffset(offset);
   };
   const manualRefetchInFlight = useRef(false);
-  const refetch = async () => {
+  const manualRefetch = async () => {
     manualRefetchInFlight.current = true;
-    _refetch();
+    refetch();
   };
   useEffect(() => {
     if (!results.stale) manualRefetchInFlight.current = false;
   }, [results]);
+  useEffect(() => {
+    const sub = new UrqlSubscription("leaderboard", refetch);
+    sub.start();
+    return () => sub.stop();
+  }, [refetch]);
 
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -481,6 +488,15 @@ export default function Leaderboard() {
               </button>
             </div>
             <div className="flex items-center">
+              <LiveIndicator className="text-xl mr-[0.9rem] mt-[0.15rem]" />
+              <RefetchButton
+                isFetching={
+                  !!results.data &&
+                  (results.fetching ||
+                    (results.stale && manualRefetchInFlight.current))
+                }
+                refetch={manualRefetch}
+              />
               <Popover
                 button={({ setIsOpen }) => (
                   <button
@@ -544,14 +560,6 @@ export default function Leaderboard() {
                     )}
                   </>
                 )}
-              />
-              <RefetchButton
-                isFetching={
-                  !!results.data &&
-                  (results.fetching ||
-                    (results.stale && manualRefetchInFlight.current))
-                }
-                refetch={refetch}
               />
             </div>
           </div>
