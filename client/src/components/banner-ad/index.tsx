@@ -1,8 +1,8 @@
 "use client";
 
+import { classNames } from "@/utils";
 import { useEffect, useState } from "react";
 import ScalingImage from "../scaling-image";
-import { classNames } from "@/utils";
 
 const NUM_ADS = 63;
 export default function BannerAd() {
@@ -19,7 +19,7 @@ export default function BannerAd() {
         <a
           href="https://tannor.net"
           target="_blank"
-          className={classNames("w-fit", { invisible })}
+          className={classNames("w-fit hidden sm:inline", { invisible })}
         >
           <ScalingImage alt="banner ad" src={src} />
         </a>
