@@ -1,8 +1,8 @@
-import { PropsWithChildren } from "react";
-import styles from "./court-layout.module.css";
-import Link from "next/link";
-import ScalingImage from "../scaling-image";
 import { classNames } from "@/utils";
+import Link from "next/link";
+import { PropsWithChildren } from "react";
+import ScalingImage from "../scaling-image";
+import styles from "./court-layout.module.css";
 
 const LEAGUE_ID = process.env.NEXT_PUBLIC_LEAGUE_ID;
 

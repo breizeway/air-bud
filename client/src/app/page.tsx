@@ -1,7 +1,7 @@
-import styles from "./home.module.css";
-import ScalingImage from "@/components/scaling-image";
-import Leaderboard from "@/components/leaderboard";
 import BannerAd from "@/components/banner-ad";
+import Leaderboard from "@/components/leaderboard";
+import ScalingImage from "@/components/scaling-image";
+import styles from "./home.module.css";
 
 export default function Home() {
   return (

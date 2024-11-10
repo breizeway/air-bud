@@ -4,10 +4,11 @@
   */
 
   -webkit-transform: translateZ(0);
+  @apply max-h-[80vh] sm:max-h-[100%];
 }
 
 .leaderboardTable {
-  @apply my-2;
+  @apply mb-2;
 }
 
 .leaderboardTable thead tr {
@@ -35,8 +36,30 @@
   background-color: black;
 }
 
-.leaderboardTable .firstColumn {
-  @apply sticky left-0 z-10 pl-4;
+.leaderboardTable .cell {
+  @apply px-1 sm:px-2 text-xs sm:text-sm;
 
-  background-color: inherit;
+  &.cell:first-child {
+    @apply sticky left-0 z-10 pl-4 bg-[inherit];
+  }
+
+  &.cell:not(:first-child) {
+    @apply text-right;
+  }
+
+  &.cell:last-child {
+    @apply pr-4;
+  }
+
+  thead &.cell {
+    @apply sticky top-0 bg-inherit !z-20;
+
+    &.cell > * {
+      @apply pt-2 pb-1;
+    }
+  }
+
+  thead &.cell:first-child {
+    @apply !z-30;
+  }
 }

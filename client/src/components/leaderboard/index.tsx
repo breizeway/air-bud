@@ -58,12 +58,6 @@ const defaultLeaderboardOptions = {
 const columnHelper = createColumnHelper<RankedBoxScore>();
 const sortingFn = "byRank";
 const defaultBoxRanks: RankedBoxScores = {};
-const getCellClasses = (idx: number, length: number) =>
-  classNames("px-1 sm:px-2 text-xs sm:text-sm", {
-    "text-right": !!idx,
-    [styles.firstColumn]: !idx,
-    "pr-4": idx === length - 1,
-  });
 
 export default function Leaderboard() {
   const { window } = useClient();
@@ -596,11 +590,8 @@ export default function Leaderboard() {
             <thead className="text-left">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id} className="pt-10">
-                  {headerGroup.headers.map((header, idx, arr) => (
-                    <th
-                      key={header.id}
-                      className={getCellClasses(idx, arr.length)}
-                    >
+                  {headerGroup.headers.map((header) => (
+                    <th key={header.id} className={classNames(styles.cell)}>
                       {header.isPlaceholder ? null : (
                         <div
                           {...{
@@ -624,11 +615,8 @@ export default function Leaderboard() {
             <tbody className="">
               {table.getRowModel().rows.map((row) => (
                 <tr key={row.id}>
-                  {row.getVisibleCells().map((cell, idx, arr) => (
-                    <td
-                      key={cell.id}
-                      className={getCellClasses(idx, arr.length)}
-                    >
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className={classNames(styles.cell)}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
