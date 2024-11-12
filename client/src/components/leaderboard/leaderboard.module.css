@@ -4,7 +4,7 @@
   */
 
   -webkit-transform: translateZ(0);
-  @apply max-h-[75vh] sm:max-h-[100%];
+  @apply max-h-[67vh] sm:max-h-[100%];
 }
 
 .leaderboardTable {
