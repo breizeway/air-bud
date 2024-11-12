@@ -86,9 +86,9 @@ export default function Leaderboard() {
   }, [results]);
   useEffect(() => {
     const sub = new UrqlSubscription("leaderboard", refetch);
-    sub.start();
+    if (matchupPeriodOffset === 0) sub.start();
     return () => sub.stop();
-  }, [refetch]);
+  }, [refetch, matchupPeriodOffset]);
 
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -482,7 +482,10 @@ export default function Leaderboard() {
               </button>
             </div>
             <div className="flex items-center">
-              <LiveIndicator className="text-xl mr-[0.9rem] mt-[0.15rem]" />
+              <LiveIndicator
+                isLive={matchupPeriodOffset === 0}
+                className="text-xl mr-[0.9rem] mt-[0.15rem]"
+              />
               <RefetchButton
                 isFetching={
                   !!results.data &&
