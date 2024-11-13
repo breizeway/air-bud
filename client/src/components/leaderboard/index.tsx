@@ -441,6 +441,10 @@ export default function Leaderboard() {
 
   const queryFetching = results.fetching;
   const queryIsSuccess = !!results.data?.getBoxScores.boxScores;
+  console.log(
+    `:::RESULTS.DATA?.GETBOXSCORES.BOXSCORES::: `,
+    results.data?.getBoxScores.boxScores
+  );
   const queryFetchingInitialData = queryFetching && !queryIsSuccess;
 
   return (
