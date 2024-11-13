@@ -8,7 +8,7 @@
 }
 
 .leaderboardTable {
-  @apply mb-2;
+  @apply mb-2 w-full;
 }
 
 .leaderboardTable thead tr {

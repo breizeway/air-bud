@@ -8,7 +8,7 @@
     "left main   right"
     "left bottom right";
   grid-template-rows: 2.5rem auto 2.5rem;
-  grid-template-columns: 1.25rem calc(100% - 2.5rem) 1.25rem;
+  grid-template-columns: 2vw calc(100% - 4vw) 2vw;
   margin-bottom: env(safe-area-inset-bottom);
 }
 
@@ -22,7 +22,7 @@
 
 .main {
   @apply h-full w-full max-w-full flex flex-col border-2 border-beige-100;
-  @apply p-2 sm:p-5 transition-[padding] duration-100;
+  @apply py-5 px-[2vw];
 
   grid-area: main;
 }

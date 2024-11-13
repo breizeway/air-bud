@@ -444,128 +444,130 @@ export default function Leaderboard() {
   const queryFetchingInitialData = queryFetching && !queryIsSuccess;
 
   return (
-    <div className={classNames(styles.leaderboard, "w-fit max-w-full")}>
+    <div className={classNames(styles.leaderboard, "w-full")}>
       <div className="flex flex-wrap gap-2 mb-2 items-center font-semibold">
         <span className="text-2xl ml-2">Leaderboard</span>
 
-        {currentMatchupPeriod && (
-          <div className="flex flex-wrap gap-2 grow justify-between">
-            <div className="flex items-center">
-              <button
-                className="text-xl"
-                onClick={() => setMatchupPeriodOffset(matchupPeriodOffset - 1)}
+        <div className="flex flex-wrap gap-2 grow justify-between">
+          <div className="flex items-center">
+            <button
+              className="text-xl"
+              onClick={() => setMatchupPeriodOffset(matchupPeriodOffset - 1)}
+            >
+              &#9668;
+            </button>
+            <button
+              className="flex flex-col justify-center items-center min-w-[4.5rem] border-0 p-0"
+              onClick={() => setMatchupPeriodOffset(0)}
+            >
+              <div
+                className={classNames({
+                  "mt-[-0.25em]": !matchupPeriodOffset,
+                })}
               >
-                &#9668;
-              </button>
-              <button
-                className="flex flex-col justify-center items-center min-w-[4.5rem] border-0 p-0"
-                onClick={() => setMatchupPeriodOffset(0)}
-              >
-                <div
-                  className={classNames({
-                    "mt-[-0.25em]": !matchupPeriodOffset,
-                  })}
-                >
-                  Week {currentMatchupPeriod + matchupPeriodOffset}
-                </div>
-                {!matchupPeriodOffset && (
-                  <span className="text-xs mt-[-0.5em] font-normal">
-                    (current)
-                  </span>
-                )}
-              </button>
-              <button
-                className="text-xl"
-                onClick={() => setMatchupPeriodOffset(matchupPeriodOffset + 1)}
-              >
-                &#9658;
-              </button>
-            </div>
-            <div className="flex items-center">
-              <LiveIndicator
-                isLive={matchupPeriodOffset === 0}
-                className="text-xl mr-[0.9rem] mt-[0.15rem]"
-              />
-              <RefetchButton
-                isFetching={
-                  !!results.data &&
-                  (results.fetching ||
-                    (results.stale && manualRefetchInFlight.current))
-                }
-                refetch={manualRefetch}
-              />
-              <Popover
-                button={({ setIsOpen }) => (
-                  <button
-                    className="border-[0.25rem] border-transparent"
-                    onClick={() => setIsOpen(true)}
-                  >
-                    <ScalingImage
-                      alt="three vertical dots"
-                      src="/icons/three-dots-vertical.svg"
-                      hEm={1}
-                      wEm={1}
-                      className="inline text-xl mb-[0.1em] my-auto"
-                    />
-                  </button>
-                )}
-                content={({ isOpen }) => (
-                  <>
-                    {isOpen && (
-                      <div className="p-3 text-lg bg-beige-100 flex flex-col shadow-xl">
-                        <table className="[&_input]:mr-4">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <input
-                                  id="options__hide-rank"
-                                  type="checkbox"
-                                  className="inline"
-                                  {...registerOption("hideRank", "checkbox")}
-                                />
-                              </td>
-                              <td>
-                                <label
-                                  htmlFor="options__hide-rank"
-                                  className="whitespace-nowrap"
-                                >
-                                  Hide Rank
-                                </label>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <input
-                                  id="options__sfw-mode"
-                                  type="checkbox"
-                                  className="inline"
-                                  {...registerOption("sfwMode", "checkbox")}
-                                />
-                              </td>
-                              <td>
-                                <label
-                                  htmlFor="options__sfw-mode"
-                                  className="whitespace-nowrap"
-                                >
-                                  SFW Mode
-                                </label>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-                  </>
-                )}
-              />
-            </div>
+                Week{" "}
+                {currentMatchupPeriod !== null &&
+                currentMatchupPeriod !== undefined
+                  ? currentMatchupPeriod + matchupPeriodOffset
+                  : "--"}
+              </div>
+              {matchupPeriodOffset === 0 && (
+                <span className="text-xs mt-[-0.5em] font-normal">
+                  (current)
+                </span>
+              )}
+            </button>
+            <button
+              className="text-xl"
+              onClick={() => setMatchupPeriodOffset(matchupPeriodOffset + 1)}
+            >
+              &#9658;
+            </button>
           </div>
-        )}
+          <div className="flex items-center">
+            <LiveIndicator
+              isLive={matchupPeriodOffset === 0 && !queryFetchingInitialData}
+              className="text-xl mr-[0.9rem] mt-[0.15rem]"
+            />
+            <RefetchButton
+              isFetching={
+                !!results.data &&
+                (results.fetching ||
+                  (results.stale && manualRefetchInFlight.current))
+              }
+              refetch={manualRefetch}
+            />
+            <Popover
+              button={({ setIsOpen }) => (
+                <button
+                  className="border-[0.25rem] border-transparent"
+                  onClick={() => setIsOpen(true)}
+                >
+                  <ScalingImage
+                    alt="three vertical dots"
+                    src="/icons/three-dots-vertical.svg"
+                    hEm={1}
+                    wEm={1}
+                    className="inline text-xl mb-[0.1em] my-auto"
+                  />
+                </button>
+              )}
+              content={({ isOpen }) => (
+                <>
+                  {isOpen && (
+                    <div className="p-3 text-lg bg-beige-100 flex flex-col shadow-xl">
+                      <table className="[&_input]:mr-4">
+                        <tbody>
+                          <tr>
+                            <td>
+                              <input
+                                id="options__hide-rank"
+                                type="checkbox"
+                                className="inline"
+                                {...registerOption("hideRank", "checkbox")}
+                              />
+                            </td>
+                            <td>
+                              <label
+                                htmlFor="options__hide-rank"
+                                className="whitespace-nowrap"
+                              >
+                                Hide Rank
+                              </label>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <input
+                                id="options__sfw-mode"
+                                type="checkbox"
+                                className="inline"
+                                {...registerOption("sfwMode", "checkbox")}
+                              />
+                            </td>
+                            <td>
+                              <label
+                                htmlFor="options__sfw-mode"
+                                className="whitespace-nowrap"
+                              >
+                                SFW Mode
+                              </label>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </>
+              )}
+            />
+          </div>
+        </div>
       </div>
 
       <div
         className={classNames(
-          "paint font-mono text-sm w-fit max-w-full overflow-x-scroll",
+          "paint font-mono text-sm w-full overflow-x-scroll",
           styles.tableContainer
         )}
       >
