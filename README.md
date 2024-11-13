@@ -1,5 +1,5 @@
 # air-bud
-[https://ballislyf3.net](https://ballislyf3.net/?leaderboard_safe_mode=true)
+[https://ballislyf3.net](https://ballislyf3.net/?sfw-mode=true)
 
 a companion to ESPN fantasy basketball. this is a personal hobby app to complement the standard ESPN fantasy basketball app for my private league. in it's initial form, it is a simple web app meant to emulate a bit of a geocities vibe. its core function is to display a leaderboard to compare overall weekly performance across the league--something the ESPN site does not provide.
 
