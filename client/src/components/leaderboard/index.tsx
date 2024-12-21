@@ -72,6 +72,10 @@ export default function Leaderboard() {
       matchupPeriodOffset,
     },
   });
+  const queryFetching = results.fetching;
+  const queryIsSuccess = !!results.data?.getBoxScores.boxScores;
+  const queryFetchingInitialData = queryFetching && !queryIsSuccess;
+
   const currentMatchupPeriod = results.data?.getBoxScores.currentMatchupPeriod;
   const setMatchupPeriodOffset = (offset: number) => {
     if (offset <= 0 && (currentMatchupPeriod ?? 0) + offset > 0)
@@ -116,7 +120,6 @@ export default function Leaderboard() {
   }, [refetch, matchupPeriodOffset, hasActiveGames]);
 
   const [sorting, setSorting] = useState<SortingState>([]);
-
   const [showMore, setShowMore] = useState<boolean>(false);
 
   const optionsLsKey = "leaderboardOptions";
@@ -205,6 +208,7 @@ export default function Leaderboard() {
           const rank = info.getValue()?.rank ?? 0;
           const rankChange = info.getValue()?.standing - rank;
           const minutes = info.row.original[BoxStatCategories.MIN]?.value ?? 0;
+          const isCurrentWeek = matchupPeriodOffset === 0;
 
           const rankColors = {
             "text-green-500": rankChange > 0,
@@ -222,7 +226,9 @@ export default function Leaderboard() {
                     <ChangeSymbol change={rankChange} />
                     {Math.abs(rankChange)}
                   </span>
-                  <span className="opacity-50"> {minutes}m</span>
+                  {isCurrentWeek && !queryFetching && (
+                    <span className="opacity-50"> {minutes}m</span>
+                  )}
                 </span>
               }
               hideRank={options.hideRank}
@@ -447,7 +453,7 @@ export default function Leaderboard() {
         sortingFn,
       }),
     ];
-  }, [options.hideRank]);
+  }, [options.hideRank, matchupPeriodOffset, queryFetching]);
 
   const table = useReactTable({
     columns,
@@ -465,10 +471,6 @@ export default function Leaderboard() {
           : -1,
     },
   });
-
-  const queryFetching = results.fetching;
-  const queryIsSuccess = !!results.data?.getBoxScores.boxScores;
-  const queryFetchingInitialData = queryFetching && !queryIsSuccess;
 
   return (
     <div className={classNames(styles.leaderboard, "w-full")}>
