@@ -218,12 +218,14 @@ export default function Leaderboard() {
               primary={<span>{info.getValue()?.teamName}</span>}
               secondary={
                 <span>
-                  <Rank rank={rank} className={rankColors} fullOpacity />{" "}
-                  <span className={classNames(rankColors)}>
-                    <ChangeSymbol change={rankChange} />
-                    {Math.abs(rankChange)}
+                  <span className="whitespace-nowrap">
+                    <Rank rank={rank} className={rankColors} fullOpacity />{" "}
+                    <span className={classNames(rankColors)}>
+                      <ChangeSymbol change={rankChange} />
+                      {Math.abs(rankChange)}
+                    </span>
                   </span>
-                  <span className="opacity-50 ml-2">{minutes}m</span>
+                  <span className="opacity-50"> {minutes}m</span>
                 </span>
               }
               hideRank={options.hideRank}
