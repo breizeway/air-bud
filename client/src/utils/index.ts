@@ -1,9 +1,9 @@
 type ClassDict = { [classNames: string]: boolean };
-type StringOrClassDict = string | ClassDict | undefined;
+export type ClassNames = string | ClassDict | undefined;
 const isClassDict = (
-  stringOrClassDict: StringOrClassDict
+  stringOrClassDict: ClassNames
 ): stringOrClassDict is ClassDict => typeof stringOrClassDict === "object";
-export const classNames = (...classes: StringOrClassDict[]) => {
+export const classNames = (...classes: ClassNames[]) => {
   return classes
     .reduce((acc: string[], cls) => {
       if (isClassDict(cls)) {

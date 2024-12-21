@@ -3,7 +3,7 @@
 import { UrqlSubscription } from "@/app/_providers/urql-wrapper";
 import { rankQuery } from "@/components/leaderboard/queries";
 import { LiveIndicator } from "@/components/live-indicator";
-import { classNames } from "@/utils";
+import { ClassNames, classNames } from "@/utils";
 import useClient from "@/utils/use-client";
 import {
   HeaderContext,
@@ -179,23 +179,25 @@ export default function Leaderboard() {
         cell: (info) => {
           const rank = info.getValue()?.rank ?? 0;
           const rankChange = info.getValue()?.standing - rank;
+          const minutes = info.row.original[BoxStatCategories.MIN]?.value ?? 0;
 
+          const rankColors = {
+            "text-green-500": rankChange > 0,
+            "text-red-500": rankChange < 0,
+            "text-yellow-500": rankChange === 0,
+            "opacity-80": true,
+          };
           return (
             <Cell
               primary={<span>{info.getValue()?.teamName}</span>}
               secondary={
                 <span>
-                  <Rank rank={rank} />{" "}
-                  <span
-                    className={classNames({
-                      "text-green-500": rankChange > 0,
-                      "text-red-500": rankChange < 0,
-                      "text-yellow-500": rankChange === 0,
-                    })}
-                  >
+                  <Rank rank={rank} className={rankColors} />{" "}
+                  <span className={classNames(rankColors)}>
                     <ChangeSymbol change={rankChange} />
                     {Math.abs(rankChange)}
                   </span>
+                  <span className="opacity-50 ml-2">{minutes}m</span>
                 </span>
               }
               hideRank={options.hideRank}
@@ -745,8 +747,14 @@ const ChangeSymbol = ({ change }: { change: number }) =>
     noChange: <span className="mr-1">{"-"}</span>,
   }[change > 0 ? "increase" : change < 0 ? "decrease" : "noChange"]);
 
-const Rank = ({ rank }: { rank?: number }) => (
-  <span className="opacity-50">
+const Rank = ({
+  rank,
+  className,
+}: {
+  rank?: number;
+  className?: ClassNames;
+}) => (
+  <span className={classNames(className)}>
     {rank
       ? `${rank}${
           rank === 1 ? "st" : rank === 2 ? "nd" : rank === 3 ? "rd" : "th"

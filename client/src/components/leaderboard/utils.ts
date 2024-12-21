@@ -9,6 +9,7 @@ import { LeaderboardOptions } from ".";
 import { BoxScoreFragment, TeamFragment } from "./queries";
 
 export enum BoxStatCategories {
+  "MIN" = "MIN",
   "FGA" = "FGA",
   "FGM" = "FGM",
   "FG%" = "FG%",
@@ -37,6 +38,7 @@ type StatsByCat<T> = {
   [Category in BoxStatCategories]: T[];
 };
 const initStatsByCat = <T>(): StatsByCat<T> => ({
+  MIN: [],
   FGA: [],
   FGM: [],
   "FG%": [],
@@ -200,6 +202,7 @@ export const getRankedBoxScores = (
               BoxStatCategories.FGA,
               BoxStatCategories.FTM,
               BoxStatCategories.FTA,
+              BoxStatCategories.MIN,
             ].includes(key) || ts.value === 0 // cat values are 0
               ? 0
               : isTied
