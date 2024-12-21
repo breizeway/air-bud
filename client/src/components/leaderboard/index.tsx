@@ -3,6 +3,7 @@
 import { UrqlSubscription } from "@/app/_providers/urql-wrapper";
 import { rankQuery } from "@/components/leaderboard/queries";
 import { LiveIndicator } from "@/components/live-indicator";
+import { useFragment } from "@/gql";
 import { ClassNames, classNames } from "@/utils";
 import useClient from "@/utils/use-client";
 import {
@@ -32,6 +33,7 @@ import Loading from "../loading";
 import Popover from "../popover";
 import ScalingImage from "../scaling-image";
 import styles from "./leaderboard.module.css";
+import { BoxScoreFragment } from "./queries";
 import {
   BoxStatCategories,
   RankedBoxScore,
@@ -84,11 +86,35 @@ export default function Leaderboard() {
   useEffect(() => {
     if (!results.stale) manualRefetchInFlight.current = false;
   }, [results]);
+
+  const hasActiveGames = useMemo(() => {
+    const boxScores = results.data?.getBoxScores.boxScores;
+    return (
+      boxScores?.some((bs) => {
+        const boxScore = useFragment(BoxScoreFragment, bs);
+        const allPlayers = [
+          ...(boxScore?.homeLineup ?? []),
+          ...(boxScore?.awayLineup ?? []),
+        ];
+        return allPlayers.some(
+          (player) =>
+            // gamePlayed values:
+            // 0: Player is currently in an active game
+            // 100: Player has finished their game
+            // Players who haven't started aren't included in the lineup
+            player?.gamePlayed === 0
+        );
+      }) ?? false
+    );
+  }, [results.data?.getBoxScores.boxScores]);
+
   useEffect(() => {
     const sub = new UrqlSubscription("leaderboard", refetch);
-    if (matchupPeriodOffset === 0) sub.start();
+    if (matchupPeriodOffset === 0 && hasActiveGames) {
+      sub.start();
+    }
     return () => sub.stop();
-  }, [refetch, matchupPeriodOffset]);
+  }, [refetch, matchupPeriodOffset, hasActiveGames]);
 
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -185,14 +211,14 @@ export default function Leaderboard() {
             "text-green-500": rankChange > 0,
             "text-red-500": rankChange < 0,
             "text-yellow-500": rankChange === 0,
-            "opacity-80": true,
+            "opacity-90": true,
           };
           return (
             <Cell
               primary={<span>{info.getValue()?.teamName}</span>}
               secondary={
                 <span>
-                  <Rank rank={rank} className={rankColors} />{" "}
+                  <Rank rank={rank} className={rankColors} fullOpacity />{" "}
                   <span className={classNames(rankColors)}>
                     <ChangeSymbol change={rankChange} />
                     {Math.abs(rankChange)}
@@ -443,10 +469,6 @@ export default function Leaderboard() {
 
   const queryFetching = results.fetching;
   const queryIsSuccess = !!results.data?.getBoxScores.boxScores;
-  console.log(
-    `:::RESULTS.DATA?.GETBOXSCORES.BOXSCORES::: `,
-    results.data?.getBoxScores.boxScores
-  );
   const queryFetchingInitialData = queryFetching && !queryIsSuccess;
 
   return (
@@ -492,7 +514,11 @@ export default function Leaderboard() {
           </div>
           <div className="flex items-center">
             <LiveIndicator
-              isLive={matchupPeriodOffset === 0 && !queryFetchingInitialData}
+              isLive={
+                matchupPeriodOffset === 0 &&
+                !queryFetchingInitialData &&
+                hasActiveGames
+              }
               className="text-xl mr-[0.9rem] mt-[0.15rem]"
             />
             <RefetchButton
@@ -750,11 +776,13 @@ const ChangeSymbol = ({ change }: { change: number }) =>
 const Rank = ({
   rank,
   className,
+  fullOpacity = false,
 }: {
   rank?: number;
   className?: ClassNames;
+  fullOpacity?: boolean;
 }) => (
-  <span className={classNames(className)}>
+  <span className={classNames(className, { "opacity-50": !fullOpacity })}>
     {rank
       ? `${rank}${
           rank === 1 ? "st" : rank === 2 ? "nd" : rank === 3 ? "rd" : "th"

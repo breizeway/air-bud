@@ -27,6 +27,7 @@ export const BoxScoreFragment = graphql(`
         category
         value
       }
+      gamePlayed
     }
     awayTeam {
       ...TeamFragment
@@ -41,6 +42,7 @@ export const BoxScoreFragment = graphql(`
         category
         value
       }
+      gamePlayed
     }
   }
 `);
