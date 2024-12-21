@@ -3,7 +3,7 @@
 import { UrqlSubscription } from "@/app/_providers/urql-wrapper";
 import { rankQuery } from "@/components/leaderboard/queries";
 import { LiveIndicator } from "@/components/live-indicator";
-import { useFragment } from "@/gql";
+import { BoxScoreFragmentFragment } from "@/gql/graphql";
 import { ClassNames, classNames } from "@/utils";
 import useClient from "@/utils/use-client";
 import {
@@ -33,7 +33,6 @@ import Loading from "../loading";
 import Popover from "../popover";
 import ScalingImage from "../scaling-image";
 import styles from "./leaderboard.module.css";
-import { BoxScoreFragment } from "./queries";
 import {
   BoxStatCategories,
   RankedBoxScore,
@@ -91,7 +90,7 @@ export default function Leaderboard() {
     const boxScores = results.data?.getBoxScores.boxScores;
     return (
       boxScores?.some((bs) => {
-        const boxScore = useFragment(BoxScoreFragment, bs);
+        const boxScore = bs as BoxScoreFragmentFragment;
         const allPlayers = [
           ...(boxScore?.homeLineup ?? []),
           ...(boxScore?.awayLineup ?? []),

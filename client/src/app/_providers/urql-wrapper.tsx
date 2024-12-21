@@ -40,7 +40,7 @@ export default function UrqlWrapper({ children }: PropsWithChildren) {
     });
 
     return { client, ssr };
-  }, []);
+  }, [authExchange]);
 
   return <UrqlProvider {...urqlContext}>{children}</UrqlProvider>;
 }
