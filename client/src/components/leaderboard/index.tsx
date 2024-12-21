@@ -99,14 +99,23 @@ export default function Leaderboard() {
           ...(boxScore?.homeLineup ?? []),
           ...(boxScore?.awayLineup ?? []),
         ];
-        return allPlayers.some(
-          (player) =>
-            // gamePlayed values:
-            // 0: Player is currently in an active game
-            // 100: Player has finished their game
-            // Players who haven't started aren't included in the lineup
-            player?.gamePlayed === 0
-        );
+
+        const now = new Date();
+        const playerData = allPlayers.map((player) => {
+          const gameDate = player?.gameDate ? new Date(player.gameDate) : null;
+          return {
+            name: player?.name,
+            isActive: gameDate
+              ? gameDate.getFullYear() === now.getFullYear() &&
+                gameDate.getMonth() === now.getMonth() &&
+                gameDate.getDate() === now.getDate() &&
+                gameDate <= now && // Check if game has started
+                player?.gamePlayed === 0
+              : false,
+          };
+        });
+
+        return playerData.some((p) => p.isActive);
       }) ?? false
     );
   }, [results.data?.getBoxScores.boxScores]);

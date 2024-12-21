@@ -16,10 +16,9 @@ def serialize_dict(box_stats: STATS_MAP, key_name: str):
 
 def listify_stats(stats: STATS_MAP):
     result = list()
-    for k, v in (stats.items() or dict()):
+    for k, v in stats.items() or dict():
         val = float(v)
-        result.append(
-            {"category": k, "value": val if math.isfinite(val) else None})
+        result.append({"category": k, "value": val if math.isfinite(val) else None})
     return result
 
 
@@ -31,11 +30,9 @@ class ClientPlayerStat:
         self.team = player_stat["team"]
         self.date = player_stat["date"]
         if "total" in player_stat and player_stat["total"] is not None:
-            self.total = listify_stats(
-                player_stat["total"])
+            self.total = listify_stats(player_stat["total"])
         if "avg" in player_stat and player_stat["avg"] is not None:
-            self.avg = listify_stats(
-                player_stat["avg"])
+            self.avg = listify_stats(player_stat["avg"])
 
 
 class ClientPlayer:
@@ -49,8 +46,10 @@ class ClientPlayer:
         self.position = player.position
         self.injury_status = player.injuryStatus
         self.injured = player.injured
-        self.stats = map(lambda player_stat: ClientPlayerStat(
-            player_stat), serialize_dict(player.stats, "scoring_period"))
+        self.stats = map(
+            lambda player_stat: ClientPlayerStat(player_stat),
+            serialize_dict(player.stats, "scoring_period"),
+        )
         self.schedule = serialize_dict(player.schedule, "scoring_period")
         self.lineup_slot = player.lineupSlot
         self.total_points = player.total_points
@@ -88,13 +87,19 @@ class ClientTeam:
 class ClientBoxPlayer:
     def __init__(self, box_player: BoxPlayer):
         self.name = box_player.name
-        self.stats = box_player.stats
         self.slot_position = box_player.slot_position
         self.points = box_player.points
-        self.points_breakdown = listify_stats(
-            box_player.points_breakdown)
+        self.points_breakdown = listify_stats(box_player.points_breakdown)
         self.pro_opponent = box_player.pro_opponent
         self.game_played = box_player.game_played
+
+        # Get game date from schedule for current opponent
+        self.game_date = None
+        if box_player.schedule and box_player.pro_opponent:
+            for _, game in box_player.schedule.items():
+                if game["team"] == box_player.pro_opponent:
+                    self.game_date = game["date"].isoformat() if game["date"] else None
+                    break
 
 
 class ClientBoxScore:
@@ -110,7 +115,9 @@ class ClientBoxScore:
         self.away_ties = box_score.away_ties
         self.away_losses = box_score.away_losses
         self.away_stats = serialize_dict(box_score.away_stats, "category")
-        self.home_lineup = map(lambda box_player: ClientBoxPlayer(
-            box_player), box_score.home_lineup)
-        self.away_lineup = map(lambda box_player: ClientBoxPlayer(
-            box_player), box_score.away_lineup)
+        self.home_lineup = map(
+            lambda box_player: ClientBoxPlayer(box_player), box_score.home_lineup
+        )
+        self.away_lineup = map(
+            lambda box_player: ClientBoxPlayer(box_player), box_score.away_lineup
+        )

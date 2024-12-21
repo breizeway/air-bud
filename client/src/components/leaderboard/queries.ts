@@ -23,11 +23,16 @@ export const BoxScoreFragment = graphql(`
       result
     }
     homeLineup {
+      name
+      slotPosition
+      points
+      proOpponent
+      gamePlayed
+      gameDate
       pointsBreakdown {
         category
         value
       }
-      gamePlayed
     }
     awayTeam {
       ...TeamFragment
@@ -38,11 +43,16 @@ export const BoxScoreFragment = graphql(`
       result
     }
     awayLineup {
+      name
+      slotPosition
+      points
+      proOpponent
+      gamePlayed
+      gameDate
       pointsBreakdown {
         category
         value
       }
-      gamePlayed
     }
   }
 `);
