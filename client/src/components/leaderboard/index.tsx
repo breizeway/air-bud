@@ -216,13 +216,11 @@ export default function Leaderboard() {
             <Cell
               primary={<span>{info.getValue()?.teamName}</span>}
               secondary={
-                <span>
-                  <span className="whitespace-nowrap">
-                    <Rank rank={rank} className={rankColors} fullOpacity />{" "}
-                    <span className={classNames(rankColors)}>
-                      <ChangeSymbol change={rankChange} />
-                      {Math.abs(rankChange)}
-                    </span>
+                <span className="whitespace-nowrap">
+                  <Rank rank={rank} className={rankColors} fullOpacity />{" "}
+                  <span className={classNames(rankColors)}>
+                    <ChangeSymbol change={rankChange} />
+                    {Math.abs(rankChange)}
                   </span>
                   <span className="opacity-50"> {minutes}m</span>
                 </span>
