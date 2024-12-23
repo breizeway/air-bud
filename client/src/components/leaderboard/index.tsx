@@ -17,6 +17,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useQuery } from "@urql/next";
+import { add } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   ChangeEvent,
@@ -92,32 +93,45 @@ export default function Leaderboard() {
 
   const hasActiveGames = useMemo(() => {
     const boxScores = results.data?.getBoxScores.boxScores;
-    return (
-      boxScores?.some((bs) => {
+
+    const boxPlayers =
+      boxScores?.flatMap((bs) => {
         const boxScore = bs as BoxScoreFragmentFragment;
-        const allPlayers = [
+        return [
           ...(boxScore?.homeLineup ?? []),
           ...(boxScore?.awayLineup ?? []),
         ];
+      }) ?? [];
+    console.log(`:::BOXPLAYERS::: `, boxPlayers);
+    const now = new Date();
 
-        const now = new Date();
-        const playerData = allPlayers.map((player) => {
-          const gameDate = player?.gameDate ? new Date(player.gameDate) : null;
-          return {
-            name: player?.name,
-            isActive: gameDate
-              ? gameDate.getFullYear() === now.getFullYear() &&
-                gameDate.getMonth() === now.getMonth() &&
-                gameDate.getDate() === now.getDate() &&
-                gameDate <= now && // Check if game has started
-                player?.gamePlayed === 0
-              : false,
-          };
-        });
-
-        return playerData.some((p) => p.isActive);
-      }) ?? false
-    );
+    return boxPlayers
+      .filter((player) => {
+        // console.log(`:::PLAYER?.GAMEDATE::: `, player?.gameDate);
+        const gameDate = player?.gameDate
+          ? add(new Date(player.gameDate), { hours: -8 })
+          : null;
+        const gameTime = gameDate ? new Date(gameDate).getTime() : Infinity;
+        const gameIsToday =
+          gameDate &&
+          add(gameDate, { days: -5 }) < now &&
+          add(gameDate, { days: 5 }) > now;
+        const gameHasStarted = gameTime <= now.getTime();
+        const gameHasNotFinished = player?.gamePlayed !== 100;
+        if (gameIsToday) {
+          console.log(
+            `:::PLAYER::: `,
+            player?.name,
+            new Date(player?.gameDate ?? new Date())
+          );
+        }
+        return gameIsToday;
+        // && gameHasStarted
+        // && gameHasNotFinished;
+      })
+      .map((player) => {
+        return true;
+      });
   }, [results.data?.getBoxScores.boxScores]);
 
   useEffect(() => {
@@ -527,7 +541,7 @@ export default function Leaderboard() {
               isLive={
                 matchupPeriodOffset === 0 &&
                 !queryFetchingInitialData &&
-                hasActiveGames
+                !!hasActiveGames
               }
               className="text-xl mr-[0.9rem] mt-[0.15rem]"
             />

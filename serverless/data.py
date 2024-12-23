@@ -96,8 +96,12 @@ class ClientBoxPlayer:
         # Get game date from schedule for current opponent
         self.game_date = None
         if box_player.schedule and box_player.pro_opponent:
+            print(f"\nPlayer: {self.name}")
+            print("Schedule:", box_player.schedule)
+            # print("Pro opponent:", box_player.pro_opponent)
             for _, game in box_player.schedule.items():
                 if game["team"] == box_player.pro_opponent:
+                    print("Found game:", game)
                     self.game_date = game["date"].isoformat() if game["date"] else None
                     break
 
