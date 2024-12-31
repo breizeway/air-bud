@@ -17,7 +17,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useQuery } from "@urql/next";
-import { add } from "date-fns";
+import { isToday } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   ChangeEvent,
@@ -91,7 +91,7 @@ export default function Leaderboard() {
     if (!results.stale) manualRefetchInFlight.current = false;
   }, [results]);
 
-  const hasActiveGames = useMemo(() => {
+  const isGameTime = useMemo(() => {
     const boxScores = results.data?.getBoxScores.boxScores;
 
     const boxPlayers =
@@ -105,42 +105,28 @@ export default function Leaderboard() {
     console.log(`:::BOXPLAYERS::: `, boxPlayers);
     const now = new Date();
 
-    return boxPlayers
-      .filter((player) => {
-        // console.log(`:::PLAYER?.GAMEDATE::: `, player?.gameDate);
-        const gameDate = player?.gameDate
-          ? add(new Date(player.gameDate), { hours: -8 })
-          : null;
-        const gameTime = gameDate ? new Date(gameDate).getTime() : Infinity;
-        const gameIsToday =
-          gameDate &&
-          add(gameDate, { days: -5 }) < now &&
-          add(gameDate, { days: 5 }) > now;
-        const gameHasStarted = gameTime <= now.getTime();
-        const gameHasNotFinished = player?.gamePlayed !== 100;
-        if (gameIsToday) {
-          console.log(
-            `:::PLAYER::: `,
-            player?.name,
-            new Date(player?.gameDate ?? new Date())
-          );
-        }
-        return gameIsToday;
-        // && gameHasStarted
-        // && gameHasNotFinished;
-      })
-      .map((player) => {
-        return true;
-      });
+    return !!boxPlayers.filter((player) => {
+      // console.log(`:::PLAYER?.GAMEDATE::: `, player?.gameDate);
+      const gameDate = player?.gameDate ? new Date(player.gameDate) : null;
+      const gameTime = gameDate ? new Date(gameDate).getTime() : Infinity;
+      const gameIsToday = gameDate ? isToday(gameDate) : false;
+      const gameHasStarted = gameTime <= now.getTime();
+      const gameInProgress = player?.gamePlayed === 0;
+
+      if (gameIsToday) {
+        console.log(`:::PLAYER-gameIsToday::: `, player?.name, gameDate);
+      }
+      return gameIsToday && gameHasStarted && gameInProgress;
+    }).length;
   }, [results.data?.getBoxScores.boxScores]);
 
   useEffect(() => {
     const sub = new UrqlSubscription("leaderboard", refetch);
-    if (matchupPeriodOffset === 0 && hasActiveGames) {
+    if (matchupPeriodOffset === 0 && isGameTime) {
       sub.start();
     }
     return () => sub.stop();
-  }, [refetch, matchupPeriodOffset, hasActiveGames]);
+  }, [refetch, matchupPeriodOffset, isGameTime]);
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [showMore, setShowMore] = useState<boolean>(false);
@@ -541,7 +527,7 @@ export default function Leaderboard() {
               isLive={
                 matchupPeriodOffset === 0 &&
                 !queryFetchingInitialData &&
-                !!hasActiveGames
+                !!isGameTime
               }
               className="text-xl mr-[0.9rem] mt-[0.15rem]"
             />

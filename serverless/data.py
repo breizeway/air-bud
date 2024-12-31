@@ -1,5 +1,7 @@
 import json
 import math
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from espn_api.basketball.box_player import BoxPlayer
 from espn_api.basketball.box_score import STATS_MAP, BoxScore
@@ -20,6 +22,15 @@ def listify_stats(stats: STATS_MAP):
         val = float(v)
         result.append({"category": k, "value": val if math.isfinite(val) else None})
     return result
+
+
+def et_to_utc(dt):
+    """Convert ET datetime to UTC."""
+    if not dt:
+        return None
+    # Convert naive ET datetime to UTC
+    et_time = dt.replace(tzinfo=ZoneInfo("America/New_York"))
+    return et_time.astimezone(ZoneInfo("UTC"))
 
 
 class ClientPlayerStat:
@@ -100,10 +111,11 @@ class ClientBoxPlayer:
             print("Schedule:", box_player.schedule)
             # print("Pro opponent:", box_player.pro_opponent)
             for _, game in box_player.schedule.items():
-                if game["team"] == box_player.pro_opponent:
-                    print("Found game:", game)
-                    self.game_date = game["date"].isoformat() if game["date"] else None
-                    break
+                # print("Found game:", game)
+                game_date = game["date"]
+                if game_date:
+                    utc_time = et_to_utc(game_date)
+                    self.game_date = utc_time.isoformat()
 
 
 class ClientBoxScore:
