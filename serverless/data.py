@@ -105,6 +105,8 @@ class ClientBoxPlayer:
         self.game_played = box_player.game_played
 
         # Get game date from schedule for current opponent
+        # NEXT: add whole schedule
+        # self.schedule = box_
         self.game_date = None
         if box_player.schedule and box_player.pro_opponent:
             print(f"\nPlayer: {self.name}")
