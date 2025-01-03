@@ -5,6 +5,7 @@ import {
   BoxStat,
   TeamFragmentFragment,
 } from "@/gql/graphql";
+import { isToday } from "date-fns";
 import { LeaderboardOptions } from ".";
 import { BoxScoreFragment, TeamFragment } from "./queries";
 
@@ -259,4 +260,21 @@ const getTeamNoun = (ownerFirstName: string) => {
     teamNounCache[ownerFirstName] = teamNoun;
     return teamNoun;
   }
+};
+
+export const findGameInProgress = (
+  lineup: BoxScoreFragmentFragment["homeLineup" | "awayLineup"]
+): boolean => {
+  return !!lineup.find((boxPlayer) => {
+    const { gamePlayed, schedule } = boxPlayer ?? {};
+    return (
+      gamePlayed === 0 &&
+      schedule?.find((gd) => {
+        const gameDate = new Date(gd);
+        return (
+          isToday(gameDate) && !!(gameDate.getTime() <= new Date().getTime())
+        );
+      })
+    );
+  });
 };

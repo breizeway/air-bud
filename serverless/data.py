@@ -24,13 +24,11 @@ def listify_stats(stats: STATS_MAP):
     return result
 
 
-def et_to_utc(dt):
-    """Convert ET datetime to UTC."""
-    if not dt:
-        return None
-    # Convert naive ET datetime to UTC
-    # et_time = dt.replace(tzinfo=ZoneInfo("America/New_York"))
-    return dt.astimezone(ZoneInfo("UTC"))
+def listify_schedule(schedule: dict):
+    result = list()
+    for v in schedule.values():
+        result.append(v["date"].astimezone(ZoneInfo("UTC")).isoformat())
+    return result
 
 
 class ClientPlayerStat:
@@ -103,31 +101,7 @@ class ClientBoxPlayer:
         self.points_breakdown = listify_stats(box_player.points_breakdown)
         self.pro_opponent = box_player.pro_opponent
         self.game_played = box_player.game_played
-
-        # Get game date from schedule for current opponent
-        # NEXT: add whole schedule
-        self.schedule = list(
-            map(
-                lambda game: game["date"].astimezone(ZoneInfo("UTC")).isoformat(),
-                box_player.schedule.values(),
-            )
-        )
-        # self.game_date = None
-
-        # if box_player.schedule and box_player.pro_opponent:
-        #     today = date.today()
-        #     # print(f"\nPlayer: {self.name}")
-        #     # print("Schedule:", box_player.schedule)
-        #     # print("Pro opponent:", box_player.pro_opponent)
-        #     for _, game in box_player.schedule.items():
-        #         # print("Found game:", game)
-        #         game_date = game["date"]
-        #         if game_date:
-        #             utc_time = et_to_utc(game_date)
-        #             isToday = utc_time.date() == today
-        #             if isToday:
-        #                 print(box_player.name, utc_time.isoformat())
-        #                 self.game_date = utc_time.isoformat()
+        self.schedule = listify_schedule(box_player.schedule)
 
 
 class ClientBoxScore:

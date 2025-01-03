@@ -17,7 +17,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useQuery } from "@urql/next";
-import { isToday } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   ChangeEvent,
@@ -39,6 +38,7 @@ import {
   RankedBoxScore,
   RankedBoxScores,
   TeamStat,
+  findGameInProgress,
   getRankedBoxScores,
 } from "./utils";
 
@@ -91,48 +91,25 @@ export default function Leaderboard() {
     if (!results.stale) manualRefetchInFlight.current = false;
   }, [results]);
 
-  const isGameTime = useMemo(() => {
-    const boxScores = results.data?.getBoxScores.boxScores;
-    const now = new Date();
-
-    return !!(
-      boxScores?.flatMap((bs) => {
+  const isAGameInProgress = useCallback(
+    () =>
+      !!results.data?.getBoxScores.boxScores?.find((bs) => {
         const boxScore = bs as BoxScoreFragmentFragment;
-
-        return [
-          ...(boxScore?.homeLineup?.flatMap((hl) =>
-            hl?.schedule.map((gd) => ({
-              gameDate: new Date(gd),
-              gamePlayed: hl?.gamePlayed,
-              name: hl?.name,
-            }))
-          ) ?? []),
-          ...(boxScore?.awayLineup?.flatMap((al) =>
-            al?.schedule.map((gd) => ({
-              gameDate: new Date(gd),
-              gamePlayed: al?.gamePlayed,
-              name: al?.name,
-            }))
-          ) ?? []),
-        ];
-      }) ?? []
-    ).find((gameInfo) => {
-      const { gameDate, gamePlayed } = gameInfo ?? {};
-      const gameTime = gameDate ? new Date(gameDate).getTime() : Infinity;
-      const gameIsToday = gameDate ? isToday(gameDate) : false;
-      const gameInProgress = now.getTime() >= gameTime && gamePlayed === 0;
-
-      return gameIsToday && gameInProgress;
-    });
-  }, [results.data?.getBoxScores.boxScores]);
+        return (
+          findGameInProgress(boxScore.homeLineup) ||
+          findGameInProgress(boxScore.awayLineup)
+        );
+      }),
+    [results.data?.getBoxScores.boxScores]
+  );
 
   useEffect(() => {
     const sub = new UrqlSubscription("leaderboard", refetch);
-    if (matchupPeriodOffset === 0 && isGameTime) {
+    if (matchupPeriodOffset === 0 && isAGameInProgress()) {
       sub.start();
     }
     return () => sub.stop();
-  }, [refetch, matchupPeriodOffset, isGameTime]);
+  }, [refetch, matchupPeriodOffset, isAGameInProgress]);
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [showMore, setShowMore] = useState<boolean>(false);
@@ -533,7 +510,7 @@ export default function Leaderboard() {
               isLive={
                 matchupPeriodOffset === 0 &&
                 !queryFetchingInitialData &&
-                !!isGameTime
+                !!isAGameInProgress
               }
               className="text-xl mr-[0.9rem] mt-[0.15rem]"
             />
