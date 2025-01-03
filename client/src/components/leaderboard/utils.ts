@@ -269,14 +269,8 @@ export const findGameInProgress = (
     const { gamePlayed, schedule } = boxPlayer ?? {};
     return (
       gamePlayed === 0 &&
-      schedule?.find((gd) => {
+      !!schedule?.find((gd) => {
         const gameDate = new Date(gd);
-        // if (
-        //   isToday(gameDate) &&
-        //   !!(gameDate.getTime() <= new Date().getTime())
-        // ) {
-        console.log(boxPlayer?.name, gameDate, boxPlayer?.gamePlayed);
-        // }
         return (
           isToday(gameDate) && !!(gameDate.getTime() <= new Date().getTime())
         );
