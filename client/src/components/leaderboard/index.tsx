@@ -100,7 +100,7 @@ export default function Leaderboard() {
           findGameInProgress(boxScore.awayLineup)
         );
       }),
-    [results.data?.getBoxScores.boxScores]
+    [results]
   );
 
   useEffect(() => {
@@ -508,9 +508,9 @@ export default function Leaderboard() {
           <div className="flex items-center">
             <LiveIndicator
               isLive={
-                matchupPeriodOffset === 0 &&
                 !queryFetchingInitialData &&
-                !!isAGameInProgress
+                matchupPeriodOffset === 0 &&
+                isAGameInProgress()
               }
               className="text-xl mr-[0.9rem] mt-[0.15rem]"
             />
