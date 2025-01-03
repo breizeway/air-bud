@@ -93,31 +93,37 @@ export default function Leaderboard() {
 
   const isGameTime = useMemo(() => {
     const boxScores = results.data?.getBoxScores.boxScores;
-
-    const boxPlayers =
-      boxScores?.flatMap((bs) => {
-        const boxScore = bs as BoxScoreFragmentFragment;
-        return [
-          ...(boxScore?.homeLineup ?? []),
-          ...(boxScore?.awayLineup ?? []),
-        ];
-      }) ?? [];
-    console.log(`:::BOXPLAYERS::: `, boxPlayers);
     const now = new Date();
 
-    return !!boxPlayers.filter((player) => {
-      // console.log(`:::PLAYER?.GAMEDATE::: `, player?.gameDate);
-      const gameDate = player?.gameDate ? new Date(player.gameDate) : null;
+    return !!(
+      boxScores?.flatMap((bs) => {
+        const boxScore = bs as BoxScoreFragmentFragment;
+
+        return [
+          ...(boxScore?.homeLineup?.flatMap((hl) =>
+            hl?.schedule.map((gd) => ({
+              gameDate: new Date(gd),
+              gamePlayed: hl?.gamePlayed,
+              name: hl?.name,
+            }))
+          ) ?? []),
+          ...(boxScore?.awayLineup?.flatMap((al) =>
+            al?.schedule.map((gd) => ({
+              gameDate: new Date(gd),
+              gamePlayed: al?.gamePlayed,
+              name: al?.name,
+            }))
+          ) ?? []),
+        ];
+      }) ?? []
+    ).find((gameInfo) => {
+      const { gameDate, gamePlayed } = gameInfo ?? {};
       const gameTime = gameDate ? new Date(gameDate).getTime() : Infinity;
       const gameIsToday = gameDate ? isToday(gameDate) : false;
-      const gameHasStarted = gameTime <= now.getTime();
-      const gameInProgress = player?.gamePlayed === 0;
+      const gameInProgress = now.getTime() >= gameTime && gamePlayed === 0;
 
-      if (gameIsToday) {
-        console.log(`:::PLAYER-gameIsToday::: `, player?.name, gameDate);
-      }
-      return gameIsToday && gameHasStarted && gameInProgress;
-    }).length;
+      return gameIsToday && gameInProgress;
+    });
   }, [results.data?.getBoxScores.boxScores]);
 
   useEffect(() => {

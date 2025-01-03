@@ -28,7 +28,7 @@ export const BoxScoreFragment = graphql(`
       points
       proOpponent
       gamePlayed
-      gameDate
+      schedule
       pointsBreakdown {
         category
         value
@@ -48,7 +48,7 @@ export const BoxScoreFragment = graphql(`
       points
       proOpponent
       gamePlayed
-      gameDate
+      schedule
       pointsBreakdown {
         category
         value

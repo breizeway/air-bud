@@ -66,8 +66,8 @@ type BoxPlayer {
   proOpponent: String!
   "0 (not played/playing) or 100 (finished game)"
   gamePlayed: Int!
-  "datetime of when the game starts"
-  gameDate: String
+  "list of game dates"
+  schedule: [String!]!
 }
 
 type Owner {

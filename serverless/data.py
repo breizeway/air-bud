@@ -1,6 +1,6 @@
 import json
 import math
-from datetime import datetime
+from datetime import date, datetime
 from zoneinfo import ZoneInfo
 
 from espn_api.basketball.box_player import BoxPlayer
@@ -29,8 +29,8 @@ def et_to_utc(dt):
     if not dt:
         return None
     # Convert naive ET datetime to UTC
-    et_time = dt.replace(tzinfo=ZoneInfo("America/New_York"))
-    return et_time.astimezone(ZoneInfo("UTC"))
+    # et_time = dt.replace(tzinfo=ZoneInfo("America/New_York"))
+    return dt.astimezone(ZoneInfo("UTC"))
 
 
 class ClientPlayerStat:
@@ -106,18 +106,28 @@ class ClientBoxPlayer:
 
         # Get game date from schedule for current opponent
         # NEXT: add whole schedule
-        # self.schedule = box_
-        self.game_date = None
-        if box_player.schedule and box_player.pro_opponent:
-            print(f"\nPlayer: {self.name}")
-            print("Schedule:", box_player.schedule)
-            # print("Pro opponent:", box_player.pro_opponent)
-            for _, game in box_player.schedule.items():
-                # print("Found game:", game)
-                game_date = game["date"]
-                if game_date:
-                    utc_time = et_to_utc(game_date)
-                    self.game_date = utc_time.isoformat()
+        self.schedule = list(
+            map(
+                lambda game: game["date"].astimezone(ZoneInfo("UTC")).isoformat(),
+                box_player.schedule.values(),
+            )
+        )
+        # self.game_date = None
+
+        # if box_player.schedule and box_player.pro_opponent:
+        #     today = date.today()
+        #     # print(f"\nPlayer: {self.name}")
+        #     # print("Schedule:", box_player.schedule)
+        #     # print("Pro opponent:", box_player.pro_opponent)
+        #     for _, game in box_player.schedule.items():
+        #         # print("Found game:", game)
+        #         game_date = game["date"]
+        #         if game_date:
+        #             utc_time = et_to_utc(game_date)
+        #             isToday = utc_time.date() == today
+        #             if isToday:
+        #                 print(box_player.name, utc_time.isoformat())
+        #                 self.game_date = utc_time.isoformat()
 
 
 class ClientBoxScore:
