@@ -82,6 +82,8 @@ export default function Leaderboard() {
     if (offset <= 0 && (currentMatchupPeriod ?? 0) + offset > 0)
       _setMatchupPeriodOffset(offset);
   };
+  const isCurrentWeek = matchupPeriodOffset === 0;
+
   const manualRefetchInFlight = useRef(false);
   const manualRefetch = async () => {
     manualRefetchInFlight.current = true;
@@ -105,7 +107,7 @@ export default function Leaderboard() {
 
   useEffect(() => {
     const sub = new UrqlSubscription("leaderboard", refetch);
-    if (matchupPeriodOffset === 0 && isAGameInProgress()) {
+    if (isCurrentWeek && isAGameInProgress()) {
       sub.start();
     }
     return () => sub.stop();
@@ -183,7 +185,7 @@ export default function Leaderboard() {
   );
 
   const columns = useMemo(() => {
-    return [
+    const cols = [
       columnHelper.accessor(BoxStatCategories["ALL"], {
         id: "teamName",
         header: (info) => (
@@ -199,8 +201,6 @@ export default function Leaderboard() {
         cell: (info) => {
           const rank = info.getValue()?.rank ?? 0;
           const rankChange = info.getValue()?.standing - rank;
-          const minutes = info.row.original[BoxStatCategories.MIN]?.value ?? 0;
-          const isCurrentWeek = matchupPeriodOffset === 0;
 
           const rankColors = {
             "text-green-500": rankChange > 0,
@@ -218,9 +218,6 @@ export default function Leaderboard() {
                     <ChangeSymbol change={rankChange} />
                     {Math.abs(rankChange)}
                   </span>
-                  {isCurrentWeek && !queryFetching && (
-                    <span className="opacity-50"> {minutes}m</span>
-                  )}
                 </span>
               }
               hideRank={options.hideRank}
@@ -229,6 +226,36 @@ export default function Leaderboard() {
         },
         sortingFn: "byTeamName",
       }),
+    ];
+
+    // Only show minutes column for current week
+    if (isCurrentWeek) {
+      cols.push(
+        columnHelper.accessor(BoxStatCategories.MIN, {
+          header: (info) => (
+            <Cell
+              primary={
+                <span>
+                  {"MIN"}
+                  {<SortSymbol {...{ info }} />}
+                </span>
+              }
+            />
+          ),
+          cell: (info) => (
+            <Cell
+              primary={<span>{info.getValue()?.value ?? 0}</span>}
+              secondary={<Rank rank={info.getValue()?.rank} />}
+              hideRank={options.hideRank}
+            />
+          ),
+          sortingFn,
+        })
+      );
+    }
+
+    return [
+      ...cols,
       columnHelper.accessor(BoxStatCategories["FG%"], {
         header: (info) => (
           <Cell
@@ -492,7 +519,7 @@ export default function Leaderboard() {
                   ? currentMatchupPeriod + matchupPeriodOffset
                   : "--"}
               </div>
-              {matchupPeriodOffset === 0 && (
+              {isCurrentWeek && (
                 <span className="text-xs mt-[-0.5em] font-normal">
                   (current)
                 </span>
@@ -509,7 +536,7 @@ export default function Leaderboard() {
             <LiveIndicator
               isLive={
                 !queryFetchingInitialData &&
-                matchupPeriodOffset === 0 &&
+                isCurrentWeek &&
                 isAGameInProgress()
               }
               className="text-xl mr-[0.9rem] mt-[0.15rem]"
