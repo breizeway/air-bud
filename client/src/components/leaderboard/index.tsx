@@ -52,10 +52,12 @@ declare module "@tanstack/table-core" {
 export interface LeaderboardOptions {
   hideRank: boolean;
   sfwMode: boolean;
+  sfwModeLocked: boolean;
 }
 const defaultLeaderboardOptions = {
   hideRank: false,
   sfwMode: false,
+  sfwModeLocked: false,
 };
 const columnHelper = createColumnHelper<RankedBoxScore>();
 const sortingFn = "byRank";
@@ -142,8 +144,8 @@ export default function Leaderboard() {
         ...JSON.parse(optionsFromStorage),
       };
       if (sfwMode) {
-        // set only if safe mode is true (locks it in)
-        Object.assign(initialOptions, { sfwMode });
+        // set only if safe mode is true (sets as default)
+        Object.assign(initialOptions, { sfwMode, sfwModeLocked: sfwMode });
       }
       const search = new URLSearchParams(window.location.search);
       search.delete("sfw-mode");
@@ -572,12 +574,14 @@ export default function Leaderboard() {
                         <tbody>
                           <tr>
                             <td>
-                              <input
-                                id="options__hide-rank"
-                                type="checkbox"
-                                className="inline"
-                                {...registerOption("hideRank", "checkbox")}
-                              />
+                              <div className="grid place-items-center">
+                                <input
+                                  id="options__hide-rank"
+                                  type="checkbox"
+                                  className="inline my-auto"
+                                  {...registerOption("hideRank", "checkbox")}
+                                />
+                              </div>
                             </td>
                             <td>
                               <label
@@ -588,24 +592,28 @@ export default function Leaderboard() {
                               </label>
                             </td>
                           </tr>
-                          <tr>
-                            <td>
-                              <input
-                                id="options__sfw-mode"
-                                type="checkbox"
-                                className="inline"
-                                {...registerOption("sfwMode", "checkbox")}
-                              />
-                            </td>
-                            <td>
-                              <label
-                                htmlFor="options__sfw-mode"
-                                className="whitespace-nowrap"
-                              >
-                                SFW Mode
-                              </label>
-                            </td>
-                          </tr>
+                          {!options.sfwModeLocked && (
+                            <tr>
+                              <td>
+                                <div className="grid place-items-center">
+                                  <input
+                                    id="options__sfw-mode"
+                                    type="checkbox"
+                                    className="inline my-auto"
+                                    {...registerOption("sfwMode", "checkbox")}
+                                  />
+                                </div>
+                              </td>
+                              <td>
+                                <label
+                                  htmlFor="options__sfw-mode"
+                                  className="whitespace-nowrap"
+                                >
+                                  SFW Mode
+                                </label>
+                              </td>
+                            </tr>
+                          )}
                         </tbody>
                       </table>
                     </div>
