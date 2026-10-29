@@ -1,3 +1,37 @@
+/* Toolbar sits directly on top of the table. The negative margin pulls the
+   table up by its border width so the active tab can overlap and "open" into it;
+   z-10 keeps the toolbar (and the active tab's black) above the table's border. */
+.toolbar {
+  @apply relative z-10 flex items-end gap-2;
+  margin-bottom: -0.125rem;
+}
+
+/* Horizontally scrollable tab strip (the part that shrinks on narrow screens). */
+.tabs {
+  @apply flex items-end gap-1 flex-1 min-w-0 overflow-x-auto;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+/* Each tab matches the table: black fill, 2px beige border. */
+.tab {
+  @apply whitespace-nowrap px-3 py-1 font-semibold leading-none text-beige-100 bg-black no-underline;
+  border: 0.125rem solid #ffefd6;
+}
+.tabInactive {
+  @apply opacity-60;
+}
+.tabInactive:hover {
+  @apply opacity-90;
+}
+/* Active tab: its black bottom border covers the table's beige top border in the
+   overlap, so the box reads as open into the table. */
+.tabActive {
+  border-bottom-color: black;
+}
+
 .tableContainer {
   /* hack to fix scrollbar under stickies in safari 
      https://stackoverflow.com/questions/67076468/why-scrollbar-is-behind-sticky-elements-in-ios-safari

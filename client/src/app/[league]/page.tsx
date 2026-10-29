@@ -1,5 +1,6 @@
 import BannerAd from "@/components/banner-ad";
 import Leaderboard from "@/components/leaderboard";
+import { slugToIndex } from "@/components/leaderboard/league-slug";
 import ScalingImage from "@/components/scaling-image";
 import { redirect } from "next/navigation";
 import styles from "../home.module.css";
@@ -9,9 +10,9 @@ export default function LeaguePage({
 }: {
   params: { league: string };
 }) {
-  const leagueIndex = Number(params.league);
-  // Non-numeric or out-of-range-low ordinals bounce to the first league.
-  if (!Number.isInteger(leagueIndex) || leagueIndex < 1) redirect("/1");
+  const leagueIndex = slugToIndex(params.league);
+  // Unknown slugs (not a single a-z letter) bounce to the first league.
+  if (!Number.isInteger(leagueIndex) || leagueIndex < 1) redirect("/a");
 
   return (
     <section className="flex flex-col gap-6">
