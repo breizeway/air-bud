@@ -42,13 +42,24 @@ def _is_pct(category):
     return category.endswith("%")
 
 
+def _is_ratio(category):
+    return category.endswith("/TO")
+
+
 def _format(category, value):
     if category == ALL:
         return str(int(round(value)))
     if _is_pct(category):
         # ESPN percentages are 0..1; render ".456" (drop the leading zero).
         return f"{value:.3f}".lstrip("0") if value else "0"
+    if _is_ratio(category):
+        return f"{value:.2f}"
     return str(int(round(value)))
+
+
+def _stat_value(stats, category):
+    value = (stats.get(category) or {}).get("value")
+    return value if isinstance(value, (int, float)) else 0
 
 
 def _sides(box_scores):
@@ -61,10 +72,19 @@ def _sides(box_scores):
 
 
 def _scored_categories(sides):
-    """The league's scoring categories, straight from its own scoreByStat."""
+    """The league's actual scoring categories.
+
+    ESPN's scoreByStat carries both the scored categories AND untracked support
+    stats (FGM/FGA/FTM/FTA/TO/EJ/...). The scored ones are exactly those ESPN
+    marks with a WIN/LOSS/TIE result; support stats have a null result. Filter on
+    that so we display each league's real categories (e.g. A/TO, not raw TO),
+    straight from the API — no hardcoded lists.
+    """
     scored = set()
     for _team, stats, _lineup in sides:
-        scored.update(stats.keys())
+        for cat, stat in stats.items():
+            if stat and stat.get("result"):
+                scored.add(cat)
     return scored
 
 
@@ -83,7 +103,7 @@ def _order(categories):
 
 
 def _team_values(stats, lineup, scored, show_minutes):
-    values = {cat: (stats.get(cat) or {}).get("value", 0) for cat in scored}
+    values = {cat: _stat_value(stats, cat) for cat in scored}
     if show_minutes:
         values[MINUTES] = sum(
             (player.points_breakdown or {}).get(MINUTES, 0) or 0
