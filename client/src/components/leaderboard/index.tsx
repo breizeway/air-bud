@@ -412,24 +412,50 @@ export default function Leaderboard() {
         ),
         sortingFn,
       }),
-      columnHelper.accessor(BoxStatCategories.TO, {
+      // TO column left in code (replaced by A/TO below); restore to show raw turnovers.
+      // columnHelper.accessor(BoxStatCategories.TO, {
+      //   header: (info) => (
+      //     <Cell
+      //       primary={
+      //         <span>
+      //           {"TO"}
+      //           {<SortSymbol {...{ info }} />}
+      //         </span>
+      //       }
+      //     />
+      //   ),
+      //   cell: (info) => (
+      //     <Cell
+      //       primary={<span>{info.getValue()?.value}</span>}
+      //       secondary={<Rank rank={info.getValue()?.rank} />}
+      //       hideRank={options.hideRank}
+      //     />
+      //   ),
+      //   sortingFn,
+      // }),
+      columnHelper.accessor(BoxStatCategories["A/TO"], {
         header: (info) => (
           <Cell
             primary={
               <span>
-                {"TO"}
+                {"A/TO"}
                 {<SortSymbol {...{ info }} />}
               </span>
             }
           />
         ),
-        cell: (info) => (
-          <Cell
-            primary={<span>{info.getValue()?.value}</span>}
-            secondary={<Rank rank={info.getValue()?.rank} />}
-            hideRank={options.hideRank}
-          />
-        ),
+        cell: (info) => {
+          const value = info.getValue()?.value;
+          return (
+            <Cell
+              primary={
+                <span>{value === Infinity ? "INF" : (value ?? 0).toFixed(2)}</span>
+              }
+              secondary={<Rank rank={info.getValue()?.rank} />}
+              hideRank={options.hideRank}
+            />
+          );
+        },
         sortingFn,
       }),
       columnHelper.accessor(BoxStatCategories.PTS, {
