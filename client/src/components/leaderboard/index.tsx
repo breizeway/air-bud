@@ -19,7 +19,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useQuery } from "@urql/next";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   ChangeEvent,
@@ -36,6 +35,7 @@ import Loading from "../loading";
 import Popover from "../popover";
 import ScalingImage from "../scaling-image";
 import styles from "./leaderboard.module.css";
+import LeagueTabs from "./tabs";
 import { getTeamName } from "./utils";
 
 declare module "@tanstack/table-core" {
@@ -46,12 +46,10 @@ declare module "@tanstack/table-core" {
 }
 
 export interface LeaderboardOptions {
-  hideRank: boolean;
   sfwMode: boolean;
   sfwModeLocked: boolean;
 }
 const defaultLeaderboardOptions = {
-  hideRank: false,
   sfwMode: false,
   sfwModeLocked: false,
 };
@@ -68,6 +66,10 @@ type TableRow = {
 const columnHelper = createColumnHelper<TableRow>();
 const ALL = "ALL";
 
+// Persisted at module scope so the selected week survives switching league tabs
+// (each tab is a link, so the component may remount) — kept deliberately simple.
+let persistedMatchupPeriodOffset = 0;
+
 export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
   const { window } = useClient();
   const searchParams = useSearchParams();
@@ -76,7 +78,9 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
   const [leaguesResult] = useQuery({ query: leaguesQuery });
   const leagues = leaguesResult.data?.getLeagues?.leagues ?? [];
 
-  const [matchupPeriodOffset, _setMatchupPeriodOffset] = useState<number>(0);
+  const [matchupPeriodOffset, _setMatchupPeriodOffset] = useState<number>(
+    persistedMatchupPeriodOffset
+  );
   const [results, refetch] = useQuery({
     query: leaderboardQuery,
     variables: { leagueIndex, matchupPeriodOffset },
@@ -89,8 +93,10 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
   const currentMatchupPeriod = leaderboard?.currentMatchupPeriod;
   const matchupPeriod = leaderboard?.matchupPeriod;
   const setMatchupPeriodOffset = (offset: number) => {
-    if (offset <= 0 && (currentMatchupPeriod ?? 0) + offset > 0)
+    if (offset <= 0 && (currentMatchupPeriod ?? 0) + offset > 0) {
+      persistedMatchupPeriodOffset = offset;
       _setMatchupPeriodOffset(offset);
+    }
   };
   const isCurrentWeek = matchupPeriodOffset === 0;
   const isLive = !!leaderboard?.isLive;
@@ -228,7 +234,6 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
                     </span>
                   </span>
                 }
-                hideRank={options.hideRank}
               />
             );
           },
@@ -257,7 +262,6 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
             <Cell
               primary={<span>{info.getValue()?.display ?? ""}</span>}
               secondary={<Rank rank={info.getValue()?.rank} />}
-              hideRank={options.hideRank}
             />
           ),
           sortingFn: "byRank",
@@ -266,7 +270,7 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
     });
 
     return cols;
-  }, [categories, options.hideRank]);
+  }, [categories]);
 
   const table = useReactTable({
     columns,
@@ -290,39 +294,14 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
 
   return (
     <div className={classNames(styles.leaderboard, "w-full")}>
-      {leagues.length > 1 && (
-        <div className="flex flex-wrap gap-1 mb-2">
-          {leagues.map((league) => {
-            const active = league.index === leagueIndex;
-            return (
-              <Link
-                key={league.index}
-                href={`/${league.index}`}
-                className={classNames(
-                  "px-3 py-1 border-2 border-black font-semibold",
-                  active
-                    ? "bg-black text-beige-100"
-                    : "bg-beige-100 text-black hover:bg-black/10"
-                )}
-              >
-                {league.name}
-              </Link>
-            );
-          })}
-        </div>
-      )}
-
-      <div className="flex flex-wrap gap-2 mb-2 items-center font-semibold">
-        <span className="text-2xl ml-2">Leaderboard</span>
-
-        <div className="flex flex-wrap gap-2 grow justify-between">
-          <div className="flex items-center">
-            <button
-              className="text-xl"
-              onClick={() => setMatchupPeriodOffset(matchupPeriodOffset - 1)}
-            >
-              &#9668;
-            </button>
+      <div className={classNames(styles.toolbar, "font-semibold")}>
+        <div className="flex items-center shrink-0">
+          <button
+            className="text-xl"
+            onClick={() => setMatchupPeriodOffset(matchupPeriodOffset - 1)}
+          >
+            &#9668;
+          </button>
             <button
               className="flex flex-col justify-center items-center min-w-[4.5rem] border-0 p-0"
               onClick={() => setMatchupPeriodOffset(0)}
@@ -349,8 +328,13 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
             >
               &#9658;
             </button>
-          </div>
-          <div className="flex items-center">
+        </div>
+
+        {leagues.length > 1 && (
+          <LeagueTabs leagues={leagues} leagueIndex={leagueIndex} />
+        )}
+
+        <div className="flex items-center shrink-0 ml-auto">
             <LiveIndicator
               isLive={!queryFetchingInitialData && isCurrentWeek && isLive}
               className="text-xl mr-[0.9rem] mt-[0.15rem]"
@@ -384,26 +368,6 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
                     <div className="p-3 text-lg bg-beige-100 flex flex-col shadow-xl">
                       <table className="[&_input]:mr-4">
                         <tbody>
-                          <tr>
-                            <td>
-                              <div className="grid place-items-center">
-                                <input
-                                  id="options__hide-rank"
-                                  type="checkbox"
-                                  className="inline my-auto"
-                                  {...registerOption("hideRank", "checkbox")}
-                                />
-                              </div>
-                            </td>
-                            <td>
-                              <label
-                                htmlFor="options__hide-rank"
-                                className="whitespace-nowrap"
-                              >
-                                Hide Rank
-                              </label>
-                            </td>
-                          </tr>
                           {!options.sfwModeLocked && (
                             <tr>
                               <td>
@@ -434,10 +398,11 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
               )}
             />
           </div>
-        </div>
       </div>
 
       <div
+        role="tabpanel"
+        aria-labelledby={`league-tab-${leagueIndex}`}
         className={classNames(
           "paint font-mono text-sm w-full overflow-x-scroll",
           styles.tableContainer
@@ -576,22 +541,12 @@ const RefetchButton = ({
 type CellProps = {
   primary: ReactNode;
   secondary?: JSX.Element;
-} & Partial<Pick<LeaderboardOptions, "hideRank">>;
-const Cell = ({ primary, secondary, hideRank }: CellProps) => {
+};
+const Cell = ({ primary, secondary }: CellProps) => {
   return (
-    <div
-      className={classNames("flex flex-col justify-start py-1", {
-        "py-[0.08rem]": !hideRank,
-      })}
-    >
+    <div className="flex flex-col justify-start py-[0.08rem]">
       <div>{primary}</div>
-      <div
-        className={classNames("text-xs mt-[-0.25em]", {
-          hidden: !!hideRank,
-        })}
-      >
-        {secondary}
-      </div>
+      <div className="text-xs mt-[-0.25em]">{secondary}</div>
     </div>
   );
 };
