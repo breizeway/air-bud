@@ -81,9 +81,70 @@ export type GetBoxScoresResult = {
   success: Scalars['Boolean']['output'];
 };
 
+export type GetLeaderboardResult = {
+  __typename?: 'GetLeaderboardResult';
+  errors: Array<Maybe<Error>>;
+  leaderboard?: Maybe<Leaderboard>;
+  success: Scalars['Boolean']['output'];
+};
+
+export type GetLeaguesResult = {
+  __typename?: 'GetLeaguesResult';
+  errors: Array<Maybe<Error>>;
+  leagues?: Maybe<Array<LeagueInfo>>;
+  success: Scalars['Boolean']['output'];
+};
+
+export type Leaderboard = {
+  __typename?: 'Leaderboard';
+  /** columns to render, in display order (ALL is last) */
+  categories: Array<LeaderboardCategory>;
+  currentMatchupPeriod: Scalars['Int']['output'];
+  /** true when this is the current week and a game is still in progress */
+  isLive: Scalars['Boolean']['output'];
+  leagueIndex: Scalars['Int']['output'];
+  leagueName: Scalars['String']['output'];
+  /** currentMatchupPeriod + requested offset */
+  matchupPeriod: Scalars['Int']['output'];
+  rows: Array<LeaderboardRow>;
+};
+
+export type LeaderboardCategory = {
+  __typename?: 'LeaderboardCategory';
+  name: Scalars['String']['output'];
+  /** false for the ALL/overall column */
+  scored: Scalars['Boolean']['output'];
+};
+
+export type LeaderboardCell = {
+  __typename?: 'LeaderboardCell';
+  category: Scalars['String']['output'];
+  /** pre-formatted for display (e.g. '.456', '1.75', 'INF', '88') */
+  display: Scalars['String']['output'];
+  rank: Scalars['Int']['output'];
+  /** 0-10 contribution to the ALL total (ALL's own score is its sum) */
+  score: Scalars['Int']['output'];
+};
+
+export type LeaderboardRow = {
+  __typename?: 'LeaderboardRow';
+  /** one cell per category (same order as Leaderboard.categories) */
+  cells: Array<LeaderboardCell>;
+  owners: Array<Owner>;
+  standing: Scalars['Int']['output'];
+  teamName: Scalars['String']['output'];
+};
+
 export type LeagueAuthInput = {
   espn_s2: Scalars['String']['input'];
   swid: Scalars['String']['input'];
+};
+
+export type LeagueInfo = {
+  __typename?: 'LeagueInfo';
+  /** 1-based ordinal — maps to the /1, /2 URL and the leagueIndex arg */
+  index: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type Matchup = {
@@ -157,10 +218,21 @@ export type PlayerStat = {
 export type Query = {
   __typename?: 'Query';
   getBoxScores: GetBoxScoresResult;
+  /** Fully-computed, ranked leaderboard table for one league + week. */
+  getLeaderboard: GetLeaderboardResult;
+  /** List of configured leagues (for the leaderboard tabs). index is 1-based (the /1, /2 URL). */
+  getLeagues: GetLeaguesResult;
 };
 
 
 export type QueryGetBoxScoresArgs = {
+  matchupPeriodOffset?: InputMaybe<Scalars['Int']['input']>;
+  year?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetLeaderboardArgs = {
+  leagueIndex: Scalars['Int']['input'];
   matchupPeriodOffset?: InputMaybe<Scalars['Int']['input']>;
   year?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -211,28 +283,21 @@ export type SetLeagueAuthMutationVariables = Exact<{
 
 export type SetLeagueAuthMutation = { __typename?: 'Mutation', setLeagueAuth: { __typename: 'SetLeagueAuthResult', success: boolean, errors: Array<{ __typename?: 'Error', code: ErrorCodes, message: string } | null> } };
 
-export type TeamFragmentFragment = { __typename?: 'Team', teamName: string, standing: number, owners: Array<{ __typename?: 'Owner', firstName: string, displayName: string }> } & { ' $fragmentName'?: 'TeamFragmentFragment' };
+export type GetLeaguesQueryVariables = Exact<{ [key: string]: never; }>;
 
-export type BoxScoreFragmentFragment = { __typename?: 'BoxScore', winner: string, homeTeam: (
-    { __typename?: 'Team' }
-    & { ' $fragmentRefs'?: { 'TeamFragmentFragment': TeamFragmentFragment } }
-  ), homeStats: Array<{ __typename?: 'BoxStat', category: string, value: number, result?: string | null }>, homeLineup: Array<{ __typename?: 'BoxPlayer', name: string, slotPosition: string, points: number, proOpponent: string, gamePlayed: number, schedule: Array<string>, pointsBreakdown: Array<{ __typename?: 'Stat', category: string, value?: number | null }> } | null>, awayTeam: (
-    { __typename?: 'Team' }
-    & { ' $fragmentRefs'?: { 'TeamFragmentFragment': TeamFragmentFragment } }
-  ), awayStats: Array<{ __typename?: 'BoxStat', category: string, value: number, result?: string | null }>, awayLineup: Array<{ __typename?: 'BoxPlayer', name: string, slotPosition: string, points: number, proOpponent: string, gamePlayed: number, schedule: Array<string>, pointsBreakdown: Array<{ __typename?: 'Stat', category: string, value?: number | null }> } | null> } & { ' $fragmentName'?: 'BoxScoreFragmentFragment' };
 
-export type GetBoxScoresQueryVariables = Exact<{
+export type GetLeaguesQuery = { __typename?: 'Query', getLeagues: { __typename?: 'GetLeaguesResult', success: boolean, errors: Array<{ __typename?: 'Error', code: ErrorCodes, message: string } | null>, leagues?: Array<{ __typename?: 'LeagueInfo', index: number, name: string }> | null } };
+
+export type GetLeaderboardQueryVariables = Exact<{
+  leagueIndex: Scalars['Int']['input'];
   year?: InputMaybe<Scalars['Int']['input']>;
   matchupPeriodOffset?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
-export type GetBoxScoresQuery = { __typename?: 'Query', getBoxScores: { __typename: 'GetBoxScoresResult', success: boolean, currentMatchupPeriod?: number | null, errors: Array<{ __typename?: 'Error', code: ErrorCodes, message: string } | null>, boxScores?: Array<(
-      { __typename?: 'BoxScore' }
-      & { ' $fragmentRefs'?: { 'BoxScoreFragmentFragment': BoxScoreFragmentFragment } }
-    )> | null } };
+export type GetLeaderboardQuery = { __typename?: 'Query', getLeaderboard: { __typename?: 'GetLeaderboardResult', success: boolean, errors: Array<{ __typename?: 'Error', code: ErrorCodes, message: string } | null>, leaderboard?: { __typename?: 'Leaderboard', leagueIndex: number, leagueName: string, currentMatchupPeriod: number, matchupPeriod: number, isLive: boolean, categories: Array<{ __typename?: 'LeaderboardCategory', name: string, scored: boolean }>, rows: Array<{ __typename?: 'LeaderboardRow', teamName: string, standing: number, owners: Array<{ __typename?: 'Owner', firstName: string, displayName: string }>, cells: Array<{ __typename?: 'LeaderboardCell', category: string, display: string, rank: number, score: number }> }> } | null } };
 
-export const TeamFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Team"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"teamName"}},{"kind":"Field","name":{"kind":"Name","value":"standing"}},{"kind":"Field","name":{"kind":"Name","value":"owners"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}}]} as unknown as DocumentNode<TeamFragmentFragment, unknown>;
-export const BoxScoreFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BoxScoreFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BoxScore"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"winner"}},{"kind":"Field","name":{"kind":"Name","value":"homeTeam"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TeamFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"homeStats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"result"}}]}},{"kind":"Field","name":{"kind":"Name","value":"homeLineup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slotPosition"}},{"kind":"Field","name":{"kind":"Name","value":"points"}},{"kind":"Field","name":{"kind":"Name","value":"proOpponent"}},{"kind":"Field","name":{"kind":"Name","value":"gamePlayed"}},{"kind":"Field","name":{"kind":"Name","value":"schedule"}},{"kind":"Field","name":{"kind":"Name","value":"pointsBreakdown"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"awayTeam"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TeamFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"awayStats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"result"}}]}},{"kind":"Field","name":{"kind":"Name","value":"awayLineup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slotPosition"}},{"kind":"Field","name":{"kind":"Name","value":"points"}},{"kind":"Field","name":{"kind":"Name","value":"proOpponent"}},{"kind":"Field","name":{"kind":"Name","value":"gamePlayed"}},{"kind":"Field","name":{"kind":"Name","value":"schedule"}},{"kind":"Field","name":{"kind":"Name","value":"pointsBreakdown"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Team"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"teamName"}},{"kind":"Field","name":{"kind":"Name","value":"standing"}},{"kind":"Field","name":{"kind":"Name","value":"owners"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}}]} as unknown as DocumentNode<BoxScoreFragmentFragment, unknown>;
+
 export const SetLeagueAuthDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"setLeagueAuth"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"leagueAuth"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LeagueAuthInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setLeagueAuth"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"leagueAuth"},"value":{"kind":"Variable","name":{"kind":"Name","value":"leagueAuth"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"errors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<SetLeagueAuthMutation, SetLeagueAuthMutationVariables>;
-export const GetBoxScoresDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getBoxScores"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"year"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"matchupPeriodOffset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getBoxScores"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"year"},"value":{"kind":"Variable","name":{"kind":"Name","value":"year"}}},{"kind":"Argument","name":{"kind":"Name","value":"matchupPeriodOffset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"matchupPeriodOffset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"errors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"Field","name":{"kind":"Name","value":"boxScores"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BoxScoreFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"currentMatchupPeriod"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TeamFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Team"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"teamName"}},{"kind":"Field","name":{"kind":"Name","value":"standing"}},{"kind":"Field","name":{"kind":"Name","value":"owners"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BoxScoreFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BoxScore"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"winner"}},{"kind":"Field","name":{"kind":"Name","value":"homeTeam"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TeamFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"homeStats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"result"}}]}},{"kind":"Field","name":{"kind":"Name","value":"homeLineup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slotPosition"}},{"kind":"Field","name":{"kind":"Name","value":"points"}},{"kind":"Field","name":{"kind":"Name","value":"proOpponent"}},{"kind":"Field","name":{"kind":"Name","value":"gamePlayed"}},{"kind":"Field","name":{"kind":"Name","value":"schedule"}},{"kind":"Field","name":{"kind":"Name","value":"pointsBreakdown"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"awayTeam"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TeamFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"awayStats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"result"}}]}},{"kind":"Field","name":{"kind":"Name","value":"awayLineup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slotPosition"}},{"kind":"Field","name":{"kind":"Name","value":"points"}},{"kind":"Field","name":{"kind":"Name","value":"proOpponent"}},{"kind":"Field","name":{"kind":"Name","value":"gamePlayed"}},{"kind":"Field","name":{"kind":"Name","value":"schedule"}},{"kind":"Field","name":{"kind":"Name","value":"pointsBreakdown"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]}}]} as unknown as DocumentNode<GetBoxScoresQuery, GetBoxScoresQueryVariables>;
+export const GetLeaguesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getLeagues"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getLeagues"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"errors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"Field","name":{"kind":"Name","value":"leagues"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"index"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GetLeaguesQuery, GetLeaguesQueryVariables>;
+export const GetLeaderboardDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getLeaderboard"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"leagueIndex"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"year"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"matchupPeriodOffset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getLeaderboard"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"leagueIndex"},"value":{"kind":"Variable","name":{"kind":"Name","value":"leagueIndex"}}},{"kind":"Argument","name":{"kind":"Name","value":"year"},"value":{"kind":"Variable","name":{"kind":"Name","value":"year"}}},{"kind":"Argument","name":{"kind":"Name","value":"matchupPeriodOffset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"matchupPeriodOffset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}},{"kind":"Field","name":{"kind":"Name","value":"errors"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"Field","name":{"kind":"Name","value":"leaderboard"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"leagueIndex"}},{"kind":"Field","name":{"kind":"Name","value":"leagueName"}},{"kind":"Field","name":{"kind":"Name","value":"currentMatchupPeriod"}},{"kind":"Field","name":{"kind":"Name","value":"matchupPeriod"}},{"kind":"Field","name":{"kind":"Name","value":"isLive"}},{"kind":"Field","name":{"kind":"Name","value":"categories"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"scored"}}]}},{"kind":"Field","name":{"kind":"Name","value":"rows"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"teamName"}},{"kind":"Field","name":{"kind":"Name","value":"standing"}},{"kind":"Field","name":{"kind":"Name","value":"owners"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"cells"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"display"}},{"kind":"Field","name":{"kind":"Name","value":"rank"}},{"kind":"Field","name":{"kind":"Name","value":"score"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetLeaderboardQuery, GetLeaderboardQueryVariables>;

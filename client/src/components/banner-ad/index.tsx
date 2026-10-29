@@ -16,13 +16,9 @@ export default function BannerAd() {
   return (
     <>
       {!!src && (
-        <a
-          href="https://tannor.net"
-          target="_blank"
-          className={classNames("w-fit hidden sm:inline", { invisible })}
-        >
+        <div className={classNames("w-fit hidden sm:inline", { invisible })}>
           <ScalingImage alt="banner ad" src={src} />
-        </a>
+        </div>
       )}
     </>
   );

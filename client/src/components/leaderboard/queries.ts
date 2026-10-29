@@ -1,75 +1,62 @@
 import { graphql } from "../../gql";
 
-export const TeamFragment = graphql(`
-  fragment TeamFragment on Team {
-    teamName
-    standing
-    owners {
-      firstName
-      displayName
-    }
-  }
-`);
-
-export const BoxScoreFragment = graphql(`
-  fragment BoxScoreFragment on BoxScore {
-    winner
-    homeTeam {
-      ...TeamFragment
-    }
-    homeStats {
-      category
-      value
-      result
-    }
-    homeLineup {
-      name
-      slotPosition
-      points
-      proOpponent
-      gamePlayed
-      schedule
-      pointsBreakdown {
-        category
-        value
-      }
-    }
-    awayTeam {
-      ...TeamFragment
-    }
-    awayStats {
-      category
-      value
-      result
-    }
-    awayLineup {
-      name
-      slotPosition
-      points
-      proOpponent
-      gamePlayed
-      schedule
-      pointsBreakdown {
-        category
-        value
-      }
-    }
-  }
-`);
-
-export const rankQuery = graphql(`
-  query getBoxScores($year: Int, $matchupPeriodOffset: Int) {
-    getBoxScores(year: $year, matchupPeriodOffset: $matchupPeriodOffset) {
-      __typename
+export const leaguesQuery = graphql(`
+  query getLeagues {
+    getLeagues {
       success
       errors {
         code
         message
       }
-      boxScores {
-        ...BoxScoreFragment
+      leagues {
+        index
+        name
       }
-      currentMatchupPeriod
+    }
+  }
+`);
+
+export const leaderboardQuery = graphql(`
+  query getLeaderboard(
+    $leagueIndex: Int!
+    $year: Int
+    $matchupPeriodOffset: Int
+  ) {
+    getLeaderboard(
+      leagueIndex: $leagueIndex
+      year: $year
+      matchupPeriodOffset: $matchupPeriodOffset
+    ) {
+      success
+      errors {
+        code
+        message
+      }
+      leaderboard {
+        leagueIndex
+        leagueName
+        currentMatchupPeriod
+        matchupPeriod
+        isLive
+        categories {
+          name
+          scored
+        }
+        rows {
+          teamName
+          standing
+          owners {
+            firstName
+            displayName
+          }
+          cells {
+            category
+            display
+            rank
+            score
+          }
+        }
+      }
     }
   }
 `);

@@ -1,9 +1,11 @@
 "use client";
 
 import { UrqlSubscription } from "@/app/_providers/urql-wrapper";
-import { rankQuery } from "@/components/leaderboard/queries";
+import {
+  leaderboardQuery,
+  leaguesQuery,
+} from "@/components/leaderboard/queries";
 import { LiveIndicator } from "@/components/live-indicator";
-import { BoxScoreFragmentFragment } from "@/gql/graphql";
 import { ClassNames, classNames } from "@/utils";
 import useClient from "@/utils/use-client";
 import {
@@ -17,6 +19,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useQuery } from "@urql/next";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   ChangeEvent,
@@ -33,14 +36,7 @@ import Loading from "../loading";
 import Popover from "../popover";
 import ScalingImage from "../scaling-image";
 import styles from "./leaderboard.module.css";
-import {
-  BoxStatCategories,
-  RankedBoxScore,
-  RankedBoxScores,
-  TeamStat,
-  findGameInProgress,
-  getRankedBoxScores,
-} from "./utils";
+import { getTeamName } from "./utils";
 
 declare module "@tanstack/table-core" {
   interface SortingFns {
@@ -59,32 +55,45 @@ const defaultLeaderboardOptions = {
   sfwMode: false,
   sfwModeLocked: false,
 };
-const columnHelper = createColumnHelper<RankedBoxScore>();
-const sortingFn = "byRank";
-const defaultBoxRanks: RankedBoxScores = {};
 
-export default function Leaderboard() {
+// One already-computed table cell as it arrives from the backend.
+type Cell = { category: string; display: string; rank: number; score: number };
+// A row shaped for the table: display name + cells keyed by category.
+type TableRow = {
+  teamName: string;
+  standing: number;
+  byCat: { [category: string]: Cell };
+};
+
+const columnHelper = createColumnHelper<TableRow>();
+const ALL = "ALL";
+
+export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
   const { window } = useClient();
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  const [leaguesResult] = useQuery({ query: leaguesQuery });
+  const leagues = leaguesResult.data?.getLeagues?.leagues ?? [];
+
   const [matchupPeriodOffset, _setMatchupPeriodOffset] = useState<number>(0);
   const [results, refetch] = useQuery({
-    query: rankQuery,
-    variables: {
-      matchupPeriodOffset,
-    },
+    query: leaderboardQuery,
+    variables: { leagueIndex, matchupPeriodOffset },
   });
+  const leaderboard = results.data?.getLeaderboard?.leaderboard;
   const queryFetching = results.fetching;
-  const queryIsSuccess = !!results.data?.getBoxScores.boxScores;
+  const queryIsSuccess = !!leaderboard;
   const queryFetchingInitialData = queryFetching && !queryIsSuccess;
 
-  const currentMatchupPeriod = results.data?.getBoxScores.currentMatchupPeriod;
+  const currentMatchupPeriod = leaderboard?.currentMatchupPeriod;
+  const matchupPeriod = leaderboard?.matchupPeriod;
   const setMatchupPeriodOffset = (offset: number) => {
     if (offset <= 0 && (currentMatchupPeriod ?? 0) + offset > 0)
       _setMatchupPeriodOffset(offset);
   };
   const isCurrentWeek = matchupPeriodOffset === 0;
+  const isLive = !!leaderboard?.isLive;
 
   const manualRefetchInFlight = useRef(false);
   const manualRefetch = async () => {
@@ -95,25 +104,12 @@ export default function Leaderboard() {
     if (!results.stale) manualRefetchInFlight.current = false;
   }, [results]);
 
-  const isAGameInProgress = useCallback(
-    () =>
-      !!results.data?.getBoxScores.boxScores?.find((bs) => {
-        const boxScore = bs as BoxScoreFragmentFragment;
-        return (
-          findGameInProgress(boxScore.homeLineup) ||
-          findGameInProgress(boxScore.awayLineup)
-        );
-      }),
-    [results]
-  );
-
+  // Poll for live scores while a game is in progress (server decides).
   useEffect(() => {
     const sub = new UrqlSubscription("leaderboard", refetch);
-    if (isCurrentWeek && isAGameInProgress()) {
-      sub.start();
-    }
+    if (isLive) sub.start();
     return () => sub.stop();
-  }, [refetch, matchupPeriodOffset, isAGameInProgress]);
+  }, [refetch, isLive]);
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [showMore, setShowMore] = useState<boolean>(false);
@@ -177,68 +173,81 @@ export default function Leaderboard() {
   const tableRef = useRef<HTMLTableElement>(null);
   const tableWidth = tableRef.current?.getBoundingClientRect().width;
 
-  const boxRanks = useMemo(
-    () =>
-      Object.values(
-        getRankedBoxScores(results.data?.getBoxScores.boxScores, options) ??
-          defaultBoxRanks
-      ).sort((a, b) => (a.ALL.rank ?? 0) - (b.ALL.rank ?? 0)),
-    [results, options]
-  );
+  // The backend returns the category list (ordered, ALL last) and pre-ranked
+  // rows; shape them for the table and sort by the overall (ALL) rank.
+  const categories = leaderboard?.categories ?? [];
+  const rows: TableRow[] = useMemo(() => {
+    if (!leaderboard) return [];
+    return leaderboard.rows
+      .map((row) => ({
+        teamName: getTeamName(row.teamName, row.owners, options.sfwMode),
+        standing: row.standing,
+        byCat: Object.fromEntries(row.cells.map((c) => [c.category, c])),
+      }))
+      .sort((a, b) => (a.byCat[ALL]?.rank ?? 0) - (b.byCat[ALL]?.rank ?? 0));
+  }, [leaderboard, options.sfwMode]);
 
   const columns = useMemo(() => {
-    const cols = [
-      columnHelper.accessor(BoxStatCategories["ALL"], {
-        id: "teamName",
-        header: (info) => (
-          <Cell
-            primary={
-              <span>
-                {"Team"}
-                {<SortSymbol {...{ info }} />}
-              </span>
-            }
-          />
-        ),
-        cell: (info) => {
-          const rank = info.getValue()?.rank ?? 0;
-          const rankChange = info.getValue()?.standing - rank;
-
-          const rankColors = {
-            "text-green-500": rankChange > 0,
-            "text-red-500": rankChange < 0,
-            "text-yellow-500": rankChange === 0,
-            "opacity-90": true,
-          };
-          return (
-            <Cell
-              primary={<span>{info.getValue()?.teamName}</span>}
-              secondary={
-                <span className="whitespace-nowrap">
-                  <Rank rank={rank} className={rankColors} fullOpacity />{" "}
-                  <span className={classNames(rankColors)}>
-                    <ChangeSymbol change={rankChange} />
-                    {Math.abs(rankChange)}
-                  </span>
-                </span>
-              }
-              hideRank={options.hideRank}
-            />
-          );
-        },
-        sortingFn: "byTeamName",
-      }),
-    ];
-
-    // Only show minutes column for current week
-    if (isCurrentWeek) {
-      cols.push(
-        columnHelper.accessor(BoxStatCategories.MIN, {
+    const cols: any[] = [
+      columnHelper.accessor(
+        (row) => ({
+          teamName: row.teamName,
+          rank: row.byCat[ALL]?.rank ?? 0,
+          standing: row.standing,
+        }),
+        {
+          id: "teamName",
           header: (info) => (
             <Cell
               primary={
                 <span>
-                  {"MIN"}
+                  {"Team"}
+                  {<SortSymbol {...{ info }} />}
+                </span>
+              }
+            />
+          ),
+          cell: (info) => {
+            const { teamName, rank, standing } = info.getValue();
+            const rankChange = standing - rank;
+            const rankColors = {
+              "text-green-500": rankChange > 0,
+              "text-red-500": rankChange < 0,
+              "text-yellow-500": rankChange === 0,
+              "opacity-90": true,
+            };
+            return (
+              <Cell
+                primary={<span>{teamName}</span>}
+                secondary={
+                  <span className="whitespace-nowrap">
+                    <Rank rank={rank} className={rankColors} fullOpacity />{" "}
+                    <span className={classNames(rankColors)}>
+                      <ChangeSymbol change={rankChange} />
+                      {Math.abs(rankChange)}
+                    </span>
+                  </span>
+                }
+                hideRank={options.hideRank}
+              />
+            );
+          },
+          sortingFn: "byTeamName",
+        }
+      ),
+    ];
+
+    categories.forEach((category) => {
+      const name = category.name;
+      cols.push(
+        columnHelper.accessor((row) => row.byCat[name], {
+          id: name,
+          header: (info) => (
+            <Cell
+              primary={
+                <span>
+                  {name}
+                  {name === ALL && <sup className="text-xs">*</sup>}
                   {<SortSymbol {...{ info }} />}
                 </span>
               }
@@ -246,274 +255,34 @@ export default function Leaderboard() {
           ),
           cell: (info) => (
             <Cell
-              primary={<span>{info.getValue()?.value ?? 0}</span>}
+              primary={<span>{info.getValue()?.display ?? ""}</span>}
               secondary={<Rank rank={info.getValue()?.rank} />}
               hideRank={options.hideRank}
             />
           ),
-          sortingFn,
+          sortingFn: "byRank",
         })
       );
-    }
+    });
 
-    return [
-      ...cols,
-      columnHelper.accessor(BoxStatCategories["FG%"], {
-        header: (info) => (
-          <Cell
-            primary={
-              <span>
-                {"FG%"}
-                {<SortSymbol {...{ info }} />}
-              </span>
-            }
-          />
-        ),
-        cell: (info) => (
-          <Cell
-            primary={
-              <span>
-                {info
-                  .getValue()
-                  .value.toFixed(3)
-                  .slice([0, 1].includes(info.getValue()?.value) ? 0 : 1)}
-              </span>
-            }
-            secondary={<Rank rank={info.getValue()?.rank} />}
-            hideRank={options.hideRank}
-          />
-        ),
-        sortingFn,
-      }),
-      columnHelper.accessor(BoxStatCategories["FT%"], {
-        header: (info) => (
-          <Cell
-            primary={
-              <span>
-                {"FT%"}
-                {<SortSymbol {...{ info }} />}
-              </span>
-            }
-          />
-        ),
-        cell: (info) => (
-          <Cell
-            primary={
-              <span>
-                {info
-                  .getValue()
-                  .value.toFixed(3)
-                  .slice([0, 1].includes(info.getValue()?.value) ? 0 : 1)}
-              </span>
-            }
-            secondary={<Rank rank={info.getValue()?.rank} />}
-            hideRank={options.hideRank}
-          />
-        ),
-        sortingFn,
-      }),
-      columnHelper.accessor(BoxStatCategories["3PM"], {
-        header: (info) => (
-          <Cell
-            primary={
-              <span>
-                {"3PM"}
-                {<SortSymbol {...{ info }} />}
-              </span>
-            }
-          />
-        ),
-        cell: (info) => (
-          <Cell
-            primary={<span>{info.getValue()?.value}</span>}
-            secondary={<Rank rank={info.getValue()?.rank} />}
-            hideRank={options.hideRank}
-          />
-        ),
-        sortingFn,
-      }),
-      columnHelper.accessor(BoxStatCategories.REB, {
-        header: (info) => (
-          <Cell
-            primary={
-              <span>
-                {"REB"}
-                {<SortSymbol {...{ info }} />}
-              </span>
-            }
-          />
-        ),
-        cell: (info) => (
-          <Cell
-            primary={<span>{info.getValue()?.value}</span>}
-            secondary={<Rank rank={info.getValue()?.rank} />}
-            hideRank={options.hideRank}
-          />
-        ),
-        sortingFn,
-      }),
-      columnHelper.accessor(BoxStatCategories.AST, {
-        header: (info) => (
-          <Cell
-            primary={
-              <span>
-                {"AST"}
-                {<SortSymbol {...{ info }} />}
-              </span>
-            }
-          />
-        ),
-        cell: (info) => (
-          <Cell
-            primary={<span>{info.getValue()?.value}</span>}
-            secondary={<Rank rank={info.getValue()?.rank} />}
-            hideRank={options.hideRank}
-          />
-        ),
-        sortingFn,
-      }),
-      columnHelper.accessor(BoxStatCategories.STL, {
-        header: (info) => (
-          <Cell
-            primary={
-              <span>
-                {"STL"}
-                {<SortSymbol {...{ info }} />}
-              </span>
-            }
-          />
-        ),
-        cell: (info) => (
-          <Cell
-            primary={<span>{info.getValue()?.value}</span>}
-            secondary={<Rank rank={info.getValue()?.rank} />}
-            hideRank={options.hideRank}
-          />
-        ),
-        sortingFn,
-      }),
-      columnHelper.accessor(BoxStatCategories.BLK, {
-        header: (info) => (
-          <Cell
-            primary={
-              <span>
-                {"BLK"}
-                {<SortSymbol {...{ info }} />}
-              </span>
-            }
-          />
-        ),
-        cell: (info) => (
-          <Cell
-            primary={<span>{info.getValue()?.value}</span>}
-            secondary={<Rank rank={info.getValue()?.rank} />}
-            hideRank={options.hideRank}
-          />
-        ),
-        sortingFn,
-      }),
-      // TO column left in code (replaced by A/TO below); restore to show raw turnovers.
-      // columnHelper.accessor(BoxStatCategories.TO, {
-      //   header: (info) => (
-      //     <Cell
-      //       primary={
-      //         <span>
-      //           {"TO"}
-      //           {<SortSymbol {...{ info }} />}
-      //         </span>
-      //       }
-      //     />
-      //   ),
-      //   cell: (info) => (
-      //     <Cell
-      //       primary={<span>{info.getValue()?.value}</span>}
-      //       secondary={<Rank rank={info.getValue()?.rank} />}
-      //       hideRank={options.hideRank}
-      //     />
-      //   ),
-      //   sortingFn,
-      // }),
-      columnHelper.accessor(BoxStatCategories["A/TO"], {
-        header: (info) => (
-          <Cell
-            primary={
-              <span>
-                {"A/TO"}
-                {<SortSymbol {...{ info }} />}
-              </span>
-            }
-          />
-        ),
-        cell: (info) => {
-          const value = info.getValue()?.value;
-          return (
-            <Cell
-              primary={
-                <span>{value === Infinity ? "INF" : (value ?? 0).toFixed(2)}</span>
-              }
-              secondary={<Rank rank={info.getValue()?.rank} />}
-              hideRank={options.hideRank}
-            />
-          );
-        },
-        sortingFn,
-      }),
-      columnHelper.accessor(BoxStatCategories.PTS, {
-        header: (info) => (
-          <Cell
-            primary={
-              <span>
-                {"PTS"}
-                {<SortSymbol {...{ info }} />}
-              </span>
-            }
-          />
-        ),
-        cell: (info) => (
-          <Cell
-            primary={<span>{info.getValue()?.value}</span>}
-            secondary={<Rank rank={info.getValue()?.rank} />}
-            hideRank={options.hideRank}
-          />
-        ),
-        sortingFn,
-      }),
-      columnHelper.accessor(BoxStatCategories.ALL, {
-        header: (info) => (
-          <Cell
-            primary={
-              <span>
-                {"ALL"}
-                <sup className="text-xs">*</sup>
-                {<SortSymbol {...{ info }} />}
-              </span>
-            }
-          />
-        ),
-        cell: (info) => (
-          <Cell
-            primary={<span>{info.getValue()?.value}</span>}
-            secondary={<Rank rank={info.getValue()?.rank} />}
-            hideRank={options.hideRank}
-          />
-        ),
-        sortingFn,
-      }),
-    ];
-  }, [options.hideRank, matchupPeriodOffset, queryFetching]);
+    return cols;
+  }, [categories, options.hideRank]);
 
   const table = useReactTable({
     columns,
-    data: boxRanks,
+    data: rows,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
     state: { sorting },
     sortingFns: {
       byRank: (rowA: any, rowB: any, columnId: any): number =>
-        rowA.getValue(columnId).rank < rowB.getValue(columnId).rank ? 1 : -1,
+        (rowA.getValue(columnId)?.rank ?? 0) <
+        (rowB.getValue(columnId)?.rank ?? 0)
+          ? 1
+          : -1,
       byTeamName: (rowA: any, rowB: any, columnId: any): number =>
-        rowA.getValue(columnId).teamName < rowB.getValue(columnId).teamName
+        rowA.getValue(columnId)?.teamName < rowB.getValue(columnId)?.teamName
           ? 1
           : -1,
     },
@@ -521,6 +290,28 @@ export default function Leaderboard() {
 
   return (
     <div className={classNames(styles.leaderboard, "w-full")}>
+      {leagues.length > 1 && (
+        <div className="flex flex-wrap gap-1 mb-2">
+          {leagues.map((league) => {
+            const active = league.index === leagueIndex;
+            return (
+              <Link
+                key={league.index}
+                href={`/${league.index}`}
+                className={classNames(
+                  "px-3 py-1 border-2 border-black font-semibold",
+                  active
+                    ? "bg-black text-beige-100"
+                    : "bg-beige-100 text-black hover:bg-black/10"
+                )}
+              >
+                {league.name}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-2 mb-2 items-center font-semibold">
         <span className="text-2xl ml-2">Leaderboard</span>
 
@@ -542,9 +333,8 @@ export default function Leaderboard() {
                 })}
               >
                 Week{" "}
-                {currentMatchupPeriod !== null &&
-                currentMatchupPeriod !== undefined
-                  ? currentMatchupPeriod + matchupPeriodOffset
+                {matchupPeriod !== null && matchupPeriod !== undefined
+                  ? matchupPeriod
                   : "--"}
               </div>
               {isCurrentWeek && (
@@ -562,11 +352,7 @@ export default function Leaderboard() {
           </div>
           <div className="flex items-center">
             <LiveIndicator
-              isLive={
-                !queryFetchingInitialData &&
-                isCurrentWeek &&
-                isAGameInProgress()
-              }
+              isLive={!queryFetchingInitialData && isCurrentWeek && isLive}
               className="text-xl mr-[0.9rem] mt-[0.15rem]"
             />
             <RefetchButton
@@ -732,11 +518,11 @@ export default function Leaderboard() {
                 * The <code>ALL</code>, or &quot;Overall&quot; category
                 indicates a team&apos;s performance across all categories
                 relative to other teams in the league. It&apos;s calculated by
-                assigning a score from 0-10 to each of the nine categories, and
-                then adding them up. If a team ranks first in a category, a
-                score of <code>10</code> is given; if 2nd, <code>9</code>; and
-                so on, ending with <code>1</code> for 10th place (or{" "}
-                <code>0</code> if there is no value yet).{" "}
+                assigning a score from 0-10 to each scored category, and then
+                adding them up. If a team ranks first in a category, a score of{" "}
+                <code>10</code> is given; if 2nd, <code>9</code>; and so on,
+                ending with <code>1</code> for 10th place (or <code>0</code> if
+                there is no value yet).{" "}
               </span>
             ) : (
               <span>
@@ -810,11 +596,7 @@ const Cell = ({ primary, secondary, hideRank }: CellProps) => {
   );
 };
 
-const SortSymbol = ({
-  info,
-}: {
-  info: HeaderContext<RankedBoxScore, TeamStat>;
-}) =>
+const SortSymbol = ({ info }: { info: HeaderContext<TableRow, any> }) =>
   ({
     asc: <span className="ml-1">{"▴"}</span>,
     desc: <span className="ml-1">{"▾"}</span>,
