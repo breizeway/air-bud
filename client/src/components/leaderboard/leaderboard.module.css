@@ -2,29 +2,35 @@
    table up by its border width so the active tab can overlap and "open" into it;
    z-10 keeps the toolbar (and the active tab's black) above the table's border. */
 .toolbar {
-  @apply relative z-10 flex items-end gap-2;
+  @apply relative z-10 flex items-stretch gap-2;
   margin-bottom: -0.125rem;
 }
 
-/* Horizontally scrollable tab strip (the part that shrinks on narrow screens). */
+/* Horizontally scrollable tab strip (the part that shrinks on narrow screens).
+   Tabs stretch to the full toolbar height; the week-nav and controls are
+   centered within that height, which gives them breathing room above the table
+   while the tabs still reach down to connect. */
 .tabs {
-  @apply flex items-end gap-1 flex-1 min-w-0 overflow-x-auto;
+  @apply flex items-stretch gap-1 flex-1 min-w-0 overflow-x-auto;
   scrollbar-width: none;
 }
 .tabs::-webkit-scrollbar {
   display: none;
 }
 
-/* Each tab matches the table: black fill, 2px beige border. */
+/* Each tab matches the table: solid black fill, 2px beige border. The min-height
+   makes the tabs the tallest item, so they define the toolbar height (and the
+   week-nav/controls get centered within it). Text is centered vertically. */
 .tab {
-  @apply whitespace-nowrap px-3 py-1 font-semibold leading-none text-beige-100 bg-black no-underline;
+  @apply inline-flex items-center whitespace-nowrap min-h-[2.75rem] px-3 font-semibold leading-none text-beige-100 bg-black no-underline;
   border: 0.125rem solid #ffefd6;
 }
+/* Inactive: solid tab (bg stays black like the table), just the TEXT faded. */
 .tabInactive {
-  @apply opacity-60;
+  color: rgba(255, 239, 214, 0.75);
 }
 .tabInactive:hover {
-  @apply opacity-90;
+  color: #ffefd6;
 }
 /* Active tab: its black bottom border covers the table's beige top border in the
    overlap, so the box reads as open into the table. */

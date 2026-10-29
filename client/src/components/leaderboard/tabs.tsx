@@ -71,11 +71,12 @@ export default function LeagueTabs({
     return () => clearTimeout(settle);
   }, [leagueIndex, leagues.length]);
 
-  const maskImage = `linear-gradient(to right, ${
-    fade.left ? "transparent 0, #000 1.5rem" : "#000 0"
-  }, ${
-    fade.right ? "#000 calc(100% - 1.5rem), transparent 100%" : "#000 100%"
-  })`;
+  // A single fade width for both edges; an edge only fades when it can scroll
+  // further that way. (left stop, right stop) -> one left-to-right gradient.
+  const FADE = "1.25rem";
+  const left = fade.left ? `transparent, #000 ${FADE}` : "#000";
+  const right = fade.right ? `#000 calc(100% - ${FADE}), transparent` : "#000";
+  const maskImage = `linear-gradient(to right, ${left}, ${right})`;
 
   return (
     <div

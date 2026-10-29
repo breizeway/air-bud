@@ -1,9 +1,7 @@
-import { classNames } from "@/utils";
-import Link from "next/link";
 import { PropsWithChildren } from "react";
+import EspnLink from "./espn-link";
+import Link from "next/link";
 import styles from "./court-layout.module.css";
-
-const LEAGUE_ID = process.env.NEXT_PUBLIC_LEAGUE_ID;
 
 export default function CourtLayout({ children }: PropsWithChildren) {
   return (
@@ -19,11 +17,11 @@ export default function CourtLayout({ children }: PropsWithChildren) {
             hRem={2.25}
           />
         </div> */}
-        <EspnLogo />
+        <EspnLink />
       </header>
       <footer className={styles.bottom}>
         <LeagueLogo />
-        <EspnLogo />
+        <EspnLink />
       </footer>
       <div className={styles.left} />
       <div className={styles.right} />
@@ -38,23 +36,6 @@ function LeagueLogo() {
       <Link href="/" className={styles.leagueLogo}>
         <span className={styles.courtLogoStretch}>BALL IS LYF3</span>
       </Link>
-    </div>
-  );
-}
-
-function EspnLogo() {
-  return (
-    <div className={classNames(styles.courtLogo, "justify-end")}>
-      <a
-        href={`https://fantasy.espn.com/basketball/league?leagueId=${LEAGUE_ID}`}
-        className={styles.espnLogo}
-      >
-        <span className={styles.courtLogoStretch}>ESPN</span>
-        <div className="flex flex-col text-xs">
-          <span className="tracking-wide">FANTASY</span>
-          <span className="tracking-widest">LEAGUE</span>
-        </div>
-      </a>
     </div>
   );
 }
