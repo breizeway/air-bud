@@ -23,6 +23,7 @@ export enum BoxStatCategories {
   "STL" = "STL",
   "BLK" = "BLK",
   "TO" = "TO",
+  "A/TO" = "A/TO",
   // "PF" = "PF",
   "PTS" = "PTS",
   "ALL" = "ALL",
@@ -52,6 +53,7 @@ const initStatsByCat = <T>(): StatsByCat<T> => ({
   STL: [],
   BLK: [],
   TO: [],
+  "A/TO": [],
   // PF: [],
   PTS: [],
   // important that this one is last to make rankings work with only one iteration
@@ -61,28 +63,12 @@ const initStatsByCat = <T>(): StatsByCat<T> => ({
 export type RankedBoxScore = { [category in BoxStatCategories]: TeamStat };
 export type RankedBoxScores = { [teamName: string]: RankedBoxScore };
 
-const alteredValue = (
-  value: number,
-  category: BoxStatCategories,
-  teamName: string
-) => {
-  const isNegativeStat = [
-    BoxStatCategories.TO,
-    // , BoxStatCategories.PF
-  ].includes(category);
-  const losers = ["All Starr Dawgs"];
-  const winners = ["AirBalls Pro", "Durham Beans", "HAGA"];
-  if (losers.includes(teamName)) {
-    if (isNegativeStat) return Math.round(Math.random() * 1_000_000);
-    return Math.round(Math.random() * 5);
-  }
-  if (winners.includes(teamName)) {
-    if (isNegativeStat) return Math.round(Math.random() * 10);
-    return Math.round(Math.random() * 300);
-  }
-
-  return value;
-};
+// A/TO (assist-to-turnover ratio) = assists / turnovers. Higher is better.
+// 0 turnovers with assists is the best possible ratio -> Infinity (renders "INF",
+// sorts to rank 1). 0 assists AND 0 turnovers means no data yet -> 0 (scores 0),
+// mirroring the FG%/FT% "no attempts -> 0" convention below.
+const computeAto = (ast: number, to: number) =>
+  to === 0 ? (ast === 0 ? 0 : Infinity) : ast / to;
 
 const breakOutTeamStats = (
   boxRanks: StatsByCat<TeamStat>,
@@ -107,6 +93,7 @@ const breakOutTeamStats = (
 
     const fieldGoals = { FGM: 0, FGA: 0 };
     const freeThrows = { FTM: 0, FTA: 0 };
+    const assistsTurnovers = { AST: 0, TO: 0 };
     Object.entries(playerStats).forEach(([category, vals]) => {
       const cat = category as BoxStatCategories;
       const value = vals.reduce((acc, val) => acc + val, 0);
@@ -115,7 +102,15 @@ const breakOutTeamStats = (
       if (cat === BoxStatCategories["FGA"]) fieldGoals.FGA = value;
       if (cat === BoxStatCategories["FTM"]) freeThrows.FTM = value;
       if (cat === BoxStatCategories["FTA"]) freeThrows.FTA = value;
-      if (![BoxStatCategories["FG%"], BoxStatCategories["FT%"]].includes(cat))
+      if (cat === BoxStatCategories["AST"]) assistsTurnovers.AST = value;
+      if (cat === BoxStatCategories["TO"]) assistsTurnovers.TO = value;
+      if (
+        ![
+          BoxStatCategories["FG%"],
+          BoxStatCategories["FT%"],
+          BoxStatCategories["A/TO"],
+        ].includes(cat)
+      )
         boxRanks[cat]?.push({ ...teamStats, value });
     });
 
@@ -127,6 +122,10 @@ const breakOutTeamStats = (
       ...teamStats,
       value: freeThrows.FTA === 0 ? 0 : freeThrows.FTM / freeThrows.FTA,
     });
+    boxRanks[BoxStatCategories["A/TO"]]?.push({
+      ...teamStats,
+      value: computeAto(assistsTurnovers.AST, assistsTurnovers.TO),
+    });
   } else {
     // static (non-live) box scores for prior weeks
     [...boxStats, { category: BoxStatCategories.ALL, value: 0 }].forEach(
@@ -135,6 +134,18 @@ const breakOutTeamStats = (
         boxRanks[cat]?.push({ ...teamStats, value: bs.value });
       }
     );
+
+    // derive A/TO from the team's AST and TO; guard missing entries (bye/empty
+    // week) so a dataless box score resolves to computeAto(0, 0) === 0 instead
+    // of throwing on undefined.value and blanking the whole week. (Review D1.)
+    const ast =
+      boxStats.find((bs) => bs.category === BoxStatCategories.AST)?.value ?? 0;
+    const to =
+      boxStats.find((bs) => bs.category === BoxStatCategories.TO)?.value ?? 0;
+    boxRanks[BoxStatCategories["A/TO"]]?.push({
+      ...teamStats,
+      value: computeAto(ast, to),
+    });
   }
 };
 
@@ -204,6 +215,9 @@ export const getRankedBoxScores = (
               BoxStatCategories.FTM,
               BoxStatCategories.FTA,
               BoxStatCategories.MIN,
+              // TO is still collected (to derive A/TO) but no longer scores
+              // toward ALL — A/TO replaces it as the ranked category.
+              BoxStatCategories.TO,
             ].includes(key) || ts.value === 0 // cat values are 0
               ? 0
               : isTied
