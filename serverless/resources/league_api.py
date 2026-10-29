@@ -8,15 +8,19 @@ from resources.edge import EdgeStore
 
 
 class LeagueApi:
-    def __init__(self, year: int = None):
+    def __init__(self, league_id: int, year: int = None):
         self.league: League = None
         self.response: Response = Response()
         league_year = year or self.get_default_league_year()
 
         try:
             league_auth = EdgeStore().league_auth
-            self.league = League(league_id=int(
-                os.environ["LEAGUE_ID"]), year=league_year, swid=league_auth.swid, espn_s2=league_auth.espn_s2, debug=False)
+            if league_auth is None:
+                self.response.add_error(ClientError(
+                    ClientErrorCodes.LEAGUE_API_AUTH, "ESPN api private league authentication credentials are not set"))
+                return
+            self.league = League(league_id=int(league_id), year=league_year,
+                                 swid=league_auth.swid, espn_s2=league_auth.espn_s2, debug=False)
         except ESPNAccessDenied:
             self.response.add_error(ClientError(
                 ClientErrorCodes.LEAGUE_API_AUTH, "ESPN api private league authentication credentials are not valid"))

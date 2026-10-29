@@ -1,7 +1,6 @@
 import { classNames } from "@/utils";
 import Link from "next/link";
 import { PropsWithChildren } from "react";
-import ScalingImage from "../scaling-image";
 import styles from "./court-layout.module.css";
 
 const LEAGUE_ID = process.env.NEXT_PUBLIC_LEAGUE_ID;
@@ -24,17 +23,6 @@ export default function CourtLayout({ children }: PropsWithChildren) {
       </header>
       <footer className={styles.bottom}>
         <LeagueLogo />
-        <a
-          href="https://github.com/breizeway/air-bud"
-          className="block rounded-full overflow-hidden min-w-fit"
-        >
-          <ScalingImage
-            src="/github-mark.svg"
-            alt="github logo"
-            wRem={1.75}
-            hRem={1.75}
-          />
-        </a>
         <EspnLogo />
       </footer>
       <div className={styles.left} />

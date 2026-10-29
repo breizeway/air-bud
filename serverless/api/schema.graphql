@@ -1,5 +1,13 @@
 type Query {
   getBoxScores(year: Int, matchupPeriodOffset: Int): GetBoxScoresResult!
+  "List of configured leagues (for the leaderboard tabs). index is 1-based (the /1, /2 URL)."
+  getLeagues: GetLeaguesResult!
+  "Fully-computed, ranked leaderboard table for one league + week."
+  getLeaderboard(
+    leagueIndex: Int!
+    year: Int
+    matchupPeriodOffset: Int
+  ): GetLeaderboardResult!
 }
 
 type Mutation {
@@ -27,6 +35,60 @@ type GetBoxScoresResult {
 type SetLeagueAuthResult {
   success: Boolean!
   errors: [Error]!
+}
+
+type GetLeaguesResult {
+  success: Boolean!
+  errors: [Error]!
+  leagues: [LeagueInfo!]
+}
+
+type LeagueInfo {
+  "1-based ordinal — maps to the /1, /2 URL and the leagueIndex arg"
+  index: Int!
+  name: String!
+}
+
+type GetLeaderboardResult {
+  success: Boolean!
+  errors: [Error]!
+  leaderboard: Leaderboard
+}
+
+type Leaderboard {
+  leagueIndex: Int!
+  leagueName: String!
+  currentMatchupPeriod: Int!
+  "currentMatchupPeriod + requested offset"
+  matchupPeriod: Int!
+  "true when this is the current week and a game is still in progress"
+  isLive: Boolean!
+  "columns to render, in display order (ALL is last)"
+  categories: [LeaderboardCategory!]!
+  rows: [LeaderboardRow!]!
+}
+
+type LeaderboardCategory {
+  name: String!
+  "false for the ALL/overall column"
+  scored: Boolean!
+}
+
+type LeaderboardRow {
+  teamName: String!
+  standing: Int!
+  owners: [Owner!]!
+  "one cell per category (same order as Leaderboard.categories)"
+  cells: [LeaderboardCell!]!
+}
+
+type LeaderboardCell {
+  category: String!
+  "pre-formatted for display (e.g. '.456', '1.75', 'INF', '88')"
+  display: String!
+  rank: Int!
+  "0-10 contribution to the ALL total (ALL's own score is its sum)"
+  score: Int!
 }
 
 input LeagueAuthInput {
