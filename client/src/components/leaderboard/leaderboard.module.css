@@ -1,41 +1,42 @@
-/* Toolbar sits directly on top of the table. The negative margin pulls the
-   table up by its border width so the active tab can overlap and "open" into it;
-   z-10 keeps the toolbar (and the active tab's black) above the table's border. */
 .toolbar {
   @apply relative z-10 flex items-stretch gap-2;
-  margin-bottom: -0.125rem;
 }
 
-/* Horizontally scrollable tab strip (the part that shrinks on narrow screens).
-   Tabs stretch to the full toolbar height; the week-nav and controls are
-   centered within that height, which gives them breathing room above the table
-   while the tabs still reach down to connect. */
-.tabs {
-  @apply flex items-stretch gap-1 flex-1 min-w-0 overflow-x-auto;
-  scrollbar-width: none;
-}
-.tabs::-webkit-scrollbar {
-  display: none;
+/* The league-tab row lives inside the table itself, as a plain bordered first
+   row — pipe-separated text, not a drawn tab shape, so it just wraps on
+   narrow screens instead of needing its own scroll/measure logic. */
+.leagueTabsCell {
+  @apply px-4 py-2 font-normal;
+  border-bottom: 0.125rem solid #ffefd6;
 }
 
-/* Each tab matches the table: solid black fill, 2px beige border. The min-height
-   makes the tabs the tallest item, so they define the toolbar height (and the
-   week-nav/controls get centered within it). Text is centered vertically. */
-.tab {
-  @apply inline-flex items-center whitespace-nowrap min-h-[2.75rem] px-3 font-semibold leading-none text-beige-100 bg-black no-underline;
-  border: 0.125rem solid #ffefd6;
+/* flex-wrap: a tab that doesn't fit on the current line drops to the next one
+   at FULL width first. Only once a single tab is alone on its own line and
+   still wider than the row does its label itself shrink + ellipsize. */
+.leagueTabs {
+  @apply flex flex-wrap font-semibold text-beige-100;
 }
-/* Inactive: solid tab (bg stays black like the table), just the TEXT faded. */
-.tabInactive {
-  color: rgba(255, 239, 214, 0.75);
+
+/* min-w-0 is required for a flex child to shrink below its content size at
+   all (the flexbox default is min-width: auto); max-w-full caps it at the
+   row's width so it can't force the row to overflow instead of ellipsizing. */
+.leagueTabItem {
+  @apply flex items-baseline min-w-0 max-w-full;
 }
-.tabInactive:hover {
-  color: #ffefd6;
+
+.leagueTabLabel {
+  @apply inline-block min-w-0 max-w-full overflow-hidden whitespace-nowrap text-ellipsis;
 }
-/* Active tab: its black bottom border covers the table's beige top border in the
-   overlap, so the box reads as open into the table. */
-.tabActive {
-  border-bottom-color: black;
+
+.leagueTabSep {
+  @apply shrink-0;
+  color: rgba(255, 239, 214, 0.5);
+}
+
+/* The active tab's brackets stay full-width always; only the name between
+   them (.leagueTabLabel) is allowed to shrink + ellipsize. */
+.leagueTabBracket {
+  @apply shrink-0 font-bold;
 }
 
 .tableContainer {

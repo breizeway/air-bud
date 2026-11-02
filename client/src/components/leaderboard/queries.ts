@@ -11,6 +11,7 @@ export const leaguesQuery = graphql(`
       leagues {
         index
         name
+        espnUrl
       }
     }
   }
