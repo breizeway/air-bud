@@ -47,6 +47,8 @@ type LeagueInfo {
   "1-based ordinal — maps to the /1, /2 URL and the leagueIndex arg"
   index: Int!
   name: String!
+  "Link to the league's ESPN fantasy page. Keeps the ESPN league id server-side."
+  espnUrl: String!
 }
 
 type GetLeaderboardResult {

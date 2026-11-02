@@ -330,10 +330,6 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
             </button>
         </div>
 
-        {leagues.length > 1 && (
-          <LeagueTabs leagues={leagues} leagueIndex={leagueIndex} />
-        )}
-
         <div className="flex items-center shrink-0 ml-auto">
             <LiveIndicator
               isLive={!queryFetchingInitialData && isCurrentWeek && isLive}
@@ -430,6 +426,13 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
         {queryIsSuccess && (
           <table ref={tableRef} className={styles.leaderboardTable}>
             <thead className="text-left">
+              {leagues.length > 1 && (
+                <tr>
+                  <th colSpan={columns.length} className={styles.leagueTabsCell}>
+                    <LeagueTabs leagues={leagues} leagueIndex={leagueIndex} />
+                  </th>
+                </tr>
+              )}
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id} className="pt-10">
                   {headerGroup.headers.map((header) => (

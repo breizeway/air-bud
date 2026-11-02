@@ -41,8 +41,11 @@ def resolve_get_leagues(*_):
     response = Response()
     try:
         leagues = EdgeStore().leagues
-        data = {"leagues": [{"index": i + 1, "name": league.name}
-                            for i, league in enumerate(leagues)]}
+        data = {"leagues": [{
+            "index": i + 1,
+            "name": league.name,
+            "espn_url": f"https://fantasy.espn.com/basketball/league?leagueId={league.id}",
+        } for i, league in enumerate(leagues)]}
         return response.resolve(data)
     except Exception as err:
         response.add_error(ClientError(ClientErrorCodes.EDGE_API, str(err)))

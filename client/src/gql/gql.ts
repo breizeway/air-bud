@@ -14,7 +14,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "\n      mutation setLeagueAuth($leagueAuth: LeagueAuthInput!) {\n        setLeagueAuth(leagueAuth: $leagueAuth) {\n          __typename\n          success\n          errors {\n            code\n            message\n          }\n        }\n      }\n    ": types.SetLeagueAuthDocument,
-    "\n  query getLeagues {\n    getLeagues {\n      success\n      errors {\n        code\n        message\n      }\n      leagues {\n        index\n        name\n      }\n    }\n  }\n": types.GetLeaguesDocument,
+    "\n  query getLeagues {\n    getLeagues {\n      success\n      errors {\n        code\n        message\n      }\n      leagues {\n        index\n        name\n        espnUrl\n      }\n    }\n  }\n": types.GetLeaguesDocument,
     "\n  query getLeaderboard(\n    $leagueIndex: Int!\n    $year: Int\n    $matchupPeriodOffset: Int\n  ) {\n    getLeaderboard(\n      leagueIndex: $leagueIndex\n      year: $year\n      matchupPeriodOffset: $matchupPeriodOffset\n    ) {\n      success\n      errors {\n        code\n        message\n      }\n      leaderboard {\n        leagueIndex\n        leagueName\n        currentMatchupPeriod\n        matchupPeriod\n        isLive\n        categories {\n          name\n          scored\n        }\n        rows {\n          teamName\n          standing\n          owners {\n            firstName\n            displayName\n          }\n          cells {\n            category\n            display\n            rank\n            score\n          }\n        }\n      }\n    }\n  }\n": types.GetLeaderboardDocument,
 };
 
@@ -39,7 +39,7 @@ export function graphql(source: "\n      mutation setLeagueAuth($leagueAuth: Lea
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query getLeagues {\n    getLeagues {\n      success\n      errors {\n        code\n        message\n      }\n      leagues {\n        index\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  query getLeagues {\n    getLeagues {\n      success\n      errors {\n        code\n        message\n      }\n      leagues {\n        index\n        name\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query getLeagues {\n    getLeagues {\n      success\n      errors {\n        code\n        message\n      }\n      leagues {\n        index\n        name\n        espnUrl\n      }\n    }\n  }\n"): (typeof documents)["\n  query getLeagues {\n    getLeagues {\n      success\n      errors {\n        code\n        message\n      }\n      leagues {\n        index\n        name\n        espnUrl\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
