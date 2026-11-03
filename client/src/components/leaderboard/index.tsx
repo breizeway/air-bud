@@ -404,6 +404,12 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
           styles.tableContainer
         )}
       >
+        {leagues.length > 1 && (
+          <div className="sticky left-0 px-4 py-2">
+            <LeagueTabs leagues={leagues} leagueIndex={leagueIndex} />
+          </div>
+        )}
+
         <Loading
           isLoading={queryFetchingInitialData}
           message="Loading"
@@ -426,13 +432,6 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
         {queryIsSuccess && (
           <table ref={tableRef} className={styles.leaderboardTable}>
             <thead className="text-left">
-              {leagues.length > 1 && (
-                <tr>
-                  <th colSpan={columns.length} className={styles.leagueTabsCell}>
-                    <LeagueTabs leagues={leagues} leagueIndex={leagueIndex} />
-                  </th>
-                </tr>
-              )}
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id} className="pt-10">
                   {headerGroup.headers.map((header) => (

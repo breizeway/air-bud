@@ -1,9 +1,7 @@
 "use client";
 
-import { classNames } from "@/utils";
 import Link from "next/link";
 import { leagueSlug } from "./league-slug";
-import styles from "./leaderboard.module.css";
 
 interface LeagueTab {
   index: number;
@@ -11,10 +9,9 @@ interface LeagueTab {
 }
 
 /**
- * League tabs — a plain, pipe-separated nav row (semantic ARIA tablist). The
- * active league renders bracketed and unlinked, `[ Like This ]`; others are
- * plain underlined links. It's just inline text, so it wraps on narrow
- * screens with no layout logic of its own.
+ * League tabs — a flex-wrap row of standard site links (semantic ARIA
+ * tablist). The active league is plain unlinked text; the rest are regular
+ * links. No custom styling, so it wraps like any other text.
  */
 export default function LeagueTabs({
   leagues,
@@ -24,46 +21,33 @@ export default function LeagueTabs({
   leagueIndex: number;
 }) {
   return (
-    <div role="tablist" aria-label="Leagues" className={styles.leagueTabs}>
-      {leagues.map((league, i) => {
+    <div
+      role="tablist"
+      aria-label="Leagues"
+      className="flex flex-wrap gap-x-3 gap-y-1"
+    >
+      {leagues.map((league) => {
         const active = league.index === leagueIndex;
-        return (
-          <span key={league.index} className={styles.leagueTabItem}>
-            {i > 0 && (
-              <span aria-hidden className={styles.leagueTabSep}>
-                {" | "}
-              </span>
-            )}
-            {active ? (
-              <>
-                <span aria-hidden className={styles.leagueTabBracket}>
-                  {"[ "}
-                </span>
-                <span
-                  id={`league-tab-${league.index}`}
-                  role="tab"
-                  aria-selected
-                  aria-current="page"
-                  className={classNames(styles.leagueTabLabel, "font-bold")}
-                >
-                  {league.name}
-                </span>
-                <span aria-hidden className={styles.leagueTabBracket}>
-                  {" ]"}
-                </span>
-              </>
-            ) : (
-              <Link
-                id={`league-tab-${league.index}`}
-                href={`/${leagueSlug(league.index)}`}
-                role="tab"
-                aria-selected={false}
-                className={classNames(styles.leagueTabLabel, "underline")}
-              >
-                {league.name}
-              </Link>
-            )}
+        return active ? (
+          <span
+            key={league.index}
+            id={`league-tab-${league.index}`}
+            role="tab"
+            aria-selected
+            aria-current="page"
+          >
+            {league.name}
           </span>
+        ) : (
+          <Link
+            key={league.index}
+            id={`league-tab-${league.index}`}
+            href={`/${leagueSlug(league.index)}`}
+            role="tab"
+            aria-selected={false}
+          >
+            {league.name}
+          </Link>
         );
       })}
     </div>

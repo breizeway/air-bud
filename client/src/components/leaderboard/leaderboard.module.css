@@ -2,43 +2,6 @@
   @apply relative z-10 flex items-stretch gap-2;
 }
 
-/* The league-tab row lives inside the table itself, as a plain bordered first
-   row — pipe-separated text, not a drawn tab shape, so it just wraps on
-   narrow screens instead of needing its own scroll/measure logic. */
-.leagueTabsCell {
-  @apply px-4 py-2 font-normal;
-  border-bottom: 0.125rem solid #ffefd6;
-}
-
-/* flex-wrap: a tab that doesn't fit on the current line drops to the next one
-   at FULL width first. Only once a single tab is alone on its own line and
-   still wider than the row does its label itself shrink + ellipsize. */
-.leagueTabs {
-  @apply flex flex-wrap font-semibold text-beige-100;
-}
-
-/* min-w-0 is required for a flex child to shrink below its content size at
-   all (the flexbox default is min-width: auto); max-w-full caps it at the
-   row's width so it can't force the row to overflow instead of ellipsizing. */
-.leagueTabItem {
-  @apply flex items-baseline min-w-0 max-w-full;
-}
-
-.leagueTabLabel {
-  @apply inline-block min-w-0 max-w-full overflow-hidden whitespace-nowrap text-ellipsis;
-}
-
-.leagueTabSep {
-  @apply shrink-0;
-  color: rgba(255, 239, 214, 0.5);
-}
-
-/* The active tab's brackets stay full-width always; only the name between
-   them (.leagueTabLabel) is allowed to shrink + ellipsize. */
-.leagueTabBracket {
-  @apply shrink-0 font-bold;
-}
-
 .tableContainer {
   /* hack to fix scrollbar under stickies in safari 
      https://stackoverflow.com/questions/67076468/why-scrollbar-is-behind-sticky-elements-in-ios-safari
