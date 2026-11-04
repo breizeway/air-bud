@@ -58,6 +58,7 @@ export default function LeagueTabs({
               role="tab"
               aria-selected={false}
               className={styles.leagueTab}
+              scroll={false}
             >
               {league.name}
             </Link>
