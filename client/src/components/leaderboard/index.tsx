@@ -411,7 +411,11 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
             <>
               <div className={styles.leagueHeader}>League</div>
               <div className={styles.leagueRow}>
-                <Loading isLoading message="Loading" />
+                <Loading
+                  isLoading
+                  message="Loading"
+                  className={styles.leagueTab}
+                />
               </div>
             </>
           ) : (

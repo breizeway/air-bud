@@ -54,8 +54,12 @@
 }
 
 /* i used this clunky shadow system because border doesn't work well with sticky positioning in safari */
+/* top+bottom (not just bottom) so it stacks with whatever sits above (the
+   league row's own bottom shadow, or a tbody row's top shadow) exactly like
+   every other internal boundary does — otherwise that one edge reads as a
+   visibly thinner line than the rest of the table's dividers. */
 .leaderboardTable thead tr > * {
-  box-shadow: inset 0 -0.05rem #34302c;
+  box-shadow: inset 0 0.05rem #34302c, inset 0 -0.05rem #34302c;
 }
 
 .leaderboardTable tbody tr > * {
