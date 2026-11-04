@@ -11,16 +11,25 @@
   box-shadow: inset 0 -0.05rem #34302c;
 }
 
+/* pl-2/pr-2 (not pl-4/pr-4): each .leagueTab below carries its own px-2, so
+   whichever tab is leftmost contributes 0.5rem + this row's 0.5rem = 1rem,
+   matching the table's pl-4. */
 .leagueRow {
-  @apply pl-4 pr-4 py-2 text-xs sm:text-sm;
+  @apply pl-2 pr-2 py-2 text-xs sm:text-sm;
   background-color: #1a1816;
   box-shadow: inset 0 0.05rem #34302c, inset 0 -0.05rem #34302c;
+}
+
+/* Shared by every tab (active or not) — see .leagueRow comment above for why
+   this needs to be uniform rather than a gap on the row. */
+.leagueTab {
+  @apply px-2;
 }
 
 /* Active league tab: the repeating basketball strip (not opacity) marks the
    current page, so it still reads clearly with only two tabs. */
 .activeLeagueTab {
-  @apply px-1 text-shadow-court;
+  @apply text-shadow-court;
   background-image: url("/bktball.gif");
   background-repeat: repeat-x;
   background-position: left;

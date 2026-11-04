@@ -15,6 +15,12 @@ interface LeagueTab {
  * a "League" label above matching the table's own header style. The active
  * league is plain unlinked text (marked by the basketball-strip background);
  * the rest are regular links.
+ *
+ * Every tab carries the same horizontal padding (rather than a gap on the
+ * row) so that whichever tab ends up leftmost — on the first line or a
+ * wrapped one, active or not — contributes the same inset. .leagueRow's own
+ * padding is reduced by that same amount, so the net inset always matches
+ * "Team"/"League" above/below regardless of wrapping or which tab is active.
  */
 export default function LeagueTabs({
   leagues,
@@ -29,10 +35,7 @@ export default function LeagueTabs({
       <div
         role="tablist"
         aria-label="Leagues"
-        className={classNames(
-          styles.leagueRow,
-          "flex flex-wrap gap-x-4 gap-y-1"
-        )}
+        className={classNames(styles.leagueRow, "flex flex-wrap gap-y-1")}
       >
         {leagues.map((league) => {
           const active = league.index === leagueIndex;
@@ -43,7 +46,7 @@ export default function LeagueTabs({
               role="tab"
               aria-selected
               aria-current="page"
-              className={styles.activeLeagueTab}
+              className={classNames(styles.leagueTab, styles.activeLeagueTab)}
             >
               {league.name}
             </span>
@@ -54,6 +57,7 @@ export default function LeagueTabs({
               href={`/${leagueSlug(league.index)}`}
               role="tab"
               aria-selected={false}
+              className={styles.leagueTab}
             >
               {league.name}
             </Link>
