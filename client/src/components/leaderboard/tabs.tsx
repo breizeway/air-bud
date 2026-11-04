@@ -11,10 +11,16 @@ interface LeagueTab {
 }
 
 /**
- * League tabs — a plain, pipe-separated nav row (semantic ARIA tablist). The
- * active league renders bracketed and unlinked, `[ Like This ]`; others are
- * plain underlined links. It's just inline text, so it wraps on narrow
- * screens with no layout logic of its own.
+ * League tabs — a flex-wrap row of plain links (semantic ARIA tablist), with
+ * a "League" label above matching the table's own header style. The active
+ * league is plain unlinked text (marked by the basketball-strip background);
+ * the rest are regular links.
+ *
+ * Every tab carries the same horizontal padding (rather than a gap on the
+ * row) so that whichever tab ends up leftmost — on the first line or a
+ * wrapped one, active or not — contributes the same inset. .leagueRow's own
+ * padding is reduced by that same amount, so the net inset always matches
+ * "Team"/"League" above/below regardless of wrapping or which tab is active.
  */
 export default function LeagueTabs({
   leagues,
@@ -24,48 +30,40 @@ export default function LeagueTabs({
   leagueIndex: number;
 }) {
   return (
-    <div role="tablist" aria-label="Leagues" className={styles.leagueTabs}>
-      {leagues.map((league, i) => {
-        const active = league.index === leagueIndex;
-        return (
-          <span key={league.index} className={styles.leagueTabItem}>
-            {i > 0 && (
-              <span aria-hidden className={styles.leagueTabSep}>
-                {" | "}
-              </span>
-            )}
-            {active ? (
-              <>
-                <span aria-hidden className={styles.leagueTabBracket}>
-                  {"[ "}
-                </span>
-                <span
-                  id={`league-tab-${league.index}`}
-                  role="tab"
-                  aria-selected
-                  aria-current="page"
-                  className={classNames(styles.leagueTabLabel, "font-bold")}
-                >
-                  {league.name}
-                </span>
-                <span aria-hidden className={styles.leagueTabBracket}>
-                  {" ]"}
-                </span>
-              </>
-            ) : (
-              <Link
-                id={`league-tab-${league.index}`}
-                href={`/${leagueSlug(league.index)}`}
-                role="tab"
-                aria-selected={false}
-                className={classNames(styles.leagueTabLabel, "underline")}
-              >
-                {league.name}
-              </Link>
-            )}
-          </span>
-        );
-      })}
+    <div>
+      <div className={styles.leagueHeader}>League</div>
+      <div
+        role="tablist"
+        aria-label="Leagues"
+        className={classNames(styles.leagueRow, "flex flex-wrap gap-y-4")}
+      >
+        {leagues.map((league) => {
+          const active = league.index === leagueIndex;
+          return active ? (
+            <span
+              key={league.index}
+              id={`league-tab-${league.index}`}
+              role="tab"
+              aria-selected
+              aria-current="page"
+              className={classNames(styles.leagueTab, styles.activeLeagueTab)}
+            >
+              {league.name}
+            </span>
+          ) : (
+            <Link
+              key={league.index}
+              id={`league-tab-${league.index}`}
+              href={`/${leagueSlug(league.index)}`}
+              role="tab"
+              aria-selected={false}
+              className={styles.leagueTab}
+            >
+              {league.name}
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 }

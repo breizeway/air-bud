@@ -2,41 +2,38 @@
   @apply relative z-10 flex items-stretch gap-2;
 }
 
-/* The league-tab row lives inside the table itself, as a plain bordered first
-   row — pipe-separated text, not a drawn tab shape, so it just wraps on
-   narrow screens instead of needing its own scroll/measure logic. */
-.leagueTabsCell {
-  @apply px-4 py-2 font-normal;
-  border-bottom: 0.125rem solid #ffefd6;
+/* The league-tabs block sits above <table> as a plain sibling, not inside it
+   (a colSpan'd row couldn't wrap narrower than the other, wider columns) —
+   so it reuses the table's own header/odd-row tokens by hand to still read
+   as part of the table. */
+.leagueHeader {
+  @apply pl-4 pr-4 pt-2 pb-1 text-xs sm:text-sm font-bold;
+  box-shadow: inset 0 -0.05rem #34302c;
 }
 
-/* flex-wrap: a tab that doesn't fit on the current line drops to the next one
-   at FULL width first. Only once a single tab is alone on its own line and
-   still wider than the row does its label itself shrink + ellipsize. */
-.leagueTabs {
-  @apply flex flex-wrap font-semibold text-beige-100;
+/* pl-2/pr-2 (not pl-4/pr-4): each .leagueTab below carries its own px-2, so
+   whichever tab is leftmost contributes 0.5rem + this row's 0.5rem = 1rem,
+   matching the table's pl-4. */
+.leagueRow {
+  @apply pl-2 pr-2 py-2 text-xs sm:text-sm;
+  background-color: #1a1816;
+  box-shadow: inset 0 0.05rem #34302c, inset 0 -0.05rem #34302c;
 }
 
-/* min-w-0 is required for a flex child to shrink below its content size at
-   all (the flexbox default is min-width: auto); max-w-full caps it at the
-   row's width so it can't force the row to overflow instead of ellipsizing. */
-.leagueTabItem {
-  @apply flex items-baseline min-w-0 max-w-full;
+/* Shared by every tab (active or not) — see .leagueRow comment above for why
+   this needs to be uniform rather than a gap on the row. */
+.leagueTab {
+  @apply px-2;
 }
 
-.leagueTabLabel {
-  @apply inline-block min-w-0 max-w-full overflow-hidden whitespace-nowrap text-ellipsis;
-}
-
-.leagueTabSep {
-  @apply shrink-0;
-  color: rgba(255, 239, 214, 0.5);
-}
-
-/* The active tab's brackets stay full-width always; only the name between
-   them (.leagueTabLabel) is allowed to shrink + ellipsize. */
-.leagueTabBracket {
-  @apply shrink-0 font-bold;
+/* Active league tab: the repeating basketball strip (not opacity) marks the
+   current page, so it still reads clearly with only two tabs. */
+.activeLeagueTab {
+  @apply text-shadow-court;
+  background-image: url("/bktball.gif");
+  background-repeat: repeat-x;
+  background-position: left;
+  background-size: auto 100%;
 }
 
 .tableContainer {
