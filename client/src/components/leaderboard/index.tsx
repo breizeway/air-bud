@@ -411,7 +411,11 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
             <>
               <div className={styles.leagueHeader}>League</div>
               <div className={styles.leagueRow}>
-                <Loading isLoading message="Loading" />
+                <Loading
+                  isLoading
+                  message="Loading"
+                  className={styles.leagueTab}
+                />
               </div>
             </>
           ) : (
@@ -423,7 +427,9 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
           <table className={styles.leaderboardTable}>
             <thead className="text-left">
               <tr>
-                <th className={classNames(styles.cell)}>Team</th>
+                <th className={classNames(styles.cell)}>
+                  <Cell primary={<span>{"Team"}</span>} />
+                </th>
               </tr>
             </thead>
             <tbody>
