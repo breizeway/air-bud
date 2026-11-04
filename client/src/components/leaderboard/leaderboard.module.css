@@ -2,6 +2,30 @@
   @apply relative z-10 flex items-stretch gap-2;
 }
 
+/* The league-tabs block sits above <table> as a plain sibling, not inside it
+   (a colSpan'd row couldn't wrap narrower than the other, wider columns) —
+   so it reuses the table's own header/odd-row tokens by hand to still read
+   as part of the table. */
+.leagueHeader {
+  @apply pl-4 pr-4 pt-2 pb-1 text-xs sm:text-sm;
+  box-shadow: inset 0 -0.05rem #34302c;
+}
+
+.leagueRow {
+  @apply pl-4 pr-4 py-[0.08rem] text-xs sm:text-sm;
+  background-color: #1a1816;
+  box-shadow: inset 0 0.05rem #34302c, inset 0 -0.05rem #34302c;
+}
+
+/* Active league tab: the repeating basketball strip (not opacity) marks the
+   current page, so it still reads clearly with only two tabs. */
+.activeLeagueTab {
+  @apply px-1 text-shadow-court;
+  background-image: url("/bktball.gif");
+  background-repeat: repeat-x;
+  background-position: center;
+}
+
 .tableContainer {
   /* hack to fix scrollbar under stickies in safari 
      https://stackoverflow.com/questions/67076468/why-scrollbar-is-behind-sticky-elements-in-ios-safari

@@ -405,7 +405,7 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
         )}
       >
         {leagues.length > 1 && (
-          <div className="sticky left-0 px-4 py-2">
+          <div className="sticky left-0">
             <LeagueTabs leagues={leagues} leagueIndex={leagueIndex} />
           </div>
         )}
