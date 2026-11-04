@@ -70,11 +70,6 @@ const ALL = "ALL";
 // (each tab is a link, so the component may remount) — kept deliberately simple.
 let persistedMatchupPeriodOffset = 0;
 
-// Same deal: a tab click remounts the component, and the brief loading
-// skeleton is much shorter than the real table, so the browser clamps scroll
-// back up before the real table re-renders. Restore it once real data lands.
-let persistedScrollY = 0;
-
 export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
   const { window } = useClient();
   const searchParams = useSearchParams();
@@ -123,27 +118,6 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
     if (isLive) sub.start();
     return () => sub.stop();
   }, [refetch, isLive]);
-
-  // Keep persistedScrollY current so a tab-click remount has somewhere to
-  // restore to (see the module-scope comment above).
-  useEffect(() => {
-    if (!window) return;
-    const onScroll = () => {
-      persistedScrollY = window.scrollY;
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [window]);
-
-  // Restore it once, after the real table has rendered (restoring any
-  // earlier, while only the loading skeleton is up, has nowhere to go).
-  const scrollRestored = useRef(false);
-  useEffect(() => {
-    if (queryIsSuccess && !scrollRestored.current) {
-      window?.scrollTo(0, persistedScrollY);
-      scrollRestored.current = true;
-    }
-  }, [queryIsSuccess, window]);
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [showMore, setShowMore] = useState<boolean>(false);
@@ -432,22 +406,20 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
           styles.tableContainer
         )}
       >
-        <div className="sticky left-0">
-          {leaguesFetchingInitialData ? (
-            <>
-              <div className={styles.leagueHeader}>League</div>
-              <div className={styles.leagueRow}>
-                <Loading
-                  isLoading
-                  message="Loading"
-                  className={styles.leagueTab}
-                />
-              </div>
-            </>
-          ) : (
-            <LeagueTabs leagues={leagues} leagueIndex={leagueIndex} />
-          )}
-        </div>
+        {leaguesFetchingInitialData ? (
+          <>
+            <div className={styles.leagueHeader}>League</div>
+            <div className={styles.leagueRow}>
+              <Loading
+                isLoading
+                message="Loading"
+                className={styles.leagueTab}
+              />
+            </div>
+          </>
+        ) : (
+          <LeagueTabs leagues={leagues} leagueIndex={leagueIndex} />
+        )}
 
         {queryFetchingInitialData && (
           <table className={styles.leaderboardTable}>
