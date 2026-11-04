@@ -76,7 +76,9 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
   const router = useRouter();
 
   const [leaguesResult] = useQuery({ query: leaguesQuery });
-  const leagues = leaguesResult.data?.getLeagues?.leagues ?? [];
+  const leaguesData = leaguesResult.data?.getLeagues?.leagues;
+  const leagues = leaguesData ?? [];
+  const leaguesFetchingInitialData = leaguesResult.fetching && !leaguesData;
 
   const [matchupPeriodOffset, _setMatchupPeriodOffset] = useState<number>(
     persistedMatchupPeriodOffset
@@ -404,17 +406,35 @@ export default function Leaderboard({ leagueIndex }: { leagueIndex: number }) {
           styles.tableContainer
         )}
       >
-        {leagues.length > 1 && (
-          <div className="sticky left-0">
+        <div className="sticky left-0">
+          {leaguesFetchingInitialData ? (
+            <>
+              <div className={styles.leagueHeader}>League</div>
+              <div className={styles.leagueRow}>
+                <Loading isLoading message="Loading" />
+              </div>
+            </>
+          ) : (
             <LeagueTabs leagues={leagues} leagueIndex={leagueIndex} />
-          </div>
-        )}
+          )}
+        </div>
 
-        <Loading
-          isLoading={queryFetchingInitialData}
-          message="Loading"
-          className="my-2 mx-4"
-        />
+        {queryFetchingInitialData && (
+          <table className={styles.leaderboardTable}>
+            <thead className="text-left">
+              <tr>
+                <th className={classNames(styles.cell)}>Team</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className={classNames(styles.cell)}>
+                  <Loading isLoading message="Loading" className="my-2" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        )}
 
         {!queryFetchingInitialData && !queryIsSuccess && (
           <div className="py-2 px-4">
