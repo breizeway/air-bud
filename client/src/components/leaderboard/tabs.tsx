@@ -35,7 +35,7 @@ export default function LeagueTabs({
       <div
         role="tablist"
         aria-label="Leagues"
-        className={classNames(styles.leagueRow, "flex flex-wrap gap-y-1")}
+        className={classNames(styles.leagueRow, "flex flex-wrap gap-y-4")}
       >
         {leagues.map((league) => {
           const active = league.index === leagueIndex;
