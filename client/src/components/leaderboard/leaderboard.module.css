@@ -23,7 +23,7 @@
 /* Shared by every tab (active or not) — see .leagueRow comment above for why
    this needs to be uniform rather than a gap on the row. */
 .leagueTab {
-  @apply px-2;
+  @apply px-2 text-base;
 }
 
 /* Active league tab: the repeating basketball strip (not opacity) marks the
