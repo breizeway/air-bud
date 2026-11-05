@@ -102,7 +102,7 @@ def _player_is_live(player, scoring_period):
     """True if the player's game for this scoring period has tipped off and isn't finished.
 
     Look up the one schedule entry `game_played` was actually computed against,
-    rather than scanning every entry for a date matching "today" -- the server
+    rather than scanning every entry for a date matching "today"; the server
     runs in UTC, so an evening Pacific-time game from yesterday can re-date to
     today in UTC and get mismatched with an unrelated game_played value.
     """
