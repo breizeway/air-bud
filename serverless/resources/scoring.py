@@ -98,15 +98,18 @@ def _minutes_available(sides):
     return False
 
 
-def _player_is_live(player):
-    """True if player has a game today that has tipped off and isn't finished."""
-    now = datetime.now()
-    today = now.date()
-    for game in (player.schedule or {}).values():
-        game_date = game["date"]
-        if game_date.date() == today and now >= game_date and (player.game_played or 0) == 0:
-            return True
-    return False
+def _player_is_live(player, scoring_period):
+    """True if the player's game for this scoring period has tipped off and isn't finished.
+
+    Look up the one schedule entry `game_played` was actually computed against,
+    rather than scanning every entry for a date matching "today"; the server
+    runs in UTC, so an evening Pacific-time game from yesterday can re-date to
+    today in UTC and get mismatched with an unrelated game_played value.
+    """
+    game = (player.schedule or {}).get(str(scoring_period))
+    if not game:
+        return False
+    return datetime.now() >= game["date"] and (player.game_played or 0) == 0
 
 
 def _order(categories):
@@ -228,8 +231,9 @@ def build_leaderboard(box_scores, league_index, league_name,
         ]
         rows.append(LeaderboardRow(team, row_cells))
 
+    scoring_period = box_scores[0].scoring_period if box_scores else None
     is_live = matchup_period == current_matchup_period and any(
-        _player_is_live(player)
+        _player_is_live(player, scoring_period)
         for _team, _stats, lineup in sides for player in lineup
     )
 
