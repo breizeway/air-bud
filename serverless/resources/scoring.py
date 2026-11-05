@@ -23,6 +23,8 @@ Pipeline
     ORDER MATTERS: every scored category is ranked and scored BEFORE ALL is
     ranked, because ALL's value is the sum of those scores.
 """
+from datetime import datetime
+
 from data import ClientOwner
 
 # Minutes: shown and ranked, never counted toward ALL. From player breakdowns,
@@ -93,6 +95,17 @@ def _minutes_available(sides):
         for player in lineup:
             if MINUTES in (player.points_breakdown or {}):
                 return True
+    return False
+
+
+def _player_is_live(player):
+    """True if player has a game today that has tipped off and isn't finished."""
+    now = datetime.now()
+    today = now.date()
+    for game in (player.schedule or {}).values():
+        game_date = game["date"]
+        if game_date.date() == today and now >= game_date and (player.game_played or 0) == 0:
+            return True
     return False
 
 
@@ -216,7 +229,7 @@ def build_leaderboard(box_scores, league_index, league_name,
         rows.append(LeaderboardRow(team, row_cells))
 
     is_live = matchup_period == current_matchup_period and any(
-        (player.game_played or 0) != 100
+        _player_is_live(player)
         for _team, _stats, lineup in sides for player in lineup
     )
 
